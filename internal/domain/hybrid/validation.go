@@ -44,7 +44,9 @@ func NewValidator(filters config.AllowedFiltersConfig, sorts config.AllowedSorts
 }
 
 // Validate checks LLM output and returns only valid, allowed fields.
-func (v *Validator) Validate(result *LLMParseResult) ValidatedIntent {
+// The query parameter is used to verify that inferred filter values actually
+// appear in the user's input (prevents false inference like "burger" → cuisine "American").
+func (v *Validator) Validate(result *LLMParseResult, query string) ValidatedIntent {
 	intent := ValidatedIntent{
 		NormalizedQuery: result.NormalizedQuery,
 		Rewrites:        result.Rewrites,
@@ -58,7 +60,7 @@ func (v *Validator) Validate(result *LLMParseResult) ValidatedIntent {
 		return intent
 	}
 
-	intent.Filters = v.validateFilters(result.Filters, &intent.Warnings)
+	intent.Filters = v.validateFilters(result.Filters, query, &intent.Warnings)
 	intent.Sort = v.validateSort(result.Sort, &intent.Warnings)
 	intent.CandidateConcepts = v.validateConcepts(result.CandidateConcepts, &intent.Warnings)
 	intent.Warnings = append(intent.Warnings, result.Warnings...)
@@ -66,7 +68,9 @@ func (v *Validator) Validate(result *LLMParseResult) ValidatedIntent {
 	return intent
 }
 
-func (v *Validator) validateFilters(filters []LLMFilter, warnings *[]string) []LLMFilter {
+func (v *Validator) validateFilters(filters []LLMFilter, query string, warnings *[]string) []LLMFilter {
+	queryLower := strings.ToLower(query)
+
 	var valid []LLMFilter
 	for _, f := range filters {
 		allowed, ok := v.allowedFilters[f.Field]
@@ -83,6 +87,19 @@ func (v *Validator) validateFilters(filters []LLMFilter, warnings *[]string) []L
 		if f.Confidence < v.minConfidence {
 			*warnings = append(*warnings, fmt.Sprintf("filter %s %s confidence %.2f below threshold, dropped", f.Field, f.Operator, f.Confidence))
 			continue
+		}
+
+		// For keyword filters, verify the value actually appears in the query.
+		// This prevents false inference like "burger" → recipe_cuisine "American".
+		if allowed.Type == "keyword" {
+			if str, ok := f.Value.(string); ok {
+				if !strings.Contains(queryLower, strings.ToLower(str)) {
+					*warnings = append(*warnings, fmt.Sprintf(
+						"filter %s value %q not found in query, dropped (possible false inference)",
+						f.Field, str))
+					continue
+				}
+			}
 		}
 
 		// Coerce non-numeric values for number-typed fields.

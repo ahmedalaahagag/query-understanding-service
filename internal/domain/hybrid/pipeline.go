@@ -131,7 +131,7 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 	}
 
 	// Step 3: Validate LLM output
-	intent := p.validator.Validate(llmResult)
+	intent := p.validator.Validate(llmResult, state.NormalizedQuery)
 
 	if debug {
 		debugInfo.ValidatedIntent = &intent

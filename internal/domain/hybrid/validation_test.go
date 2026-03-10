@@ -13,6 +13,7 @@ func testValidator() *Validator {
 			Filters: []config.AllowedFilter{
 				{Field: "price", Operators: []string{"lt", "lte", "gt", "gte", "eq"}, Type: "number"},
 				{Field: "dietary", Operators: []string{"eq", "in"}, Type: "string_list"},
+			{Field: "recipe_cuisine", Operators: []string{"eq", "in"}, Type: "keyword"},
 			},
 		},
 		config.AllowedSortsConfig{
@@ -37,7 +38,7 @@ func TestValidator_ValidFilters(t *testing.T) {
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.Len(t, intent.Filters, 1)
 	assert.Equal(t, "price", intent.Filters[0].Field)
 	assert.Empty(t, intent.Warnings)
@@ -53,7 +54,7 @@ func TestValidator_InvalidFilterField(t *testing.T) {
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.Empty(t, intent.Filters)
 	assert.Contains(t, intent.Warnings[0], "not allowed")
 }
@@ -68,7 +69,7 @@ func TestValidator_InvalidOperator(t *testing.T) {
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.Empty(t, intent.Filters)
 	assert.Contains(t, intent.Warnings[0], "operator")
 }
@@ -83,7 +84,7 @@ func TestValidator_LowConfidenceFilter(t *testing.T) {
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.Empty(t, intent.Filters)
 	assert.Contains(t, intent.Warnings[0], "below threshold")
 }
@@ -96,7 +97,7 @@ func TestValidator_ValidSort(t *testing.T) {
 		Confidence:      0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.NotNil(t, intent.Sort)
 	assert.Equal(t, "price", intent.Sort.Field)
 }
@@ -109,7 +110,7 @@ func TestValidator_InvalidSort(t *testing.T) {
 		Confidence:      0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.Nil(t, intent.Sort)
 	assert.Contains(t, intent.Warnings[0], "sort")
 }
@@ -122,7 +123,7 @@ func TestValidator_RelevanceSort(t *testing.T) {
 		Confidence:      0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.NotNil(t, intent.Sort)
 }
 
@@ -137,7 +138,7 @@ func TestValidator_LowOverallConfidence(t *testing.T) {
 		Confidence: 0.3,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.Empty(t, intent.Filters)
 	assert.Nil(t, intent.Sort)
 	assert.Contains(t, intent.Warnings[0], "overall confidence")
@@ -154,7 +155,7 @@ func TestValidator_LowConfidenceConcept(t *testing.T) {
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.Len(t, intent.CandidateConcepts, 1)
 	assert.Equal(t, "burger", intent.CandidateConcepts[0].Label)
 }
@@ -171,9 +172,42 @@ func TestValidator_MixedValid_Invalid(t *testing.T) {
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result)
+	intent := v.Validate(result, result.NormalizedQuery)
 	assert.Len(t, intent.Filters, 2)
 	assert.Equal(t, "price", intent.Filters[0].Field)
 	assert.Equal(t, "dietary", intent.Filters[1].Field)
 	assert.Len(t, intent.Warnings, 1)
+}
+
+func TestValidator_KeywordFilterDroppedWhenValueNotInQuery(t *testing.T) {
+	v := testValidator()
+	result := &LLMParseResult{
+		NormalizedQuery: "chicken burger under 20",
+		Filters: []LLMFilter{
+			{Field: "recipe_cuisine", Operator: "eq", Value: "American", Confidence: 0.85},
+			{Field: "price", Operator: "lt", Value: float64(20), Confidence: 0.96},
+		},
+		Confidence: 0.89,
+	}
+
+	intent := v.Validate(result, "chicken burger under 20")
+	assert.Len(t, intent.Filters, 1)
+	assert.Equal(t, "price", intent.Filters[0].Field)
+	assert.Contains(t, intent.Warnings[0], "not found in query")
+}
+
+func TestValidator_KeywordFilterKeptWhenValueInQuery(t *testing.T) {
+	v := testValidator()
+	result := &LLMParseResult{
+		NormalizedQuery: "Italian pasta",
+		Filters: []LLMFilter{
+			{Field: "recipe_cuisine", Operator: "eq", Value: "Italian", Confidence: 0.9},
+		},
+		Confidence: 0.89,
+	}
+
+	intent := v.Validate(result, "Italian pasta")
+	assert.Len(t, intent.Filters, 1)
+	assert.Equal(t, "recipe_cuisine", intent.Filters[0].Field)
+	assert.Empty(t, intent.Warnings)
 }

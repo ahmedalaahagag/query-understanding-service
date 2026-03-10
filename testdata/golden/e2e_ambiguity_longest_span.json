@@ -9,8 +9,7 @@
     "originalQuery": "Chicken Burger",
     "normalizedQuery": "chicken burger",
     "tokens": [
-      {"value": "chicken", "normalized": "chicken", "position": 0},
-      {"value": "burger", "normalized": "burger", "position": 1}
+      {"value": "chicken burger", "normalized": "chicken burger", "position": 0}
     ],
     "rewrites": ["chicken burger"],
     "concepts": [

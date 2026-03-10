@@ -10,8 +10,7 @@
     "normalizedQuery": "cheapest chicken burger under 20",
     "tokens": [
       {"value": "cheapest", "normalized": "cheapest", "position": 0},
-      {"value": "chiken", "normalized": "chicken", "position": 1},
-      {"value": "burgar", "normalized": "burger", "position": 2},
+      {"value": "chiken burgar", "normalized": "chicken burger", "position": 1},
       {"value": "under", "normalized": "under", "position": 3},
       {"value": "20", "normalized": "20", "position": 4}
     ],

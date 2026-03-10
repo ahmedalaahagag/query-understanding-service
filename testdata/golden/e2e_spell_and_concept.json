@@ -9,8 +9,7 @@
     "originalQuery": "Cheeze Pizzza",
     "normalizedQuery": "cheese pizza",
     "tokens": [
-      {"value": "cheeze", "normalized": "cheese", "position": 0},
-      {"value": "pizzza", "normalized": "pizza", "position": 1}
+      {"value": "cheeze pizzza", "normalized": "cheese pizza", "position": 0}
     ],
     "rewrites": ["cheese pizza"],
     "concepts": [

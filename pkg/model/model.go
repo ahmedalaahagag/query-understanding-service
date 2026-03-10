@@ -1,5 +1,10 @@
 package model
 
+import (
+	"sort"
+	"strings"
+)
+
 // AnalyzeRequest is the input contract for the /v1/analyze endpoint.
 type AnalyzeRequest struct {
 	Query          string   `json:"query"`
@@ -128,7 +133,7 @@ func (s *QueryState) ToResponse() AnalyzeResponse {
 		rewrites = append(rewrites, s.NormalizedQuery)
 	}
 
-	tokens := s.Tokens
+	tokens := mergeConceptTokens(s.Tokens, s.Concepts)
 	if tokens == nil {
 		tokens = []Token{}
 	}
@@ -151,4 +156,82 @@ func (s *QueryState) ToResponse() AnalyzeResponse {
 		Sort:            s.Sort,
 		Warnings:        s.Warnings,
 	}
+}
+
+// mergeConceptTokens merges tokens that are covered by concept spans into
+// compound tokens. For example, tokens ["high", "protein"] with a concept
+// spanning positions 0–1 become ["high protein"].
+func mergeConceptTokens(tokens []Token, concepts []ConceptMatch) []Token {
+	if len(concepts) == 0 || len(tokens) == 0 {
+		return tokens
+	}
+
+	// Build position-to-token index.
+	byPos := make(map[int]int, len(tokens))
+	for i, t := range tokens {
+		byPos[t.Position] = i
+	}
+
+	// Sort concepts by start position.
+	sorted := make([]ConceptMatch, len(concepts))
+	copy(sorted, concepts)
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorted[i].Start < sorted[j].Start
+	})
+
+	// Mark which token indices are consumed by a concept.
+	consumed := make(map[int]bool)
+	type mergedToken struct {
+		token Token
+		pos   int // original start position for ordering
+	}
+	var merged []mergedToken
+
+	for _, c := range sorted {
+		// Collect tokens in this concept's span.
+		var values []string
+		var normalized []string
+		var indices []int
+		for pos := c.Start; pos <= c.End; pos++ {
+			if idx, ok := byPos[pos]; ok && !consumed[idx] {
+				values = append(values, tokens[idx].Value)
+				normalized = append(normalized, tokens[idx].Normalized)
+				indices = append(indices, idx)
+			}
+		}
+		if len(values) <= 1 {
+			continue // single-token concept, nothing to merge
+		}
+		for _, idx := range indices {
+			consumed[idx] = true
+		}
+		merged = append(merged, mergedToken{
+			token: Token{
+				Value:      strings.Join(values, " "),
+				Normalized: strings.Join(normalized, " "),
+				Position:   c.Start,
+			},
+			pos: c.Start,
+		})
+	}
+
+	if len(merged) == 0 {
+		return tokens
+	}
+
+	// Build final token list: unconsumed tokens + merged tokens, sorted by position.
+	var result []Token
+	for i, t := range tokens {
+		if !consumed[i] {
+			result = append(result, t)
+		}
+	}
+	for _, m := range merged {
+		result = append(result, m.token)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Position < result[j].Position
+	})
+
+	return result
 }

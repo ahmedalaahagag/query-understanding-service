@@ -10,8 +10,7 @@
     "normalizedQuery": "cheap chicken burger",
     "tokens": [
       {"value": "cheap", "normalized": "cheap", "position": 0},
-      {"value": "chiken", "normalized": "chicken", "position": 1},
-      {"value": "burger", "normalized": "burger", "position": 2}
+      {"value": "chiken burger", "normalized": "chicken burger", "position": 1}
     ],
     "rewrites": ["cheap chicken burger"],
     "concepts": [

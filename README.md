@@ -331,11 +331,28 @@ Type values: `SYN` (synonym), `HYP` (hypernym), `CMP` (compound), `SW` (stopword
 ### Seeding
 
 ```bash
-# Seed all locale data into OpenSearch
+# Seed all locale data (concepts + linguistic + compounds)
 ./scripts/seed-opensearch.sh
+
+# Seed compound rules only (from scripts/compound-data/*.tsv)
+./scripts/seed-compounds.sh
+
+# Seed compounds for a single locale
+./scripts/seed-compounds.sh http://localhost:9200 en_gb
 ```
 
-Sample data is provided in `scripts/locale-data/` for 20+ locales.
+Sample data is provided in `scripts/locale-data/` for 20+ locales and `scripts/compound-data/` for compound word rules.
+
+#### Adding Compound Words
+
+Add entries to `scripts/compound-data/{locale}.tsv` (tab-separated):
+
+```
+icecream	ice cream
+peanutbutter	peanut butter
+```
+
+Then run `./scripts/seed-compounds.sh` to index them.
 
 ---
 

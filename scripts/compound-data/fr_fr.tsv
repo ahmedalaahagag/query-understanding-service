@@ -1,4 +1,197 @@
 # French (FR) compound words
 # Format: compound<TAB>parts
+# ============================================================================
+# VIANDES & PROTEINES (Meat & Protein)
+# ============================================================================
+boeufhaché	boeuf haché
+steakhaché	steak haché
+escalopedepoulet	escalope de poulet
+blancdepoulet	blanc de poulet
+cuissedepoulet	cuisse de poulet
+ailedepoulet	aile de poulet
+côtedeporc	côte de porc
+filetdeporc	filet de porc
+côtelettedagneau	côtelette d agneau
+gigotdagneau	gigot d agneau
+boulettesdeviande	boulettes de viande
+bâtonnetsdepoisson	bâtonnets de poisson
+filetdepoisson	filet de poisson
+fruitsdemer	fruits de mer
+# ============================================================================
+# PRODUITS LAITIERS (Dairy)
+# ============================================================================
+fromageblanc	fromage blanc
+fromagefrais	fromage frais
+fromagedechèvre	fromage de chèvre
+fromagebrebis	fromage brebis
+crèmefraîche	crème fraîche
+crèmeentière	crème entière
+crèmeliquide	crème liquide
+crèmechantilly	crème chantilly
+laitemier	lait emier
+laitécrémé	lait écrémé
+laitdavoine	lait d avoine
+laitdesoja	lait de soja
+laitdamande	lait d amande
+laitdecoco	lait de coco
+laitderiz	lait de riz
+beurredecacahuète	beurre de cacahuète
+beurredamande	beurre d amande
 milkshake	milk shake
 cheesecake	cheese cake
+# ============================================================================
+# FRUITS
+# ============================================================================
+pamplemousse	pample mousse
+pastèque	pas tèque
+fraisedubois	fraise du bois
+fruitsrouges	fruits rouges
+fruitsdela passion	fruits de la passion
+# ============================================================================
+# LEGUMES (Vegetables)
+# ============================================================================
+pommedeterre	pomme de terre
+patatedouce	patate douce
+choufleur	chou fleur
+chourouge	chou rouge
+choublanc	chou blanc
+choudeBruxelles	chou de Bruxelles
+choufrisé	chou frisé
+choukale	chou kale
+brocoli	broco li
+artichauts	arti chauts
+poivronrouge	poivron rouge
+poivronvert	poivron vert
+poischiches	pois chiches
+haricotsverts	haricots verts
+haricotsblancs	haricots blancs
+haricotsnoirs	haricots noirs
+haricots rouges	haricots rouges
+oignonvert	oignon vert
+# ============================================================================
+# NOIX & GRAINES (Nuts & Seeds)
+# ============================================================================
+noixdecoco	noix de coco
+noixdecajou	noix de cajou
+noixdepecan	noix de pecan
+noixdemuscade	noix de muscade
+grainesdetournesol	graines de tournesol
+grainesdecourge	graines de courge
+grainesdechia	graines de chia
+grainesdelin	graines de lin
+grainesdesesame	graines de sesame
+# ============================================================================
+# PAIN & PATISSERIE (Bread & Pastry)
+# ============================================================================
+paincomplet	pain complet
+paindeseigle	pain de seigle
+paindemie	pain de mie
+paingrillé	pain grillé
+painperdu	pain perdu
+chapelure	chape lure
+crêpe	crê pe
+galette	ga lette
+gâteauchocolat	gâteau chocolat
+gâteaudeyaourt	gâteau de yaourt
+tarteauxpommes	tarte aux pommes
+tarteaucitron	tarte au citron
+pâtefeuilletée	pâte feuilletée
+pâtebrisée	pâte brisée
+pâtesablée	pâte sablée
+# ============================================================================
+# CONDIMENTS & SAUCES
+# ============================================================================
+saucetomate	sauce tomate
+saucesoja	sauce soja
+saucepoisson	sauce poisson
+concentrédetomates	concentré de tomates
+huiledolive	huile d olive
+huiledesesame	huile de sesame
+huiledecoco	huile de coco
+huiledetournesol	huile de tournesol
+huiledecolza	huile de colza
+vinaigrebalsamique	vinaigre balsamique
+vinaigredevin	vinaigre de vin
+vinaigredecidre	vinaigre de cidre
+poivrenoir	poivre noir
+poivreblanc	poivre blanc
+selvdemer	sel de mer
+# ============================================================================
+# BOISSONS (Beverages)
+# ============================================================================
+thévert	thé vert
+thénoir	thé noir
+théglacé	thé glacé
+infusion	infu sion
+jusdorange	jus d orange
+jusdeomme	jus de pomme
+juspamplemousse	jus pamplemousse
+jusdetomate	jus de tomate
+eaudecoco	eau de coco
+eaupétillante	eau pétillante
+eaudesource	eau de source
+# ============================================================================
+# CUISSON (Cooking Methods)
+# ============================================================================
+faireauter	faire sauter
+fairerevenir	faire revenir
+fairemijoter	faire mijoter
+fairebouillir	faire bouillir
+fairecuire	faire cuire
+fairegriller	faire griller
+fairefrire	faire frire
+fairerôtir	faire rôtir
+# ============================================================================
+# USTENSILES (Kitchen Equipment)
+# ============================================================================
+casserole	casse role
+poêleàfrire	poêle à frire
+plaquedecuisson	plaque de cuisson
+mouledegâteau	moule de gâteau
+cocotteminute	cocotte minute
+robotcuiseur	robot cuiseur
+cuillèreàsoupe	cuillère à soupe
+cuillèreàcafé	cuillère à café
+plancheàdécouper	planche à découper
+rouleauàpâtisserie	rouleau à pâtisserie
+papieraluminium	papier aluminium
+papierfilm	papier film
+papiercuisson	papier cuisson
+# ============================================================================
+# REPAS (Meals)
+# ============================================================================
+petitdéjeuner	petit déjeuner
+déjeuner	déjeu ner
+dîner	dî ner
+goûter	goû ter
+encas	en cas
+platprincipal	plat principal
+accompagnement	accompagne ment
+entreé	entr ée
+# ============================================================================
+# ALIMENTATION (Dietary)
+# ============================================================================
+sansgluten	sans gluten
+sanslactose	sans lactose
+sanssucre	sans sucre
+pauvreenmatières grasses	pauvre en matières grasses
+richeenprotéines	riche en protéines
+faibleencalories	faible en calories
+végetalien	végéta lien
+faitmaison	fait maison
+# ============================================================================
+# TERMES CULINAIRES (Cooking Terms)
+# ============================================================================
+livredecuisine	livre de cuisine
+levurechimique	levure chimique
+bicarbonatdesoude	bicarbonate de soude
+farinecomplète	farine complète
+farinedeblé	farine de blé
+farinedeiz	farine de riz
+farineamande	farine amande
+sucreglace	sucre glace
+sucrebrun	sucre brun
+sucreroux	sucre roux
+sirableérable	sirab le érable
+siraveagave	sirav e agave
+cubedebouillon	cube de bouillon

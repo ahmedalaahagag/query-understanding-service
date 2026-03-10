@@ -1,17 +1,525 @@
 # English (GB) compound words
 # Format: compound<TAB>parts
-# compound = joined form, parts = split form (space-separated)
-icecream	ice cream
-peanutbutter	peanut butter
-crewneck	crew neck
-lunchbox	lunch box
-toothpaste	tooth paste
+# ============================================================================
+# PROTEINS & MEATS
+# ============================================================================
+beefsteak	beef steak
+meatball	meat ball
+meatloaf	meat loaf
+mincemeat	mince meat
+mincedbeef	minced beef
+mincedlamb	minced lamb
+mincedpork	minced pork
+mincedturkey	minced turkey
+mincedchicken	minced chicken
+fishcake	fish cake
+fishfinger	fish finger
+fishstick	fish stick
+fishpie	fish pie
+shellfish	shell fish
+swordfish	sword fish
+jellyfish	jelly fish
+cuttlefish	cuttle fish
+crabcake	crab cake
+crabstick	crab stick
+drumstick	drum stick
+breastfillet	breast fillet
+chickenwing	chicken wing
+chickenbreast	chicken breast
+chickenthigh	chicken thigh
+chickenleg	chicken leg
+turkeymince	turkey mince
+lambchop	lamb chop
+lambshank	lamb shank
+porkchop	pork chop
+porkloin	pork loin
+porkbelly	pork belly
+baconegg	bacon egg
+baconrasher	bacon rasher
+# ============================================================================
+# DAIRY & EGGS
+# ============================================================================
+buttermilk	butter milk
+buttercream	butter cream
+butterscotch	butter scotch
+butterfat	butter fat
+creamcheese	cream cheese
+cottagecheese	cottage cheese
+goatcheese	goat cheese
+bluecheese	blue cheese
+cheddarcheese	cheddar cheese
+mozzarella	mozza rella
+eggwhite	egg white
+eggyolk	egg yolk
+eggnog	egg nog
+eggcup	egg cup
 milkshake	milk shake
+milkpowder	milk powder
+skimmedmilk	skimmed milk
+wholemilk	whole milk
+oatmilk	oat milk
+soymilk	soy milk
+almondmilk	almond milk
+coconutmilk	coconut milk
+ricemilk	rice milk
+yoghurtpot	yoghurt pot
+icecream	ice cream
+doublechocolate	double chocolate
+whitechocolate	white chocolate
+darkchocolate	dark chocolate
+milkchocolate	milk chocolate
+# ============================================================================
+# FRUITS
+# ============================================================================
+grapefruit	grape fruit
+watermelon	water melon
+pineapple	pine apple
+strawberry	straw berry
+blueberry	blue berry
+blackberry	black berry
+raspberry	rasp berry
+gooseberry	goose berry
+cranberry	cran berry
+boysenberry	boysen berry
+elderberry	elder berry
+loganberry	logan berry
+mulberry	mul berry
+lingonberry	lingon berry
+passionfruit	passion fruit
+starfruit	star fruit
+dragonfruit	dragon fruit
+jackfruit	jack fruit
+breadfruit	bread fruit
+kiwifruit	kiwi fruit
+honeydew	honey dew
+redcurrant	red currant
+blackcurrant	black currant
+whitecurrant	white currant
+# ============================================================================
+# NUTS & SEEDS
+# ============================================================================
+coconut	coco nut
+walnut	wal nut
+hazelnut	hazel nut
+chestnut	chest nut
+groundnut	ground nut
+cashewnut	cashew nut
+peanut	pea nut
+pistachio	pista chio
+macadamia	maca damia
+sunflowerseed	sunflower seed
+pumpkinseed	pumpkin seed
+linseed	lin seed
+flaxseed	flax seed
+sesameseed	sesame seed
+chiaseed	chia seed
+hempseed	hemp seed
+poppyseed	poppy seed
+mustardseed	mustard seed
+# ============================================================================
+# VEGETABLES & HERBS
+# ============================================================================
+eggplant	egg plant
+sweetcorn	sweet corn
+sweetpotato	sweet potato
+springonion	spring onion
+redonion	red onion
+whiteonion	white onion
+butternut	butter nut
+butterbean	butter bean
+broadbean	broad bean
+greenbean	green bean
+runnerbean	runner bean
+kidneybean	kidney bean
+blackbean	black bean
+chickpea	chick pea
+snowpea	snow pea
+sugarpea	sugar pea
+mangepea	mange pea
+beetroot	beet root
+turnip	tur nip
+parsnip	pars nip
+sunflower	sun flower
+cauliflower	cauli flower
+artichoke	arti choke
+asparagus	aspa ragus
+broccoli	brocco li
+courgette	cour gette
+watercress	water cress
+mushroom	mush room
+portobello	porto bello
+shiitake	shii take
+beansprout	bean sprout
+leafy greens	leafy greens
+bayleaf	bay leaf
+curleaf	cur leaf
+mintleaf	mint leaf
+# ============================================================================
+# GRAINS, PASTA & BREAD
+# ============================================================================
+cornflakes	corn flakes
+cornflour	corn flour
+cornmeal	corn meal
+cornstarch	corn starch
+oatmeal	oat meal
+porridge	por ridge
+wholegrain	whole grain
+wholemeal	whole meal
+wholewheat	whole wheat
+buckwheat	buck wheat
+flatbread	flat bread
+sourdough	sour dough
+cornbread	corn bread
+gingerbread	ginger bread
+shortbread	short bread
+breadcrumbs	bread crumbs
+breadstick	bread stick
+breadroll	bread roll
+breadbin	bread bin
+breadboard	bread board
+breadbasket	bread basket
+garlichread	garlic bread
+naanbread	naan bread
+pitabread	pita bread
+ryebread	rye bread
+sandwichbread	sandwich bread
+tortillawrap	tortilla wrap
+eggpasta	egg pasta
+ricenoodle	rice noodle
+eggnoodle	egg noodle
+glassnoodle	glass noodle
+# ============================================================================
+# BAKED GOODS & DESSERTS
+# ============================================================================
 cheesecake	cheese cake
 pancake	pan cake
-meatball	meat ball
-cornflakes	corn flakes
-breadcrumbs	bread crumbs
-grapefruit	grape fruit
-butterscotch	butter scotch
-shortbread	short bread
+cupcake	cup cake
+fruitcake	fruit cake
+coffeecake	coffee cake
+poundcake	pound cake
+spongecake	sponge cake
+layercake	layer cake
+sheetcake	sheet cake
+bundt	bun dt
+brownie	brown ie
+flapjack	flap jack
+shortcake	short cake
+hotcake	hot cake
+johnnycake	johnny cake
+oatcake	oat cake
+ricecake	rice cake
+teacake	tea cake
+crumpet	crum pet
+doughnut	dough nut
+applesauce	apple sauce
+applepie	apple pie
+appletart	apple tart
+applestrudel	apple strudel
+applecrisp	apple crisp
+applecrumble	apple crumble
+honeycomb	honey comb
+honeycake	honey cake
+butterfingers	butter fingers
+popcorn	pop corn
+marshmallow	marsh mallow
+lollipop	lolli pop
+# ============================================================================
+# CONDIMENTS, SAUCES & SPREADS
+# ============================================================================
+peanutbutter	peanut butter
+almondbutter	almond butter
+cashewbutter	cashew butter
+sunflowerbutter	sunflower butter
+applebutter	apple butter
+cocobutter	coco butter
+tomatosauce	tomato sauce
+tomatopaste	tomato paste
+tomatopuree	tomato puree
+soysauce	soy sauce
+fishsauce	fish sauce
+hotsauce	hot sauce
+barbecuesauce	barbecue sauce
+worcestershiresauce	worcestershire sauce
+horseradish	horse radish
+peppercorn	pepper corn
+blackpepper	black pepper
+whitepepper	white pepper
+seasalt	sea salt
+rocksalt	rock salt
+tablesalt	table salt
+garlicpowder	garlic powder
+onionpowder	onion powder
+cinnamonsugar	cinnamon sugar
+vanillaextract	vanilla extract
+oliveoil	olive oil
+sesameoil	sesame oil
+coconutoil	coconut oil
+sunfloweroil	sunflower oil
+rapeseedoil	rapeseed oil
+vegetableoil	vegetable oil
+groundnutoil	groundnut oil
+vinegarette	vine garette
+balsamicvinegar	balsamic vinegar
+winevinegar	wine vinegar
+applevinegar	apple vinegar
+# ============================================================================
+# BEVERAGES
+# ============================================================================
+milkshake	milk shake
+smoothie	smooth ie
+greentea	green tea
+blacktea	black tea
+herbtea	herb tea
+icedtea	iced tea
+coffeebean	coffee bean
+coffeeground	coffee ground
+espresso	espress o
+cappuccino	cappu ccino
+lemonade	lemon ade
+limeade	lime ade
+orangejuice	orange juice
+applejuice	apple juice
+grapefruitjuice	grapefruit juice
+tomatojuice	tomato juice
+cranberryjuice	cranberry juice
+pomegranate	pome granate
+grapejuice	grape juice
+coconutwater	coconut water
+sparklingwater	sparkling water
+springwater	spring water
+tapwater	tap water
+# ============================================================================
+# COOKING METHODS
+# ============================================================================
+stirfry	stir fry
+deepfry	deep fry
+airfry	air fry
+shallowfry	shallow fry
+panfry	pan fry
+flashfry	flash fry
+slowcook	slow cook
+overcook	over cook
+undercook	under cook
+precook	pre cook
+preheat	pre heat
+reheat	re heat
+defrost	de frost
+parboil	par boil
+hardboil	hard boil
+softboil	soft boil
+poach	po ach
+steamcook	steam cook
+pressurecook	pressure cook
+barbecue	barbe cue
+charbroil	char broil
+chargrill	char grill
+flamegrill	flame grill
+# ============================================================================
+# KITCHEN EQUIPMENT
+# ============================================================================
+saucepan	sauce pan
+stockpot	stock pot
+grillpan	grill pan
+fryingpan	frying pan
+roastingtin	roasting tin
+bakingtray	baking tray
+bakingsheet	baking sheet
+cakepan	cake pan
+breadpan	bread pan
+muffintin	muffin tin
+springform	spring form
+dishwasher	dish washer
+breadmaker	bread maker
+slowcooker	slow cooker
+ricecooker	rice cooker
+pressurecooker	pressure cooker
+foodprocessor	food processor
+corkscrew	cork screw
+nutcracker	nut cracker
+grater	gra ter
+peeler	pee ler
+teaspoon	tea spoon
+tablespoon	table spoon
+dessertspoon	dessert spoon
+breadknife	bread knife
+carvingknife	carving knife
+choppingboard	chopping board
+cuttingboard	cutting board
+servingboard	serving board
+cheeseboard	cheese board
+rollingpin	rolling pin
+whisker	whis ker
+colander	col ander
+clingfilm	cling film
+tinfoil	tin foil
+greaseproof	grease proof
+# ============================================================================
+# KITCHENWARE & DINING
+# ============================================================================
+cookware	cook ware
+bakeware	bake ware
+ovenware	oven ware
+glassware	glass ware
+drinkware	drink ware
+silverware	silver ware
+dinnerware	dinner ware
+stoneware	stone ware
+earthenware	earthen ware
+ironware	iron ware
+tableware	table ware
+tablecloth	table cloth
+placemat	place mat
+napkinring	napkin ring
+soupbowl	soup bowl
+cereal bowl	cereal bowl
+wineglass	wine glass
+# ============================================================================
+# MEALS & MEAL TYPES
+# ============================================================================
+breakfast	break fast
+brunch	brun ch
+lunchtime	lunch time
+dinnertime	dinner time
+mealtime	meal time
+teatime	tea time
+suppertime	supper time
+leftovers	left overs
+takeaway	take away
+takeout	take out
+mealprep	meal prep
+mealplan	meal plan
+lunchbox	lunch box
+mealkit	meal kit
+readymeal	ready meal
+midweek	mid week
+weeknight	week night
+# ============================================================================
+# DIETARY & LIFESTYLE
+# ============================================================================
+superfood	super food
+lowfat	low fat
+nonfat	non fat
+lowcalorie	low calorie
+highprotein	high protein
+lowcarb	low carb
+sugarfree	sugar free
+glutenfree	gluten free
+dairyfree	dairy free
+nutfree	nut free
+fatfree	fat free
+lactosefree	lactose free
+soyfree	soy free
+eggfree	egg free
+wheatfree	wheat free
+plantbased	plant based
+wholegrain	whole grain
+freerange	free range
+grassfed	grass fed
+organic	orga nic
+fairtrade	fair trade
+farmfresh	farm fresh
+homemade	home made
+handmade	hand made
+homecooked	home cooked
+homegrown	home grown
+# ============================================================================
+# CUISINES & FOOD STYLES
+# ============================================================================
+streetfood	street food
+fastfood	fast food
+junkfood	junk food
+rawfood	raw food
+soulfood	soul food
+seafood	sea food
+fingerfood	finger food
+comfortfood	comfort food
+babyfood	baby food
+dogfood	dog food
+catfood	cat food
+petfood	pet food
+# ============================================================================
+# RECIPE & COOKING TERMS
+# ============================================================================
+cookbook	cook book
+sidedish	side dish
+maincourse	main course
+applesauce	apple sauce
+tomatoketchup	tomato ketchup
+foodcolouring	food colouring
+bakingpowder	baking powder
+bakingsoda	baking soda
+bicarbonateofsoda	bicarbonate ofsoda
+selfraisingflour	self raising flour
+plainflour	plain flour
+strongflour	strong flour
+breadflour	bread flour
+riceflour	rice flour
+coconutflour	coconut flour
+almondflour	almond flour
+castorsugar	castor sugar
+icingsugar	icing sugar
+brownsugar	brown sugar
+muscovadosugar	muscovado sugar
+demerara	deme rara
+goldensyrup	golden syrup
+maplesyrup	maple syrup
+agavesyrup	agave syrup
+stockcube	stock cube
+bouilloncube	bouillon cube
+yeastextract	yeast extract
+gelatine	gela tine
+cornflour	corn flour
+arrowroot	arrow root
+# ============================================================================
+# GENERAL / MISCELLANEOUS
+# ============================================================================
+crewneck	crew neck
+toothpaste	tooth paste
+cupboard	cup board
+doorstep	door step
+fireplace	fire place
+bookshelf	book shelf
+wardrobe	ward robe
+bathroom	bath room
+bedroom	bed room
+livingroom	living room
+diningroom	dining room
+greenhouse	green house
+farmhouse	farm house
+warehouse	ware house
+penthouse	pent house
+household	house hold
+overweight	over weight
+underweight	under weight
+everything	every thing
+something	some thing
+anything	any thing
+nothing	no thing
+everyone	every one
+someone	some one
+anyone	any one
+outcome	out come
+overcome	over come
+undertake	under take
+understand	under stand
+outstanding	out standing
+overnight	over night
+downstairs	down stairs
+upstairs	up stairs
+outdoors	out doors
+indoors	in doors
+outside	out side
+inside	in side
+meanwhile	mean while
+furthermore	further more
+nevertheless	never the less
+however	how ever
+whatever	what ever
+whenever	when ever
+wherever	where ever
+whoever	who ever
+throughout	through out
+without	with out
+within	with in
+although	al though
+together	to gether

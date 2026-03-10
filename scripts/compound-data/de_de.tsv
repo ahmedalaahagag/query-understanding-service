@@ -1,9 +1,275 @@
 # German (DE) compound words
 # Format: compound<TAB>parts
-kartoffelsalat	kartoffel salat
-erdnussbutter	erdnuss butter
+# ============================================================================
+# FLEISCH & PROTEIN (Meat & Protein)
+# ============================================================================
+rindfleisch	rind fleisch
+schweinefleisch	schweine fleisch
+haehnchenbrust	haehnchen brust
+haehnchenkeule	haehnchen keule
+haehnchenfilet	haehnchen filet
+haehnchenflügel	haehnchen flügel
+putenbrust	puten brust
+putenfilet	puten filet
+lammfleisch	lamm fleisch
+lammkeule	lamm keule
+kalbfleisch	kalb fleisch
+hackfleisch	hack fleisch
+rinderhack	rinder hack
+schweinehack	schweine hack
+bratwurst	brat wurst
+currywurst	curry wurst
+leberwurst	leber wurst
+fleischbaellchen	fleisch baellchen
+frikadelle	frika delle
+fischstaebchen	fisch staebchen
+fischfilet	fisch filet
+garnelen	gar nelen
+meeresfrüchte	meeres früchte
+# ============================================================================
+# MILCHPRODUKTE (Dairy)
+# ============================================================================
+buttermilch	butter milch
+sahnetorte	sahne torte
+frischkaese	frisch kaese
+huettenkaese	huetten kaese
+ziegenkaese	ziegen kaese
+schafkaese	schaf kaese
+schmelzkaese	schmelz kaese
+rahmkaese	rahm kaese
 kaesekuchen	kaese kuchen
 milchshake	milch shake
+vollmilch	voll milch
+magermilch	mager milch
+hafermilch	hafer milch
+sojamilch	soja milch
+mandelmilch	mandel milch
+kokosmilch	kokos milch
+reismilch	reis milch
+speiseeis	speise eis
+vanilleeis	vanille eis
+schokoladeneis	schokoladen eis
+erdbeereis	erdbeer eis
+softeis	soft eis
+# ============================================================================
+# OBST (Fruit)
+# ============================================================================
+erdbeere	erd beere
+himbeere	him beere
+heidelbeere	heidel beere
+brombeere	brom beere
+johannisbeere	johannis beere
+stachelbeere	stachel beere
+preiselbeere	preisel beere
+wassermelone	wasser melone
+honigmelone	honig melone
+pampelmuse	pampel muse
+blutorange	blut orange
+grapefruit	grape fruit
+passionsfrucht	passions frucht
+drachenfrucht	drachen frucht
+sternfrucht	stern frucht
+brotfrucht	brot frucht
+trockenobst	trocken obst
+obstkorb	obst korb
+obstsalat	obst salat
+# ============================================================================
+# GEMUESE (Vegetables)
+# ============================================================================
+kartoffel	kar toffel
+kartoffelsalat	kartoffel salat
+kartoffelpüree	kartoffel püree
+kartoffelsuppe	kartoffel suppe
+kartoffelgratin	kartoffel gratin
+bratkartoffeln	brat kartoffeln
+ofenkartoffel	ofen kartoffel
+pellkartoffel	pell kartoffel
+süsskartoffel	süss kartoffel
+blumenkohl	blumen kohl
+rosenkohl	rosen kohl
+grünkohl	grün kohl
+rotkohl	rot kohl
+weisskohl	weiss kohl
+spitzkohl	spitz kohl
+chinakohl	china kohl
+wirsingkohl	wirsing kohl
+sauerkraut	sauer kraut
+bohnensuppe	bohnen suppe
+kidneybohne	kidney bohne
+kichererbse	kicher erbse
+sonnenblume	sonnen blume
+salatgurke	salat gurke
+frühlingszwiebel	frühlings zwiebel
+gemüsebrühe	gemüse brühe
+gemüsesuppe	gemüse suppe
+gemüsepfanne	gemüse pfanne
+# ============================================================================
+# NÜSSE & SAMEN (Nuts & Seeds)
+# ============================================================================
+erdnuss	erd nuss
+erdnussbutter	erdnuss butter
+walnuss	wal nuss
+haselnuss	hasel nuss
+kokosnuss	kokos nuss
+cashewnuss	cashew nuss
+mandelbutter	mandel butter
+sonnenblumenkern	sonnenblumen kern
+kürbiskern	kürbis kern
+leinsamen	lein samen
+sesamsamen	sesam samen
+chiasamen	chia samen
+mohnsamen	mohn samen
+# ============================================================================
+# BROT & BACKWAREN (Bread & Baked Goods)
+# ============================================================================
+vollkornbrot	vollkorn brot
+roggenbrot	roggen brot
+weissbrot	weiss brot
+knäckebrot	knäcke brot
+pumpernickel	pumper nickel
+brötchen	bröt chen
+semmelbrösel	semmel brösel
+paniermehl	panier mehl
 pfannkuchen	pfann kuchen
-fleischbaellchen	fleisch baellchen
-brotkruemel	brot kruemel
+eierkuchen	eier kuchen
+apfelkuchen	apfel kuchen
+schokoladenkuchen	schokoladen kuchen
+marmorkuchen	marmor kuchen
+streuselkuchen	streusel kuchen
+bienenstich	bienen stich
+schwarzwälderkirsch	schwarzwälder kirsch
+lebkuchen	leb kuchen
+hefeteig	hefe teig
+blätterteig	blätter teig
+mürbeteig	mürbe teig
+nudelteig	nudel teig
+pizzateig	pizza teig
+# ============================================================================
+# GEWÜRZE & SOSSEN (Spices & Sauces)
+# ============================================================================
+tomatensosse	tomaten sosse
+tomatenmark	tomaten mark
+tomatensaft	tomaten saft
+senf	sen f
+meerrettich	meer rettich
+knoblauchpulver	knoblauch pulver
+zwiebelpulver	zwiebel pulver
+pfefferkorn	pfeffer korn
+meersalz	meer salz
+steinsalz	stein salz
+olivenöl	oliven öl
+sesamöl	sesam öl
+kokosöl	kokos öl
+sonnenblumenöl	sonnenblumen öl
+rapsöl	raps öl
+balsamicoessig	balsamico essig
+weinessig	wein essig
+apfelessig	apfel essig
+bratensauce	braten sauce
+sahnesauce	sahne sauce
+käsesauce	käse sauce
+pilzsauce	pilz sauce
+# ============================================================================
+# GETRÄNKE (Beverages)
+# ============================================================================
+grüntee	grün tee
+schwarztee	schwarz tee
+kräutertee	kräuter tee
+eistee	eis tee
+kaffeebohne	kaffee bohne
+orangensaft	orangen saft
+apfelsaft	apfel saft
+traubensaft	trauben saft
+karottensaft	karotten saft
+kokoswasser	kokos wasser
+sprudelwasser	sprudel wasser
+leitungswasser	leitungs wasser
+mineralwasser	mineral wasser
+ingwerbier	ingwer bier
+# ============================================================================
+# KOCHMETHODEN (Cooking Methods)
+# ============================================================================
+kurzbraten	kurz braten
+langsamkochen	langsam kochen
+überkochen	über kochen
+vorkochen	vor kochen
+vorheizen	vor heizen
+aufwärmen	auf wärmen
+auftauen	auf tauen
+dünsten	düns ten
+schmoren	schmo ren
+# ============================================================================
+# KÜCHENGERÄTE (Kitchen Equipment)
+# ============================================================================
+kochtopf	koch topf
+bratpfanne	brat pfanne
+backblech	back blech
+backform	back form
+kuchenform	kuchen form
+muffinform	muffin form
+geschirrspüler	geschirr spüler
+küchenmaschine	küchen maschine
+reiskocher	reis kocher
+schnellkochtopf	schnell kochtopf
+korkenzieher	korken zieher
+nussknacker	nuss knacker
+teelöffel	tee löffel
+esslöffel	ess löffel
+brotmesser	brot messer
+schneidebrett	schneide brett
+nudelholz	nudel holz
+alufolie	alu folie
+frischhaltefolie	frischhalte folie
+# ============================================================================
+# MAHLZEITEN (Meals)
+# ============================================================================
+frühstück	früh stück
+mittagessen	mittag essen
+abendessen	abend essen
+zwischenmahlzeit	zwischen mahlzeit
+brotzeit	brot zeit
+vesper	ves per
+essensreste	essens reste
+mitnehmen	mit nehmen
+# ============================================================================
+# ERNÄHRUNG (Dietary)
+# ============================================================================
+fettarm	fett arm
+kalorienarm	kalorien arm
+eiweissreich	eiweiss reich
+kohlenhydratarm	kohlenhydrat arm
+zuckerfrei	zucker frei
+glutenfrei	gluten frei
+laktosefrei	laktose frei
+milchfrei	milch frei
+nussfrei	nuss frei
+sojafrei	soja frei
+pflanzlich	pflanz lich
+vollwertkost	vollwert kost
+biolebensmittel	bio lebensmittel
+freilandhaltung	freiland haltung
+selbstgemacht	selbst gemacht
+hausgemacht	haus gemacht
+# ============================================================================
+# ESSEN & BEGRIFFE (Food Terms)
+# ============================================================================
+kochbuch	koch buch
+beilage	bei lage
+hauptgericht	haupt gericht
+vorspeise	vor speise
+nachspeise	nach speise
+nachtisch	nach tisch
+tomatenketchup	tomaten ketchup
+backpulver	back pulver
+natron	nat ron
+hefe	he fe
+reismehl	reis mehl
+kokosmehl	kokos mehl
+mandelmehl	mandel mehl
+puderzucker	puder zucker
+rohrzucker	rohr zucker
+braunerzucker	brauner zucker
+ahornsirup	ahorn sirup
+agavensirup	agaven sirup
+maissirup	mais sirup
+brühwürfel	brüh würfel

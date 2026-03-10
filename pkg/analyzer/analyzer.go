@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/native"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/bedrock"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/observability"
@@ -20,9 +21,10 @@ import (
 
 // Analyzer runs query understanding analysis in-process.
 type Analyzer struct {
-	v1       *pipeline.Pipeline
-	v2       *hybrid.Pipeline
-	logger   *logrus.Logger
+	v1     *pipeline.Pipeline
+	v2     *hybrid.Pipeline
+	v3     *native.Pipeline
+	logger *logrus.Logger
 }
 
 // Config holds all settings needed to construct an Analyzer.
@@ -94,8 +96,16 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 		pipeline.NewComprehensionEngine(comprehensionCfg),
 	)
 
+	v3 := native.NewPipeline(native.PipelineConfig{
+		FuzzySearcher: osClient,
+		Concept:       pipelineCfg.Concept,
+		Comprehension: comprehensionCfg,
+		Logger:        logger,
+	})
+
 	a := &Analyzer{
 		v1:     v1,
+		v3:     v3,
 		logger: logger,
 	}
 
@@ -143,6 +153,11 @@ func (a *Analyzer) AnalyzeV2Debug(ctx context.Context, req model.AnalyzeRequest)
 	}
 	resp, debugInfo := a.v2.Run(ctx, req, true)
 	return resp, debugInfo, nil
+}
+
+// AnalyzeV3 runs the v3 native OS-driven pipeline.
+func (a *Analyzer) AnalyzeV3(ctx context.Context, req model.AnalyzeRequest) (model.AnalyzeResponse, error) {
+	return a.v3.Run(ctx, req)
 }
 
 // HasV2 reports whether the v2 hybrid pipeline is available.

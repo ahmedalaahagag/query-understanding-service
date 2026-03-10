@@ -24,8 +24,9 @@ type SpellChecker interface {
 
 // LinguisticMatch represents a match from the linguistic dictionary index.
 type LinguisticMatch struct {
-	Term string `json:"term"`
-	Type string `json:"type"` // SYN, HYP, SW
+	Term        string `json:"term"`
+	Type        string `json:"type"` // SYN, HYP, SW
+	IsCanonical bool   `json:"isCanonical"` // true if the input IS the canonical term (has its own entry)
 }
 
 // LinguisticLookup queries the linguistic dictionary for synonyms/hypernyms.
@@ -153,12 +154,27 @@ type suggestOption struct {
 }
 
 // Lookup queries the linguistic dictionary index for synonyms/hypernyms of a term.
+// It searches the variant field to find canonical forms. Returns the canonical term
+// and whether the input is itself a canonical form (IsCanonical flag).
 func (c *Client) Lookup(ctx context.Context, term, locale string) ([]LinguisticMatch, error) {
+	// Search both directions: is the input a variant of something (variant field),
+	// OR is it a canonical term with variants (term field)?
 	body := map[string]interface{}{
 		"size": 50,
 		"query": map[string]interface{}{
-			"term": map[string]interface{}{
-				"term": term,
+			"bool": map[string]interface{}{
+				"should": []interface{}{
+					map[string]interface{}{
+						"term": map[string]interface{}{
+							"variant": term,
+						},
+					},
+					map[string]interface{}{
+						"term": map[string]interface{}{
+							"term": term,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -195,14 +211,30 @@ func (c *Client) Lookup(ctx context.Context, term, locale string) ([]LinguisticM
 		return nil, fmt.Errorf("decoding linguistic response: %w", err)
 	}
 
-	var matches []LinguisticMatch
+	// Separate hits into two groups:
+	// 1. Entries where the input is the term (canonical) — means the input IS a canonical form.
+	// 2. Entries where the input is a variant — these give us the canonical form to replace with.
+	isCanonical := false
+	var canonicals []LinguisticMatch
 	for _, hit := range result.Hits.Hits {
-		matches = append(matches, LinguisticMatch{
-			Term: hit.Source.Variant,
-			Type: hit.Source.Type,
-		})
+		if strings.EqualFold(hit.Source.Term, term) {
+			// The input is a canonical term — it has variants but is already the primary form.
+			isCanonical = true
+		} else if strings.EqualFold(hit.Source.Variant, term) {
+			// The input is a variant of this canonical term.
+			canonicals = append(canonicals, LinguisticMatch{
+				Term: hit.Source.Term,
+				Type: hit.Source.Type,
+			})
+		}
 	}
-	return matches, nil
+
+	// If the input is already a canonical form, mark all results so the
+	// synonym expander can skip replacement for bidirectional synonyms.
+	for i := range canonicals {
+		canonicals[i].IsCanonical = isCanonical
+	}
+	return canonicals, nil
 }
 
 type linguisticSearchResponse struct {
@@ -273,6 +305,130 @@ func (c *Client) SearchConcepts(ctx context.Context, text, locale, market string
 	var hits []ConceptHit
 	for _, hit := range result.Hits.Hits {
 		source := "alias"
+		if hit.Source.Label == text {
+			source = "exact"
+		}
+		hits = append(hits, ConceptHit{
+			ID:     hit.Source.ID,
+			Label:  hit.Source.Label,
+			Field:  hit.Source.Field,
+			Weight: hit.Source.Weight,
+			Score:  hit.Score,
+			Source: source,
+		})
+	}
+	return hits, nil
+}
+
+// FuzzySearcher provides fuzzy-matching search capabilities for the native pipeline.
+type FuzzySearcher interface {
+	FuzzySuggest(ctx context.Context, token, locale string) (string, float64, error)
+	FuzzySearchConcepts(ctx context.Context, text, locale, market string) ([]ConceptHit, error)
+}
+
+// FuzzySuggest finds the best fuzzy match for a token against the concept index.
+// Returns the corrected term, its score, and any error. Returns empty string if no match.
+func (c *Client) FuzzySuggest(ctx context.Context, token, locale string) (string, float64, error) {
+	body := map[string]interface{}{
+		"size": 1,
+		"query": map[string]interface{}{
+			"multi_match": map[string]interface{}{
+				"query":     token,
+				"fields":    []string{"label^2", "aliases"},
+				"fuzziness": "AUTO",
+				"type":      "best_fields",
+			},
+		},
+	}
+
+	data, err := json.Marshal(body)
+	if err != nil {
+		return "", 0, fmt.Errorf("marshalling fuzzy suggest: %w", err)
+	}
+
+	url := fmt.Sprintf("%s/%s/_search", c.cfg.URL, indexName(c.cfg.ConceptIndexPrefix, locale))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return "", 0, fmt.Errorf("creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if c.cfg.Username != "" {
+		req.SetBasicAuth(c.cfg.Username, c.cfg.Password)
+	}
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return "", 0, fmt.Errorf("executing fuzzy suggest: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return "", 0, fmt.Errorf("opensearch returned %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var result conceptSearchResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", 0, fmt.Errorf("decoding fuzzy suggest response: %w", err)
+	}
+
+	if len(result.Hits.Hits) == 0 {
+		return "", 0, nil
+	}
+
+	hit := result.Hits.Hits[0]
+	return hit.Source.Label, hit.Score, nil
+}
+
+// FuzzySearchConcepts searches the concept index with fuzzy matching enabled.
+// Handles typos, synonym variants, and compound word matching natively in OS.
+func (c *Client) FuzzySearchConcepts(ctx context.Context, text, locale, market string) ([]ConceptHit, error) {
+	body := map[string]interface{}{
+		"size": 10,
+		"query": map[string]interface{}{
+			"multi_match": map[string]interface{}{
+				"query":     text,
+				"fields":    []string{"label^2", "aliases"},
+				"type":      "cross_fields",
+				"fuzziness": "AUTO",
+			},
+		},
+	}
+
+	data, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("marshalling fuzzy concept search: %w", err)
+	}
+
+	url := fmt.Sprintf("%s/%s/_search", c.cfg.URL, indexName(c.cfg.ConceptIndexPrefix, locale))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if c.cfg.Username != "" {
+		req.SetBasicAuth(c.cfg.Username, c.cfg.Password)
+	}
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("executing fuzzy concept search: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("opensearch returned %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var result conceptSearchResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("decoding fuzzy concept response: %w", err)
+	}
+
+	var hits []ConceptHit
+	for _, hit := range result.Hits.Hits {
+		source := "fuzzy"
 		if hit.Source.Label == text {
 			source = "exact"
 		}

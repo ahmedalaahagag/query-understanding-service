@@ -7,8 +7,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
-	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/native"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/observability"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -21,6 +22,7 @@ type RouterConfig struct {
 	Metrics        *observability.Metrics
 	HybridPipeline *hybrid.Pipeline
 	HybridMetrics  *observability.HybridMetrics
+	NativePipeline *native.Pipeline
 }
 
 // New creates and configures the chi router with all routes.
@@ -48,6 +50,10 @@ func NewWithConfig(cfg RouterConfig) chi.Router {
 	if cfg.HybridPipeline != nil {
 		r.Post("/v2/analyze", analyzeV2Handler(cfg.Logger, cfg.HybridPipeline, cfg.HybridMetrics))
 		r.Post("/v2/analyze/debug", analyzeV2DebugHandler(cfg.Logger, cfg.HybridPipeline, cfg.HybridMetrics))
+	}
+
+	if cfg.NativePipeline != nil {
+		r.Post("/v3/analyze", analyzeV3Handler(cfg.Logger, cfg.NativePipeline))
 	}
 
 	return r
@@ -191,5 +197,30 @@ func analyzeV2DebugHandler(logger *logrus.Logger, hp *hybrid.Pipeline, metrics *
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result)
+	}
+}
+
+func analyzeV3Handler(logger *logrus.Logger, np *native.Pipeline) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req, err := parseV2Request(r)
+		if err != nil {
+			http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+			return
+		}
+
+		if req.Query == "" {
+			http.Error(w, `{"error":"query is required"}`, http.StatusBadRequest)
+			return
+		}
+
+		resp, err := np.Run(r.Context(), req)
+		if err != nil {
+			logger.WithError(err).Error("native pipeline execution failed")
+			http.Error(w, `{"error":"internal server error"}`, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
 	}
 }

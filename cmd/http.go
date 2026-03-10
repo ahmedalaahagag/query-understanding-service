@@ -12,6 +12,7 @@ import (
 
 	"github.com/ahmedalaahagag/query-understanding-service/internal/application/routes"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/native"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/bedrock"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/observability"
@@ -97,10 +98,19 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		pipeline.NewComprehensionEngine(comprehensionCfg),
 	)
 
+	// v3 native pipeline — uses OS fuzzy matching for spell/synonym/compound
+	nativePipeline := native.NewPipeline(native.PipelineConfig{
+		FuzzySearcher: osClient,
+		Concept:       pipelineCfg.Concept,
+		Comprehension: comprehensionCfg,
+		Logger:        logger,
+	})
+
 	routerCfg := routes.RouterConfig{
-		Logger:   logger,
-		Pipeline: p,
-		Metrics:  metrics,
+		Logger:         logger,
+		Pipeline:       p,
+		Metrics:        metrics,
+		NativePipeline: nativePipeline,
 	}
 
 	if cfg.LLM.Enabled {

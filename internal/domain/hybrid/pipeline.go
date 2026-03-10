@@ -151,10 +151,21 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 	allWarnings = append(allWarnings, intent.Warnings...)
 	allWarnings = append(allWarnings, conceptWarnings...)
 
-	// Use LLM normalized query if available, otherwise keep preprocessed
+	// Use LLM normalized query if available, otherwise keep preprocessed.
+	// If the LLM corrected the query (e.g. typo fix), re-tokenize so tokens
+	// reflect the corrected form — otherwise the orchestrator searches with
+	// the original misspelled tokens.
 	normalizedQuery := state.NormalizedQuery
 	if intent.NormalizedQuery != "" {
 		normalizedQuery = intent.NormalizedQuery
+		if normalizedQuery != state.NormalizedQuery {
+			reTokenized := &model.QueryState{
+				OriginalQuery:   state.OriginalQuery,
+				NormalizedQuery: normalizedQuery,
+			}
+			pipeline.Tokenizer{}.Process(ctx, reTokenized)
+			state.Tokens = reTokenized.Tokens
+		}
 	}
 
 	rewrites := intent.Rewrites

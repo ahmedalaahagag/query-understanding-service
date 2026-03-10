@@ -1,6 +1,6 @@
 # QUS — Query Understanding Service
 
-A Go library and HTTP service that parses search queries into structured intent: normalized tokens, concept matches, filters, sorts, and rewrites. It provides both a deterministic pipeline (v1) and an LLM-augmented hybrid pipeline (v2).
+A Go library and HTTP service that parses search queries into structured intent: normalized tokens, concept matches, filters, sorts, and rewrites. It provides three pipelines: deterministic (v1), LLM-augmented hybrid (v2), and native OpenSearch-driven (v3).
 
 ## Architecture
 
@@ -15,9 +15,19 @@ A Go library and HTTP service that parses search queries into structured intent:
 │             │     │ Normalize → Tokenize → LLM Parse → Validate     │
 │             │     │           → Resolve Concepts → Assemble          │
 └─────────────┘     └─────────────────────────────────────────────────┘
+
+┌─────────────┐     ┌─────────────────────────────────────────────────┐
+│  /v3/analyze│────▶│ Native OS Pipeline                              │
+│             │     │ Normalize → Tokenize → OS Fuzzy Spell           │
+│             │     │           → OS Fuzzy Concepts → Comprehension    │
+└─────────────┘     └─────────────────────────────────────────────────┘
 ```
 
-The v2 hybrid pipeline uses an LLM (AWS Bedrock or Ollama) as an **advisory** layer. All LLM outputs are schema-validated against allowlists, and the service fails open to deterministic-only results on LLM failure.
+**v1** handles synonyms, compounds, and spell correction in Go application code using YAML configs.
+
+**v2** uses an LLM (AWS Bedrock or Ollama) as an **advisory** layer. All LLM outputs are schema-validated against allowlists, and the service fails open to deterministic-only results on LLM failure.
+
+**v3** delegates spell correction, synonym matching, and compound handling to OpenSearch natively via `fuzziness: AUTO` + `cross_fields` multi_match. No YAML synonym/compound configs needed — OpenSearch handles it.
 
 ## Project Structure
 
@@ -33,6 +43,7 @@ internal/
   domain/
     pipeline/                 # v1 deterministic pipeline steps
     hybrid/                   # v2 hybrid LLM pipeline
+    native/                   # v3 native OS-driven pipeline
   infra/
     bedrock/                  # AWS Bedrock Converse API client
     ollama/                   # Ollama local LLM client
@@ -100,6 +111,17 @@ func main() {
     fmt.Printf("Tokens:     %d\n", len(resp.Tokens))
     fmt.Printf("Concepts:   %d\n", len(resp.Concepts))
     fmt.Printf("Filters:    %d\n", len(resp.Filters))
+
+    // v3: native OS pipeline (always available, no extra config)
+    resp, err = a.AnalyzeV3(ctx, model.AnalyzeRequest{
+        Query:  "chiken soup",  // typo corrected via OS fuzzy matching
+        Locale: "en-GB",
+        Market: "uk",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("V3 Normalized: %s\n", resp.NormalizedQuery)
 
     // v2: hybrid LLM analysis (only if LLM is enabled)
     if a.HasV2() {
@@ -225,6 +247,20 @@ sort_rules:
     field: created_at
     direction: desc
 ```
+
+### Config Files per Pipeline
+
+| Config File | v1 | v2 | v3 |
+|---|---|---|---|
+| `qus.yaml` | ✅ | — | ✅ |
+| `synonyms.{locale}.yaml` | ✅ | — | — |
+| `compounds.{locale}.yaml` | ✅ | — | — |
+| `comprehension.{locale}.yaml` | ✅ | — | ✅ |
+| `allowed_filters.yaml` | — | ✅ | — |
+| `allowed_sorts.yaml` | — | ✅ | — |
+| `llm_prompt.txt` | — | ✅ | — |
+
+v3 skips synonym and compound configs because OpenSearch handles those natively via fuzzy matching.
 
 ### V2 Hybrid Pipeline Files (optional)
 
@@ -397,6 +433,18 @@ curl -X POST 'http://localhost:8080/v2/analyze?locale=en-GB&country=uk' \
   -d '{"query": "chicken under 500 calories"}'
 ```
 
+### POST /v3/analyze
+
+Native OpenSearch-driven analysis. Delegates spell correction and concept matching to OpenSearch via `fuzziness: AUTO` + `cross_fields` multi_match. No YAML synonym/compound configs needed.
+
+**Query parameters:** `locale`, `country`
+
+```bash
+curl -X POST 'http://localhost:8080/v3/analyze?locale=en-GB&country=uk' \
+  -H 'Content-Type: application/json' \
+  -d '{"query": "chiken soup under 5"}'
+```
+
 ### POST /v2/analyze/debug
 
 Same as v2, returns additional debug info (raw LLM output, validation details, timing).
@@ -443,7 +491,7 @@ Prometheus metrics endpoint.
 | `matchedText` | `string` | Text in the query that matched |
 | `field` | `string` | Index field (e.g. `category`, `ingredient`) |
 | `score` | `float64` | Match confidence score |
-| `source` | `string` | How it was matched: `exact`, `alias`, or `llm` |
+| `source` | `string` | How it was matched: `exact`, `alias`, `fuzzy`, or `llm` |
 | `start` | `int` | Start token position |
 | `end` | `int` | End token position |
 

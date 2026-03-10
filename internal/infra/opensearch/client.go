@@ -472,7 +472,7 @@ func (c *Client) FuzzySearchConcepts(ctx context.Context, text, locale, market s
 			"multi_match": map[string]interface{}{
 				"query":     text,
 				"fields":    []string{"label^2", "aliases"},
-				"type":      "cross_fields",
+				"type":      "best_fields",
 				"fuzziness": "AUTO",
 			},
 		},

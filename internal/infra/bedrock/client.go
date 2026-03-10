@@ -138,8 +138,9 @@ func parseLLMOutput(raw string) (*hybrid.LLMParseResult, error) {
 		return nil, err
 	}
 
-	// Nova sometimes returns "rewrite" (singular) or "rewrites" as an object
-	// instead of a string array. Normalize to ensure it's always an array.
+	// Nova sometimes returns "rewrite" (singular) instead of "rewrites",
+	// or returns rewrites as [{query:"...", confidence:0.9}] instead of ["..."].
+	// Normalize to a JSON array of strings.
 	if val, ok := flexible["rewrite"]; ok {
 		if _, exists := flexible["rewrites"]; !exists {
 			flexible["rewrites"] = val
@@ -147,11 +148,7 @@ func parseLLMOutput(raw string) (*hybrid.LLMParseResult, error) {
 		delete(flexible, "rewrite")
 	}
 	if val, ok := flexible["rewrites"]; ok {
-		trimmed := strings.TrimSpace(string(val))
-		if !strings.HasPrefix(trimmed, "[") {
-			// Not an array — drop it to avoid unmarshal errors.
-			delete(flexible, "rewrites")
-		}
+		flexible["rewrites"] = normalizeRewrites(val)
 	}
 
 	normalized, err := json.Marshal(flexible)
@@ -164,6 +161,45 @@ func parseLLMOutput(raw string) (*hybrid.LLMParseResult, error) {
 		return nil, err
 	}
 	return &result, nil
+}
+
+// normalizeRewrites converts various LLM rewrite formats into a JSON []string.
+// Nova may return: a string, an object, an array of strings, or an array of
+// objects like [{"query":"...","confidence":0.9}].
+func normalizeRewrites(raw json.RawMessage) json.RawMessage {
+	trimmed := strings.TrimSpace(string(raw))
+
+	// Already a string array like ["foo"] — try it.
+	var strArr []string
+	if json.Unmarshal(raw, &strArr) == nil {
+		out, _ := json.Marshal(strArr)
+		return out
+	}
+
+	// Array of objects like [{"query":"..."}]
+	if strings.HasPrefix(trimmed, "[") {
+		var objArr []map[string]interface{}
+		if json.Unmarshal(raw, &objArr) == nil {
+			var result []string
+			for _, obj := range objArr {
+				if q, ok := obj["query"].(string); ok {
+					result = append(result, q)
+				}
+			}
+			out, _ := json.Marshal(result)
+			return out
+		}
+	}
+
+	// Single string
+	var s string
+	if json.Unmarshal(raw, &s) == nil {
+		out, _ := json.Marshal([]string{s})
+		return out
+	}
+
+	// Unrecognized — return empty array
+	return json.RawMessage(`[]`)
 }
 
 // stripMarkdownFences removes ```json ... ``` wrapping that models sometimes add.

@@ -2,6 +2,7 @@ package hybrid
 
 import (
 	"context"
+	"strings"
 
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
@@ -64,11 +65,34 @@ func (r *ConceptResolver) Resolve(ctx context.Context, candidates []LLMCandidate
 }
 
 // findTokenSpan finds the start and end token positions for a label in the token list.
+// For multi-word labels like "high protein", it finds consecutive tokens that match.
 func findTokenSpan(tokens []model.Token, label string) (int, int) {
+	// Single token match.
 	for i, tok := range tokens {
-		if tok.Normalized == label || tok.Value == label {
+		if strings.EqualFold(tok.Normalized, label) || strings.EqualFold(tok.Value, label) {
 			return i, i
 		}
 	}
+
+	// Multi-token span: split the label and find matching consecutive tokens.
+	words := strings.Fields(strings.ToLower(label))
+	if len(words) <= 1 {
+		return 0, 0
+	}
+
+	for i := 0; i <= len(tokens)-len(words); i++ {
+		match := true
+		for j, w := range words {
+			tok := strings.ToLower(tokens[i+j].Normalized)
+			if tok != w {
+				match = false
+				break
+			}
+		}
+		if match {
+			return tokens[i].Position, tokens[i+len(words)-1].Position
+		}
+	}
+
 	return 0, 0
 }

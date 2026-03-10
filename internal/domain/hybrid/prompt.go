@@ -32,19 +32,24 @@ func NewPromptBuilder(promptFile string, filters config.AllowedFiltersConfig, so
 func (p *PromptBuilder) SystemPrompt() string {
 	var b strings.Builder
 	b.WriteString(p.systemPromptTemplate)
-	b.WriteString("\nFILTERS: ")
-	for i, f := range p.filters.Filters {
-		if i > 0 {
-			b.WriteString("; ")
+	b.WriteString("\nALLOWED FILTERS:\n")
+	for _, f := range p.filters.Filters {
+		b.WriteString(fmt.Sprintf("- %s (%s) [%s]", f.Field, strings.Join(f.Operators, ","), f.Type))
+		if f.Description != "" {
+			b.WriteString(": ")
+			b.WriteString(f.Description)
 		}
-		b.WriteString(fmt.Sprintf("%s(%s)%s", f.Field, strings.Join(f.Operators, ","), f.Type))
+		if len(f.Examples) > 0 {
+			b.WriteString(fmt.Sprintf(" e.g. %s", strings.Join(f.Examples, ", ")))
+		}
+		b.WriteString("\n")
 	}
-	b.WriteString("\nSORTS: ")
+	b.WriteString("ALLOWED SORTS: ")
 	keys := make([]string, 0, len(p.sorts.Sorts))
 	for _, s := range p.sorts.Sorts {
 		keys = append(keys, s.Key)
 	}
-	b.WriteString(strings.Join(keys, ","))
+	b.WriteString(strings.Join(keys, ", "))
 	return b.String()
 }
 

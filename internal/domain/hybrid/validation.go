@@ -2,6 +2,7 @@ package hybrid
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 )
@@ -84,11 +85,21 @@ func (v *Validator) validateFilters(filters []LLMFilter, warnings *[]string) []L
 			continue
 		}
 
-		// Reject non-numeric values for number-typed fields.
+		// Coerce non-numeric values for number-typed fields.
 		if allowed.Type == "number" {
 			if _, isNum := f.Value.(float64); !isNum {
-				*warnings = append(*warnings, fmt.Sprintf("filter %s value %v is not a number, dropped", f.Field, f.Value))
-				continue
+				// Try to resolve word values (e.g. "cheap" → 8).
+				if str, ok := f.Value.(string); ok && len(allowed.WordValues) > 0 {
+					if num, found := allowed.WordValues[strings.ToLower(str)]; found {
+						f.Value = num
+					} else {
+						*warnings = append(*warnings, fmt.Sprintf("filter %s value %q is not a number, dropped", f.Field, str))
+						continue
+					}
+				} else {
+					*warnings = append(*warnings, fmt.Sprintf("filter %s value %v is not a number, dropped", f.Field, f.Value))
+					continue
+				}
 			}
 		}
 

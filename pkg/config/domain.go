@@ -124,9 +124,12 @@ type AllowedFiltersConfig struct {
 
 // AllowedFilter defines a single allowed filter field with its operators and type.
 type AllowedFilter struct {
-	Field     string   `yaml:"field"`
-	Operators []string `yaml:"operators"`
-	Type      string   `yaml:"type"`
+	Field       string            `yaml:"field"`
+	Operators   []string          `yaml:"operators"`
+	Type        string            `yaml:"type"`
+	Description string            `yaml:"description,omitempty"`
+	Examples    []string          `yaml:"examples,omitempty"`
+	WordValues  map[string]float64 `yaml:"word_values,omitempty"`
 }
 
 // AllowedSortsConfig holds the allowlist of valid sort keys.

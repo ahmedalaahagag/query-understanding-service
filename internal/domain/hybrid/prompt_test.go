@@ -29,11 +29,38 @@ func TestPromptBuilder_SystemPrompt(t *testing.T) {
 
 	prompt := pb.SystemPrompt()
 	assert.Contains(t, prompt, "You are a parser.")
-	assert.Contains(t, prompt, "FILTERS:")
+	assert.Contains(t, prompt, "ALLOWED FILTERS:")
 	assert.Contains(t, prompt, "price")
 	assert.Contains(t, prompt, "lt,gt")
-	assert.Contains(t, prompt, "SORTS:")
+	assert.Contains(t, prompt, "[number]")
+	assert.Contains(t, prompt, "ALLOWED SORTS:")
 	assert.Contains(t, prompt, "price_asc")
+}
+
+func TestPromptBuilder_SystemPrompt_WithDescriptionAndExamples(t *testing.T) {
+	tmpDir := t.TempDir()
+	promptFile := filepath.Join(tmpDir, "prompt.txt")
+	require.NoError(t, os.WriteFile(promptFile, []byte("Parse query."), 0644))
+
+	pb, err := NewPromptBuilder(promptFile,
+		config.AllowedFiltersConfig{
+			Filters: []config.AllowedFilter{
+				{
+					Field:       "recipe_cuisine",
+					Operators:   []string{"eq", "in"},
+					Type:        "keyword",
+					Description: "Cuisine origin of the recipe. NOT a food type.",
+					Examples:    []string{"Italian", "Mexican", "Asian"},
+				},
+			},
+		},
+		config.AllowedSortsConfig{},
+	)
+	require.NoError(t, err)
+
+	prompt := pb.SystemPrompt()
+	assert.Contains(t, prompt, "Cuisine origin of the recipe. NOT a food type.")
+	assert.Contains(t, prompt, "e.g. Italian, Mexican, Asian")
 }
 
 func TestPromptBuilder_UserMessage(t *testing.T) {

@@ -43,11 +43,16 @@ func (s *SynonymExpander) Process(ctx context.Context, state *model.QueryState) 
 				s.logger.WithError(err).WithField("token", tok.Normalized).Warn("linguistic lookup failed, trying fallback")
 			} else if len(matches) > 0 {
 				best := matches[0]
-				canonical := strings.ToLower(best.Term)
-				if canonical != tok.Normalized {
-					state.Tokens[i].Normalized = canonical
-					changed = true
-					continue
+				// Skip replacement if the input is already a canonical form.
+				// This prevents bidirectional synonyms (burger↔hamburger) from
+				// replacing one valid term with another.
+				if !best.IsCanonical {
+					canonical := strings.ToLower(best.Term)
+					if canonical != tok.Normalized {
+						state.Tokens[i].Normalized = canonical
+						changed = true
+						continue
+					}
 				}
 			}
 		}

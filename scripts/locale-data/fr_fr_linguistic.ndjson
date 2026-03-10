@@ -1,0 +1,198 @@
+{"index":{}}
+{"term":"bœuf","variant":"viande rouge","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"bœuf","variant":"steak","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"poulet","variant":"volaille","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"poulet","variant":"blanc de poulet","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"porc","variant":"viande de porc","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"dinde","variant":"volaille","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"canard","variant":"volaille","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"lardons","variant":"bacon","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"lardons","variant":"poitrine fumée","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"lieu","variant":"poisson blanc","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"lieu","variant":"colin","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"saumon","variant":"poisson","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"thon","variant":"poisson","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"crevettes","variant":"gambas","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"crevettes","variant":"fruits de mer","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"haché veggie","variant":"protéines végétales","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"betterave","variant":"betteraves","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"brocoli","variant":"brocolis","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"carotte","variant":"carottes","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"champignons","variant":"champignon","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"portobello","variant":"champignon","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"endive","variant":"endives","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"endive","variant":"chicon","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"épinards","variant":"épinard","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"pak choï","variant":"bok choy","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"patate douce","variant":"patates douces","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"petits pois","variant":"pois","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"poireau","variant":"poireaux","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"poivron","variant":"poivrons","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"pommes de terre","variant":"pomme de terre","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"pommes de terre","variant":"patate","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"tomate","variant":"tomates","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"oignon","variant":"oignons","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"ail","variant":"gousse d'ail","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"courgette","variant":"courgettes","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"courgette","variant":"zucchini","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"aubergine","variant":"aubergines","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"haricots verts","variant":"haricots","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"chèvre","variant":"fromage de chèvre","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"emmental","variant":"gruyère","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"parmesan","variant":"parmigiano","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"bleu","variant":"fromage bleu","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"bleu","variant":"roquefort","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"nouilles","variant":"nouille","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"rigatoni","variant":"pâtes","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"tagliatelle","variant":"pâtes","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"tortelloni","variant":"pâtes","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"orzo","variant":"pâtes","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"riz","variant":"riz basmati","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"boulgour","variant":"blé","type":"HYP","locale":"fr_FR"}
+{"index":{}}
+{"term":"polenta","variant":"semoule de maïs","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"française","variant":"français","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"italienne","variant":"italien","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"thaïlandaise","variant":"thaï","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"coréenne","variant":"coréen","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"indienne","variant":"indien","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"japonaise","variant":"japonais","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"malaisienne","variant":"malais","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"mexicaine","variant":"mexicain","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"marocaine","variant":"marocain","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"libanaise","variant":"libanais","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"asiatique","variant":"fusion asiatique","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"espagnole","variant":"espagnol","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"végétarien","variant":"veggie","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"végétarien","variant":"sans viande","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"rapide","variant":"vite","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"rapide","variant":"express","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"épicé","variant":"piquant","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"épicé","variant":"relevé","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"calorie smart","variant":"léger","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"riche en protéines","variant":"protéiné","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"peu de vaisselle","variant":"facile","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"sauté","variant":"wok","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"grillé","variant":"grill","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"poêlé","variant":"à la poêle","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"braisé","variant":"mijoté","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"rôti","variant":"au four","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"pané","variant":"croustillant","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"laqué","variant":"glacé","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"burger","variant":"hamburger","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"tacos","variant":"taco","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"pâtes","variant":"pasta","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"bol","variant":"bowl","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"wrap","variant":"tortilla","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"soupe","variant":"potage","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"salade","variant":"salades","type":"SYN","locale":"fr_FR"}
+{"index":{}}
+{"term":"le","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"la","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"les","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"de","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"du","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"des","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"un","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"une","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"avec","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"à","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"au","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"aux","variant":"","type":"SW","locale":"fr_FR"}
+{"index":{}}
+{"term":"et","variant":"","type":"SW","locale":"fr_FR"}

@@ -1,0 +1,29 @@
+{
+  "name": "compound join: ice cream → icecream",
+  "input": {
+    "query": "Ice Cream",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Ice Cream",
+    "normalizedQuery": "icecream",
+    "tokens": [
+      {"value": "icecream", "normalized": "icecream", "position": 0}
+    ],
+    "rewrites": ["icecream"],
+    "concepts": [
+      {
+        "id": "c-icecream",
+        "label": "icecream",
+        "matchedText": "icecream",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 0,
+        "end": 0
+      }
+    ],
+    "filters": []
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "apostrophes preserved",
+  "input": {
+    "query": "it's a meal deal",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "it's a meal deal",
+    "normalizedQuery": "it's a meal deal",
+    "tokens": [
+      {"value": "it's", "normalized": "it's", "position": 0},
+      {"value": "a", "normalized": "a", "position": 1},
+      {"value": "meal", "normalized": "meal", "position": 2},
+      {"value": "deal", "normalized": "deal", "position": 3}
+    ],
+    "rewrites": [],
+    "concepts": [],
+    "filters": []
+  }
+}

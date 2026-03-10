@@ -1,0 +1,7 @@
+sorts:
+  - key: relevance
+  - key: price_asc
+  - key: price_desc
+  - key: newest
+  - key: prep_time_asc
+  - key: calories_asc

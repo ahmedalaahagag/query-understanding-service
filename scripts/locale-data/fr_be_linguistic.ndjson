@@ -1,0 +1,172 @@
+{"index":{}}
+{"term":"bœuf","variant":"viande rouge","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"bœuf","variant":"steak","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"poulet","variant":"volaille","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"poulet","variant":"blanc de poulet","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"dinde","variant":"volaille","type":"HYP","locale":"fr_BE"}
+{"index":{}}
+{"term":"canard","variant":"volaille","type":"HYP","locale":"fr_BE"}
+{"index":{}}
+{"term":"lardons","variant":"bacon","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"lardons","variant":"spek","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"saumon","variant":"poisson","type":"HYP","locale":"fr_BE"}
+{"index":{}}
+{"term":"crevettes","variant":"gambas","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"crevettes","variant":"fruits de mer","type":"HYP","locale":"fr_BE"}
+{"index":{}}
+{"term":"moules","variant":"fruits de mer","type":"HYP","locale":"fr_BE"}
+{"index":{}}
+{"term":"moules","variant":"moules-frites","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"haché veggie","variant":"protéines végétales","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"carotte","variant":"carottes","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"champignons","variant":"champignon","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"choux de Bruxelles","variant":"choux","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"endive","variant":"chicon","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"endive","variant":"witloof","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"épinards","variant":"épinard","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"poireau","variant":"poireaux","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"poivron","variant":"poivrons","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"pommes de terre","variant":"pomme de terre","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"pommes de terre","variant":"patate","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"pommes de terre","variant":"frites","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"tomate","variant":"tomates","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"oignon","variant":"oignons","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"courgette","variant":"courgettes","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"brocoli","variant":"brocolis","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"petits pois","variant":"pois","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"patate douce","variant":"patates douces","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"haricots verts","variant":"haricots","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"emmental","variant":"gruyère","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"chèvre","variant":"fromage de chèvre","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"parmesan","variant":"parmigiano","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"nouilles","variant":"nouille","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"pâtes","variant":"tagliatelle","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"pâtes","variant":"spaghetti","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"pâtes","variant":"pasta","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"riz","variant":"riz basmati","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"ail","variant":"gousse d'ail","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"belge","variant":"flamand","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"française","variant":"français","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"italienne","variant":"italien","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"thaïlandaise","variant":"thaï","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"indienne","variant":"indien","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"mexicaine","variant":"mexicain","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"asiatique","variant":"fusion asiatique","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"végétarien","variant":"veggie","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"végétarien","variant":"sans viande","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"rapide","variant":"vite","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"rapide","variant":"express","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"épicé","variant":"piquant","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"calorie smart","variant":"léger","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"riche en protéines","variant":"protéiné","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"peu de vaisselle","variant":"facile","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"grillé","variant":"grill","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"poêlé","variant":"à la poêle","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"braisé","variant":"mijoté","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"rôti","variant":"au four","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"pané","variant":"croustillant","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"pané","variant":"croquette","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"moules-frites","variant":"moules frites","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"carbonade flamande","variant":"carbonnade","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"carbonade flamande","variant":"stoofvlees","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"gaufre","variant":"waffle","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"croquettes de crevettes","variant":"garnaalkroketten","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"frites","variant":"frieten","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"burger","variant":"hamburger","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"tacos","variant":"taco","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"bol","variant":"bowl","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"soupe","variant":"potage","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"salade","variant":"salades","type":"SYN","locale":"fr_BE"}
+{"index":{}}
+{"term":"le","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"la","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"les","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"de","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"du","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"des","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"un","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"une","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"avec","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"à","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"au","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"aux","variant":"","type":"SW","locale":"fr_BE"}
+{"index":{}}
+{"term":"et","variant":"","type":"SW","locale":"fr_BE"}

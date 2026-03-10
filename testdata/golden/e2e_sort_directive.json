@@ -1,0 +1,34 @@
+{
+  "name": "sort directive extraction: cheapest pizza",
+  "input": {
+    "query": "Cheapest Pizza",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Cheapest Pizza",
+    "normalizedQuery": "cheapest pizza",
+    "tokens": [
+      {"value": "cheapest", "normalized": "cheapest", "position": 0},
+      {"value": "pizza", "normalized": "pizza", "position": 1}
+    ],
+    "rewrites": ["cheapest pizza"],
+    "concepts": [
+      {
+        "id": "c-pizza",
+        "label": "pizza",
+        "matchedText": "pizza",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 1,
+        "end": 1
+      }
+    ],
+    "filters": [],
+    "sort": {
+      "field": "price",
+      "direction": "asc"
+    }
+  }
+}

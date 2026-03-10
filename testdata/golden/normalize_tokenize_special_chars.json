@@ -1,0 +1,21 @@
+{
+  "name": "special characters stripped",
+  "input": {
+    "query": "chicken & burger @ home #meal",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "chicken & burger @ home #meal",
+    "normalizedQuery": "chicken burger home meal",
+    "tokens": [
+      {"value": "chicken", "normalized": "chicken", "position": 0},
+      {"value": "burger", "normalized": "burger", "position": 1},
+      {"value": "home", "normalized": "home", "position": 2},
+      {"value": "meal", "normalized": "meal", "position": 3}
+    ],
+    "rewrites": ["chicken burger home meal"],
+    "concepts": [],
+    "filters": []
+  }
+}

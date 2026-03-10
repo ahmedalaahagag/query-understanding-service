@@ -1,0 +1,12 @@
+price_rules:
+  - pattern: '(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)'
+    field: price
+    operator: lt
+
+sort_rules:
+  - pattern: '(cheapest|lowest price)'
+    field: price
+    direction: asc
+  - pattern: '(newest|most recent)'
+    field: created_at
+    direction: desc

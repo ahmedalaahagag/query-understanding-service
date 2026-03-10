@@ -1,0 +1,28 @@
+filters:
+  - field: price
+    operators: [lt, lte, gt, gte, eq]
+    type: number
+
+  - field: dietary
+    operators: [eq, in]
+    type: string_list
+
+  - field: availability
+    operators: [eq, in]
+    type: string_list
+
+  - field: cuisine
+    operators: [eq, in]
+    type: string_list
+
+  - field: difficulty
+    operators: [eq, in]
+    type: string_list
+
+  - field: prep_time
+    operators: [lt, lte, gt, gte, eq]
+    type: number
+
+  - field: calories
+    operators: [lt, lte, gt, gte, eq]
+    type: number

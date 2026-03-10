@@ -1,0 +1,20 @@
+{
+  "name": "hyphens preserved",
+  "input": {
+    "query": "Sugar-Free Cola Zero",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Sugar-Free Cola Zero",
+    "normalizedQuery": "sugar-free cola zero",
+    "tokens": [
+      {"value": "sugar-free", "normalized": "sugar-free", "position": 0},
+      {"value": "cola", "normalized": "cola", "position": 1},
+      {"value": "zero", "normalized": "zero", "position": 2}
+    ],
+    "rewrites": ["sugar-free cola zero"],
+    "concepts": [],
+    "filters": []
+  }
+}

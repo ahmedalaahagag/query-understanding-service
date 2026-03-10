@@ -1,0 +1,20 @@
+{
+  "name": "strip noise punctuation",
+  "input": {
+    "query": "chicken!! burger??? (meal)",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "chicken!! burger??? (meal)",
+    "normalizedQuery": "chicken burger meal",
+    "tokens": [
+      {"value": "chicken", "normalized": "chicken", "position": 0},
+      {"value": "burger", "normalized": "burger", "position": 1},
+      {"value": "meal", "normalized": "meal", "position": 2}
+    ],
+    "rewrites": ["chicken burger meal"],
+    "concepts": [],
+    "filters": []
+  }
+}

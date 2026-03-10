@@ -1,0 +1,30 @@
+{
+  "name": "linguistic synonym: sneakers → trainers via OpenSearch",
+  "input": {
+    "query": "White Sneakers",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "White Sneakers",
+    "normalizedQuery": "white trainers",
+    "tokens": [
+      {"value": "white", "normalized": "white", "position": 0},
+      {"value": "sneakers", "normalized": "trainers", "position": 1}
+    ],
+    "rewrites": ["white trainers"],
+    "concepts": [
+      {
+        "id": "c-trainers",
+        "label": "trainers",
+        "matchedText": "trainers",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 1,
+        "end": 1
+      }
+    ],
+    "filters": []
+  }
+}

@@ -1,0 +1,196 @@
+{"index":{"_id":"it-cat-pollo"}}
+{"id":"it-cat-pollo","label":"pollo","field":"category","aliases":["pollame","petto di pollo","cosce di pollo"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-manzo"}}
+{"id":"it-cat-manzo","label":"manzo","field":"category","aliases":["bovino","macinato di manzo","carne di manzo"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-maiale"}}
+{"id":"it-cat-maiale","label":"maiale","field":"category","aliases":["suino","carne di maiale","salsiccia","pancetta"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-vitello"}}
+{"id":"it-cat-vitello","label":"vitello","field":"category","aliases":["carne di vitello"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-tacchino"}}
+{"id":"it-cat-tacchino","label":"tacchino","field":"category","aliases":["carne di tacchino","petto di tacchino"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-salmone"}}
+{"id":"it-cat-salmone","label":"salmone","field":"category","aliases":["filetto di salmone"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-merluzzo"}}
+{"id":"it-cat-merluzzo","label":"merluzzo","field":"category","aliases":["filetto di merluzzo"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-gamberi"}}
+{"id":"it-cat-gamberi","label":"gamberi","field":"category","aliases":["gamberoni","gamberetti"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-tonno"}}
+{"id":"it-cat-tonno","label":"tonno","field":"category","aliases":["filetto di tonno"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-branzino"}}
+{"id":"it-cat-branzino","label":"branzino","field":"category","aliases":["spigola","filetto di branzino"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-halloumi"}}
+{"id":"it-cat-halloumi","label":"halloumi","field":"category","aliases":["formaggio halloumi"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-tofu"}}
+{"id":"it-cat-tofu","label":"tofu","field":"category","aliases":["tofu naturale"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cat-uova"}}
+{"id":"it-cat-uova","label":"uova","field":"category","aliases":["uovo"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-pomodoro"}}
+{"id":"it-ing-pomodoro","label":"pomodoro","field":"ingredient","aliases":["pomodori","pomodorini","pomodori ciliegini","salsa di pomodoro"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-zucchine"}}
+{"id":"it-ing-zucchine","label":"zucchine","field":"ingredient","aliases":["zucchina"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-melanzane"}}
+{"id":"it-ing-melanzane","label":"melanzane","field":"ingredient","aliases":["melanzana"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-peperoni"}}
+{"id":"it-ing-peperoni","label":"peperoni","field":"ingredient","aliases":["peperone","peperone rosso","peperone giallo"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-funghi"}}
+{"id":"it-ing-funghi","label":"funghi","field":"ingredient","aliases":["fungo","champignon","porcini","funghi porcini"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-spinaci"}}
+{"id":"it-ing-spinaci","label":"spinaci","field":"ingredient","aliases":["spinacio"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-cavolo"}}
+{"id":"it-ing-cavolo","label":"cavolo","field":"ingredient","aliases":["cavolfiore","cavolo nero","cavolo cappuccio"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-broccoli"}}
+{"id":"it-ing-broccoli","label":"broccoli","field":"ingredient","aliases":["broccolo"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-patate"}}
+{"id":"it-ing-patate","label":"patate","field":"ingredient","aliases":["patata","patate dolci","patata dolce"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-carote"}}
+{"id":"it-ing-carote","label":"carote","field":"ingredient","aliases":["carota"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-cipolla"}}
+{"id":"it-ing-cipolla","label":"cipolla","field":"ingredient","aliases":["cipolle","cipolla rossa","scalogno"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-aglio"}}
+{"id":"it-ing-aglio","label":"aglio","field":"ingredient","aliases":["spicchio di aglio","aglio fresco"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-rucola"}}
+{"id":"it-ing-rucola","label":"rucola","field":"ingredient","aliases":["rughetta"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-insalata"}}
+{"id":"it-ing-insalata","label":"insalata","field":"ingredient","aliases":["lattuga","insalata mista","misticanza"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-finocchio"}}
+{"id":"it-ing-finocchio","label":"finocchio","field":"ingredient","aliases":["finocchi"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-carciofi"}}
+{"id":"it-ing-carciofi","label":"carciofi","field":"ingredient","aliases":["carciofo"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-zucca"}}
+{"id":"it-ing-zucca","label":"zucca","field":"ingredient","aliases":["zucca butternut"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-pasta"}}
+{"id":"it-ing-pasta","label":"pasta","field":"ingredient","aliases":["spaghetti","penne","rigatoni","tagliatelle","fusilli","orecchiette","farfalle","conchiglie","linguine"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-riso"}}
+{"id":"it-ing-riso","label":"riso","field":"ingredient","aliases":["riso arborio","riso basmati","riso per risotto","riso carnaroli"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-gnocchi"}}
+{"id":"it-ing-gnocchi","label":"gnocchi","field":"ingredient","aliases":["gnocchi di patate"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-polenta"}}
+{"id":"it-ing-polenta","label":"polenta","field":"ingredient","aliases":["farina di mais"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-couscous"}}
+{"id":"it-ing-couscous","label":"couscous","field":"ingredient","aliases":["cous cous"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-pane"}}
+{"id":"it-ing-pane","label":"pane","field":"ingredient","aliases":["focaccia","ciabatta","pangrattato","pane carasau"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-parmigiano"}}
+{"id":"it-ing-parmigiano","label":"parmigiano reggiano","field":"ingredient","aliases":["parmigiano","grana padano"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-mozzarella"}}
+{"id":"it-ing-mozzarella","label":"mozzarella","field":"ingredient","aliases":["mozzarella di bufala","fior di latte"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-burrata"}}
+{"id":"it-ing-burrata","label":"burrata","field":"ingredient","aliases":["burrata pugliese"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-ricotta"}}
+{"id":"it-ing-ricotta","label":"ricotta","field":"ingredient","aliases":["ricotta fresca"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-pecorino"}}
+{"id":"it-ing-pecorino","label":"pecorino","field":"ingredient","aliases":["pecorino romano"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-gorgonzola"}}
+{"id":"it-ing-gorgonzola","label":"gorgonzola","field":"ingredient","aliases":["formaggio gorgonzola"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-mascarpone"}}
+{"id":"it-ing-mascarpone","label":"mascarpone","field":"ingredient","aliases":["formaggio mascarpone"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-basilico"}}
+{"id":"it-ing-basilico","label":"basilico","field":"ingredient","aliases":["basilico fresco"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-prezzemolo"}}
+{"id":"it-ing-prezzemolo","label":"prezzemolo","field":"ingredient","aliases":["prezzemolo fresco"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-rosmarino"}}
+{"id":"it-ing-rosmarino","label":"rosmarino","field":"ingredient","aliases":["rosmarino fresco"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-ing-pesto"}}
+{"id":"it-ing-pesto","label":"pesto","field":"ingredient","aliases":["pesto alla genovese","pesto di basilico"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-italiana"}}
+{"id":"it-cuis-italiana","label":"italiana","field":"cuisine","aliases":["cucina italiana","cucina casalinga"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-mediterranea"}}
+{"id":"it-cuis-mediterranea","label":"mediterranea","field":"cuisine","aliases":["cucina mediterranea"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-giapponese"}}
+{"id":"it-cuis-giapponese","label":"giapponese","field":"cuisine","aliases":["cucina giapponese"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-cinese"}}
+{"id":"it-cuis-cinese","label":"cinese","field":"cuisine","aliases":["cucina cinese"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-coreana"}}
+{"id":"it-cuis-coreana","label":"coreana","field":"cuisine","aliases":["cucina coreana"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-tailandese"}}
+{"id":"it-cuis-tailandese","label":"tailandese","field":"cuisine","aliases":["cucina tailandese","thai"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-indiana"}}
+{"id":"it-cuis-indiana","label":"indiana","field":"cuisine","aliases":["cucina indiana"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-messicana"}}
+{"id":"it-cuis-messicana","label":"messicana","field":"cuisine","aliases":["cucina messicana"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-greca"}}
+{"id":"it-cuis-greca","label":"greca","field":"cuisine","aliases":["cucina greca"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-francese"}}
+{"id":"it-cuis-francese","label":"francese","field":"cuisine","aliases":["cucina francese"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-marocchina"}}
+{"id":"it-cuis-marocchina","label":"marocchina","field":"cuisine","aliases":["cucina marocchina"],"weight":6,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cuis-americana"}}
+{"id":"it-cuis-americana","label":"americana","field":"cuisine","aliases":["cucina americana"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-vegetariano"}}
+{"id":"it-diet-vegetariano","label":"vegetariano","field":"dietary","aliases":["vegetariana","ricette vegetariane"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-vegano"}}
+{"id":"it-diet-vegano","label":"vegano","field":"dietary","aliases":["vegana","ricette vegane"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-veloce"}}
+{"id":"it-diet-veloce","label":"veloce","field":"dietary","aliases":["rapido","facile","20 minuti"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-salutare"}}
+{"id":"it-diet-salutare","label":"salutare","field":"dietary","aliases":["sano","equilibrato","leggero"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-calorie"}}
+{"id":"it-diet-calorie","label":"conta calorie","field":"dietary","aliases":["basso contenuto calorico","light","poche calorie"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-proteine"}}
+{"id":"it-diet-proteine","label":"ricco di proteine","field":"dietary","aliases":["alto contenuto proteico","proteico"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-glutenfree"}}
+{"id":"it-diet-glutenfree","label":"senza glutine","field":"dietary","aliases":["gluten free","celiachia"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-lactosefree"}}
+{"id":"it-diet-lactosefree","label":"senza lattosio","field":"dietary","aliases":["lactose free","intolleranza al lattosio"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-diet-famiglia"}}
+{"id":"it-diet-famiglia","label":"famiglia","field":"dietary","aliases":["per tutta la famiglia","adatto ai bambini"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-alforno"}}
+{"id":"it-cook-alforno","label":"al forno","field":"cooking_method","aliases":["forno","cottura in forno"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-padella"}}
+{"id":"it-cook-padella","label":"in padella","field":"cooking_method","aliases":["padella","saltato in padella"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-griglia"}}
+{"id":"it-cook-griglia","label":"alla griglia","field":"cooking_method","aliases":["grigliato","griglia"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-saltato"}}
+{"id":"it-cook-saltato","label":"saltato","field":"cooking_method","aliases":["saltare"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-fritto"}}
+{"id":"it-cook-fritto","label":"fritto","field":"cooking_method","aliases":["friggere","frittura"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-brasato"}}
+{"id":"it-cook-brasato","label":"brasato","field":"cooking_method","aliases":["brasare","cottura lenta"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-arrosto"}}
+{"id":"it-cook-arrosto","label":"arrosto","field":"cooking_method","aliases":["arrostito"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-gratinato"}}
+{"id":"it-cook-gratinato","label":"gratinato","field":"cooking_method","aliases":["gratinare","gratin"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-croccante"}}
+{"id":"it-cook-croccante","label":"croccante","field":"cooking_method","aliases":["croccantezza"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-cook-cremoso"}}
+{"id":"it-cook-cremoso","label":"cremoso","field":"cooking_method","aliases":["cremosità","cremosa"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-pasta"}}
+{"id":"it-meal-pasta","label":"pasta","field":"meal_type","aliases":["piatto di pasta","primo di pasta"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-risotto"}}
+{"id":"it-meal-risotto","label":"risotto","field":"meal_type","aliases":["primo di riso"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-insalata"}}
+{"id":"it-meal-insalata","label":"insalata","field":"meal_type","aliases":["insalatona","insalata mista"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-zuppa"}}
+{"id":"it-meal-zuppa","label":"zuppa","field":"meal_type","aliases":["minestra","vellutata","crema"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-pizza"}}
+{"id":"it-meal-pizza","label":"pizza","field":"meal_type","aliases":["focaccia"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-burger"}}
+{"id":"it-meal-burger","label":"burger","field":"meal_type","aliases":["hamburger","panino"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-contorno"}}
+{"id":"it-meal-contorno","label":"contorno","field":"meal_type","aliases":["contorni","verdure"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-secondo"}}
+{"id":"it-meal-secondo","label":"secondo","field":"meal_type","aliases":["secondo piatto","portata principale"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-meal-primo"}}
+{"id":"it-meal-primo","label":"primo","field":"meal_type","aliases":["primo piatto"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-carbonara"}}
+{"id":"it-dish-carbonara","label":"carbonara","field":"category","aliases":["pasta alla carbonara","spaghetti carbonara"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-amatriciana"}}
+{"id":"it-dish-amatriciana","label":"amatriciana","field":"category","aliases":["pasta all'amatriciana"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-caciopepe"}}
+{"id":"it-dish-caciopepe","label":"cacio e pepe","field":"category","aliases":["pasta cacio e pepe"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-pesto"}}
+{"id":"it-dish-pesto","label":"pesto alla genovese","field":"category","aliases":["pasta al pesto","pesto genovese"],"weight":9,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-bolognese"}}
+{"id":"it-dish-bolognese","label":"ragù bolognese","field":"category","aliases":["ragù","bolognese","tagliatelle al ragù"],"weight":10,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-ossobuco"}}
+{"id":"it-dish-ossobuco","label":"ossobuco","field":"category","aliases":["osso buco alla milanese"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-vitellotonnato"}}
+{"id":"it-dish-vitellotonnato","label":"vitello tonnato","field":"category","aliases":["vitello tonnè"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-bruschetta"}}
+{"id":"it-dish-bruschetta","label":"bruschetta","field":"category","aliases":["bruschette"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-caprese"}}
+{"id":"it-dish-caprese","label":"caprese","field":"category","aliases":["insalata caprese"],"weight":8,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-panzanella"}}
+{"id":"it-dish-panzanella","label":"panzanella","field":"category","aliases":["insalata di pane"],"weight":7,"locale":"it_IT","market":"IT"}
+{"index":{"_id":"it-dish-ribollita"}}
+{"id":"it-dish-ribollita","label":"ribollita","field":"category","aliases":["zuppa ribollita"],"weight":6,"locale":"it_IT","market":"IT"}

@@ -1,0 +1,106 @@
+{"index":{"_id":"frlu-cat-boeuf"}}
+{"id":"frlu-cat-boeuf","label":"bœuf","field":"category","aliases":["viande rouge","steak"],"weight":10,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cat-porc"}}
+{"id":"frlu-cat-porc","label":"porc","field":"category","aliases":["viande de porc"],"weight":10,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cat-poulet"}}
+{"id":"frlu-cat-poulet","label":"poulet","field":"category","aliases":["volaille","blanc de poulet"],"weight":10,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cat-dinde"}}
+{"id":"frlu-cat-dinde","label":"dinde","field":"category","aliases":["escalope de dinde"],"weight":9,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cat-saucisse"}}
+{"id":"frlu-cat-saucisse","label":"saucisse","field":"category","aliases":["saucisse de Toulouse"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cat-lardons"}}
+{"id":"frlu-cat-lardons","label":"lardons","field":"category","aliases":["bacon"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cat-saumon"}}
+{"id":"frlu-cat-saumon","label":"saumon","field":"category","aliases":["poisson"],"weight":10,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cat-crevettes"}}
+{"id":"frlu-cat-crevettes","label":"crevettes","field":"category","aliases":["gambas","fruits de mer"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cat-veggie"}}
+{"id":"frlu-cat-veggie","label":"haché veggie","field":"category","aliases":["végétarien"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-carotte"}}
+{"id":"frlu-ing-carotte","label":"carotte","field":"ingredient","aliases":["carottes"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-champignons"}}
+{"id":"frlu-ing-champignons","label":"champignons","field":"ingredient","aliases":["champignon"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-brocoli"}}
+{"id":"frlu-ing-brocoli","label":"brocoli","field":"ingredient","aliases":["brocolis"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-epinards"}}
+{"id":"frlu-ing-epinards","label":"épinards","field":"ingredient","aliases":["épinard"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-poireau"}}
+{"id":"frlu-ing-poireau","label":"poireau","field":"ingredient","aliases":["poireaux"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-poivron"}}
+{"id":"frlu-ing-poivron","label":"poivron","field":"ingredient","aliases":["poivrons"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-pommedeterre"}}
+{"id":"frlu-ing-pommedeterre","label":"pommes de terre","field":"ingredient","aliases":["pomme de terre","patate"],"weight":10,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-tomate"}}
+{"id":"frlu-ing-tomate","label":"tomate","field":"ingredient","aliases":["tomates"],"weight":9,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-oignon"}}
+{"id":"frlu-ing-oignon","label":"oignon","field":"ingredient","aliases":["oignons"],"weight":9,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-courgette"}}
+{"id":"frlu-ing-courgette","label":"courgette","field":"ingredient","aliases":["courgettes"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-ail"}}
+{"id":"frlu-ing-ail","label":"ail","field":"ingredient","aliases":["gousse d'ail"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-patatedouce"}}
+{"id":"frlu-ing-patatedouce","label":"patate douce","field":"ingredient","aliases":["patates douces"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-petitspois"}}
+{"id":"frlu-ing-petitspois","label":"petits pois","field":"ingredient","aliases":["pois"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-emmental"}}
+{"id":"frlu-ing-emmental","label":"emmental","field":"ingredient","aliases":["gruyère"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-chevre"}}
+{"id":"frlu-ing-chevre","label":"chèvre","field":"ingredient","aliases":["fromage de chèvre"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-parmesan"}}
+{"id":"frlu-ing-parmesan","label":"parmesan","field":"ingredient","aliases":["parmigiano"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-pates"}}
+{"id":"frlu-ing-pates","label":"pâtes","field":"ingredient","aliases":["tagliatelle","spaghetti"],"weight":9,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-riz"}}
+{"id":"frlu-ing-riz","label":"riz","field":"ingredient","aliases":["riz basmati"],"weight":9,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-ing-nouilles"}}
+{"id":"frlu-ing-nouilles","label":"nouilles","field":"ingredient","aliases":["nouille"],"weight":6,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cui-francaise"}}
+{"id":"frlu-cui-francaise","label":"française","field":"cuisine","aliases":["France","français"],"weight":10,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cui-italienne"}}
+{"id":"frlu-cui-italienne","label":"italienne","field":"cuisine","aliases":["Italie","italien"],"weight":10,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cui-thailandaise"}}
+{"id":"frlu-cui-thailandaise","label":"thaïlandaise","field":"cuisine","aliases":["Thaïlande","thaï"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cui-indienne"}}
+{"id":"frlu-cui-indienne","label":"indienne","field":"cuisine","aliases":["Inde","indien"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cui-mexicaine"}}
+{"id":"frlu-cui-mexicaine","label":"mexicaine","field":"cuisine","aliases":["Mexique","mexicain"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cui-asiatique"}}
+{"id":"frlu-cui-asiatique","label":"asiatique","field":"cuisine","aliases":["Asie"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-diet-vegetarien"}}
+{"id":"frlu-diet-vegetarien","label":"végétarien","field":"dietary","aliases":["veggie","sans viande"],"weight":9,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-diet-rapide"}}
+{"id":"frlu-diet-rapide","label":"rapide","field":"dietary","aliases":["vite","express"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-diet-epice"}}
+{"id":"frlu-diet-epice","label":"épicé","field":"dietary","aliases":["piquant"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-diet-calorie"}}
+{"id":"frlu-diet-calorie","label":"calorie smart","field":"dietary","aliases":["léger"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-diet-proteine"}}
+{"id":"frlu-diet-proteine","label":"riche en protéines","field":"dietary","aliases":["protéiné"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cook-grille"}}
+{"id":"frlu-cook-grille","label":"grillé","field":"cooking_method","aliases":["grill"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cook-poele"}}
+{"id":"frlu-cook-poele","label":"poêlé","field":"cooking_method","aliases":["à la poêle"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cook-roti"}}
+{"id":"frlu-cook-roti","label":"rôti","field":"cooking_method","aliases":["au four"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-cook-pane"}}
+{"id":"frlu-cook-pane","label":"pané","field":"cooking_method","aliases":["croustillant"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-burger"}}
+{"id":"frlu-meal-burger","label":"burger","field":"meal_type","aliases":["hamburger"],"weight":9,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-tacos"}}
+{"id":"frlu-meal-tacos","label":"tacos","field":"meal_type","aliases":["taco"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-curry"}}
+{"id":"frlu-meal-curry","label":"curry","field":"meal_type","aliases":[],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-pates"}}
+{"id":"frlu-meal-pates","label":"pâtes","field":"meal_type","aliases":["pasta"],"weight":9,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-bol"}}
+{"id":"frlu-meal-bol","label":"bol","field":"meal_type","aliases":["bowl"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-wrap"}}
+{"id":"frlu-meal-wrap","label":"wrap","field":"meal_type","aliases":["wraps"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-soupe"}}
+{"id":"frlu-meal-soupe","label":"soupe","field":"meal_type","aliases":["potage"],"weight":7,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-salade"}}
+{"id":"frlu-meal-salade","label":"salade","field":"meal_type","aliases":["salades"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-pizza"}}
+{"id":"frlu-meal-pizza","label":"pizza","field":"meal_type","aliases":["pizzas"],"weight":8,"locale":"fr_LU","market":"LU"}
+{"index":{"_id":"frlu-meal-gratin"}}
+{"id":"frlu-meal-gratin","label":"gratin","field":"meal_type","aliases":[],"weight":7,"locale":"fr_LU","market":"LU"}

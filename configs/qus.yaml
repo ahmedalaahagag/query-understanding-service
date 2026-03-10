@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+pipeline:
+  enabled_steps:
+    - normalize
+    - tokenize
+    - spell
+    - synonym
+    - compound
+    - concept
+    - ambiguity
+    - comprehension
+
+spell:
+  enabled: true
+  min_token_length: 4
+  confidence_threshold: 0.85
+
+concept:
+  shingle_max_size: 4
+  max_matches_per_span: 3
+
+ambiguity:
+  prefer_longest_span: true
+  min_score_delta: 0.05

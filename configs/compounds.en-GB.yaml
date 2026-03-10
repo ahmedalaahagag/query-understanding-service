@@ -1,0 +1,12 @@
+locale: en-GB
+split:
+  - crewneck
+  - lunchbox
+  - staircase
+join:
+  - source: ["ice", "cream"]
+    target: "icecream"
+  - source: ["peanut", "butter"]
+    target: "peanutbutter"
+  - source: ["tooth", "paste"]
+    target: "toothpaste"

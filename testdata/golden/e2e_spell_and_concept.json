@@ -1,0 +1,30 @@
+{
+  "name": "spell + concept: cheeze pizzza → cheese pizza concept",
+  "input": {
+    "query": "Cheeze Pizzza",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Cheeze Pizzza",
+    "normalizedQuery": "cheese pizza",
+    "tokens": [
+      {"value": "cheeze", "normalized": "cheese", "position": 0},
+      {"value": "pizzza", "normalized": "pizza", "position": 1}
+    ],
+    "rewrites": ["cheese pizza"],
+    "concepts": [
+      {
+        "id": "c-cheese-pizza",
+        "label": "cheese pizza",
+        "matchedText": "cheese pizza",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 0,
+        "end": 1
+      }
+    ],
+    "filters": []
+  }
+}

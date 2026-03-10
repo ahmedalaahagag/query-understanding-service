@@ -1,0 +1,20 @@
+{
+  "name": "numbers preserved in query",
+  "input": {
+    "query": "under 20 euros",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "under 20 euros",
+    "normalizedQuery": "under 20 euros",
+    "tokens": [
+      {"value": "under", "normalized": "under", "position": 0},
+      {"value": "20", "normalized": "20", "position": 1},
+      {"value": "euros", "normalized": "euros", "position": 2}
+    ],
+    "rewrites": [],
+    "concepts": [],
+    "filters": []
+  }
+}

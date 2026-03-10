@@ -1,0 +1,30 @@
+{
+  "name": "no corrections: clean query passes through unchanged",
+  "input": {
+    "query": "chicken burger",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "chicken burger",
+    "normalizedQuery": "chicken burger",
+    "tokens": [
+      {"value": "chicken", "normalized": "chicken", "position": 0},
+      {"value": "burger", "normalized": "burger", "position": 1}
+    ],
+    "rewrites": [],
+    "concepts": [
+      {
+        "id": "c-chicken-burger",
+        "label": "chicken burger",
+        "matchedText": "chicken burger",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 0,
+        "end": 1
+      }
+    ],
+    "filters": []
+  }
+}

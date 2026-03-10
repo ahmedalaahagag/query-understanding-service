@@ -1,0 +1,182 @@
+{"index":{"_id":"es-cat-pollo"}}
+{"id":"es-cat-pollo","label":"pollo","field":"category","aliases":["ave","pechuga de pollo","muslos de pollo"],"weight":10,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-cerdo"}}
+{"id":"es-cat-cerdo","label":"cerdo","field":"category","aliases":["lomo de cerdo","carne de cerdo"],"weight":10,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-ternera"}}
+{"id":"es-cat-ternera","label":"ternera","field":"category","aliases":["entrecot","carne de ternera","bistec"],"weight":10,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-bacon"}}
+{"id":"es-cat-bacon","label":"bacon","field":"category","aliases":["beicon","panceta"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-tofu"}}
+{"id":"es-cat-tofu","label":"tofu","field":"category","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-lubina"}}
+{"id":"es-cat-lubina","label":"lubina","field":"category","aliases":["pescado blanco"],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-langostinos"}}
+{"id":"es-cat-langostinos","label":"langostinos","field":"category","aliases":["gambas","marisco"],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-garbanzos"}}
+{"id":"es-cat-garbanzos","label":"garbanzos","field":"category","aliases":["legumbres"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-judias"}}
+{"id":"es-cat-judias","label":"judías","field":"category","aliases":["judías blancas","alubias"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cat-lentejas"}}
+{"id":"es-cat-lentejas","label":"lentejas","field":"category","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-esparragos"}}
+{"id":"es-ing-esparragos","label":"espárragos blancos","field":"ingredient","aliases":["espárragos"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-calabacin"}}
+{"id":"es-ing-calabacin","label":"calabacín","field":"ingredient","aliases":["zucchini"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-calabaza"}}
+{"id":"es-ing-calabaza","label":"calabaza","field":"ingredient","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-pimiento"}}
+{"id":"es-ing-pimiento","label":"pimiento","field":"ingredient","aliases":["pimiento rojo","pimiento verde","pimientos de padrón"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-pepino"}}
+{"id":"es-ing-pepino","label":"pepino","field":"ingredient","aliases":[],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-tomate"}}
+{"id":"es-ing-tomate","label":"tomate","field":"ingredient","aliases":["tomates cherry","tomates","jitomate"],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-cebolla"}}
+{"id":"es-ing-cebolla","label":"cebolla","field":"ingredient","aliases":["chalota","cebolleta"],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-champinones"}}
+{"id":"es-ing-champinones","label":"champiñones","field":"ingredient","aliases":["setas","hongos"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-zanahoria"}}
+{"id":"es-ing-zanahoria","label":"zanahoria","field":"ingredient","aliases":["zanahorias"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-chirivia"}}
+{"id":"es-ing-chirivia","label":"chirivía","field":"ingredient","aliases":[],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-patatas"}}
+{"id":"es-ing-patatas","label":"patatas","field":"ingredient","aliases":["papas","patatas bravas"],"weight":10,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-boniato"}}
+{"id":"es-ing-boniato","label":"boniato","field":"ingredient","aliases":["batata","camote"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-coliflor"}}
+{"id":"es-ing-coliflor","label":"coliflor","field":"ingredient","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-berenjena"}}
+{"id":"es-ing-berenjena","label":"berenjena","field":"ingredient","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-guisante"}}
+{"id":"es-ing-guisante","label":"guisante","field":"ingredient","aliases":["guisantes","arvejas"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-espinacas"}}
+{"id":"es-ing-espinacas","label":"espinacas","field":"ingredient","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-rucula"}}
+{"id":"es-ing-rucula","label":"rúcula","field":"ingredient","aliases":["arúgula"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-canonigos"}}
+{"id":"es-ing-canonigos","label":"canónigos","field":"ingredient","aliases":[],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-manzana"}}
+{"id":"es-ing-manzana","label":"manzana","field":"ingredient","aliases":["manzanas"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-espaguetis"}}
+{"id":"es-ing-espaguetis","label":"espaguetis","field":"ingredient","aliases":["pasta","spaghetti"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-rigatoni"}}
+{"id":"es-ing-rigatoni","label":"rigatoni","field":"ingredient","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-arroz"}}
+{"id":"es-ing-arroz","label":"arroz","field":"ingredient","aliases":["arroz basmati","arroz integral"],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-fideos-udon"}}
+{"id":"es-ing-fideos-udon","label":"fideos udon","field":"ingredient","aliases":["udon"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-orzotto"}}
+{"id":"es-ing-orzotto","label":"orzotto","field":"ingredient","aliases":["cebada perlada"],"weight":5,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-chapata"}}
+{"id":"es-ing-chapata","label":"chapata","field":"ingredient","aliases":["ciabatta","pan"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-queso-griego"}}
+{"id":"es-ing-queso-griego","label":"queso griego","field":"ingredient","aliases":["feta"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-pecorino"}}
+{"id":"es-ing-pecorino","label":"pecorino","field":"ingredient","aliases":[],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-ricotta"}}
+{"id":"es-ing-ricotta","label":"ricotta italiana","field":"ingredient","aliases":["ricotta"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-queso-rallado"}}
+{"id":"es-ing-queso-rallado","label":"queso italiano rallado","field":"ingredient","aliases":["queso rallado","parmesano"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-leche-coco"}}
+{"id":"es-ing-leche-coco","label":"leche de coco","field":"ingredient","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-jamon-serrano"}}
+{"id":"es-ing-jamon-serrano","label":"jamón serrano","field":"ingredient","aliases":["jamón","jamón ibérico"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-ing-chorizo"}}
+{"id":"es-ing-chorizo","label":"chorizo","field":"ingredient","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-italiana"}}
+{"id":"es-cui-italiana","label":"italiana","field":"cuisine","aliases":[],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-india"}}
+{"id":"es-cui-india","label":"india","field":"cuisine","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-mediterranea"}}
+{"id":"es-cui-mediterranea","label":"mediterránea","field":"cuisine","aliases":[],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-espanola"}}
+{"id":"es-cui-espanola","label":"española","field":"cuisine","aliases":[],"weight":10,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-magrebi"}}
+{"id":"es-cui-magrebi","label":"magrebí","field":"cuisine","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-peruana"}}
+{"id":"es-cui-peruana","label":"peruana","field":"cuisine","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-japonesa"}}
+{"id":"es-cui-japonesa","label":"japonesa","field":"cuisine","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-tailandesa"}}
+{"id":"es-cui-tailandesa","label":"tailandesa","field":"cuisine","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-coreana"}}
+{"id":"es-cui-coreana","label":"coreana","field":"cuisine","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-asiatica"}}
+{"id":"es-cui-asiatica","label":"asiática","field":"cuisine","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-canaria"}}
+{"id":"es-cui-canaria","label":"canaria","field":"cuisine","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-asturiana"}}
+{"id":"es-cui-asturiana","label":"asturiana","field":"cuisine","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cui-mexicana"}}
+{"id":"es-cui-mexicana","label":"mexicana","field":"cuisine","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-vegetariano"}}
+{"id":"es-diet-vegetariano","label":"vegetariano","field":"dietary","aliases":[],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-expres"}}
+{"id":"es-diet-expres","label":"exprés","field":"dietary","aliases":["rápido","express"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-familia"}}
+{"id":"es-diet-familia","label":"familia","field":"dietary","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-bajo-calorias"}}
+{"id":"es-diet-bajo-calorias","label":"bajo en calorías","field":"dietary","aliases":["ligero","light"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-proteico"}}
+{"id":"es-diet-proteico","label":"proteico","field":"dietary","aliases":["alto en proteínas"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-picante"}}
+{"id":"es-diet-picante","label":"picante","field":"dietary","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-premium"}}
+{"id":"es-diet-premium","label":"premium","field":"dietary","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-regional"}}
+{"id":"es-diet-regional","label":"regional","field":"dietary","aliases":[],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-taper"}}
+{"id":"es-diet-taper","label":"especial para táper","field":"dietary","aliases":["táper","tupper"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-vegetales"}}
+{"id":"es-diet-vegetales","label":">250g de vegetales","field":"dietary","aliases":["muchos vegetales"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-diet-bajo-carb"}}
+{"id":"es-diet-bajo-carb","label":"<50g carbohidratos","field":"dietary","aliases":["bajo en carbohidratos"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-sarten"}}
+{"id":"es-cook-sarten","label":"una sartén","field":"cooking_method","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-olla"}}
+{"id":"es-cook-olla","label":"una olla","field":"cooking_method","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-solo-horno"}}
+{"id":"es-cook-solo-horno","label":"solo horno","field":"cooking_method","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-papillote"}}
+{"id":"es-cook-papillote","label":"en papillote","field":"cooking_method","aliases":["papillote"],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-al-horno"}}
+{"id":"es-cook-al-horno","label":"al horno","field":"cooking_method","aliases":["horneado"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-salteadas"}}
+{"id":"es-cook-salteadas","label":"salteadas","field":"cooking_method","aliases":["salteado"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-plancha"}}
+{"id":"es-cook-plancha","label":"a la plancha","field":"cooking_method","aliases":["plancha"],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-asadas"}}
+{"id":"es-cook-asadas","label":"asadas","field":"cooking_method","aliases":["asado"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-gratinado"}}
+{"id":"es-cook-gratinado","label":"gratinado","field":"cooking_method","aliases":[],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-crujiente"}}
+{"id":"es-cook-crujiente","label":"crujiente","field":"cooking_method","aliases":[],"weight":6,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-cook-desmechado"}}
+{"id":"es-cook-desmechado","label":"desmechado","field":"cooking_method","aliases":[],"weight":5,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-hamburguesa"}}
+{"id":"es-meal-hamburguesa","label":"hamburguesa","field":"meal_type","aliases":["burger"],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-tacos"}}
+{"id":"es-meal-tacos","label":"tacos","field":"meal_type","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-tostadas"}}
+{"id":"es-meal-tostadas","label":"tostadas","field":"meal_type","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-curry"}}
+{"id":"es-meal-curry","label":"curry","field":"meal_type","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-ensalada"}}
+{"id":"es-meal-ensalada","label":"ensalada","field":"meal_type","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-sopa"}}
+{"id":"es-meal-sopa","label":"sopa","field":"meal_type","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-crema"}}
+{"id":"es-meal-crema","label":"crema","field":"meal_type","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-paella"}}
+{"id":"es-meal-paella","label":"paella","field":"meal_type","aliases":[],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-gazpacho"}}
+{"id":"es-meal-gazpacho","label":"gazpacho","field":"meal_type","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-tortilla"}}
+{"id":"es-meal-tortilla","label":"tortilla española","field":"meal_type","aliases":["tortilla de patatas"],"weight":9,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-croquetas"}}
+{"id":"es-meal-croquetas","label":"croquetas","field":"meal_type","aliases":[],"weight":8,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-fabada"}}
+{"id":"es-meal-fabada","label":"fabada","field":"meal_type","aliases":[],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-ropavieja"}}
+{"id":"es-meal-ropavieja","label":"ropa vieja","field":"meal_type","aliases":["ropavieja"],"weight":7,"locale":"es_ES","market":"ES"}
+{"index":{"_id":"es-meal-pan-tomate"}}
+{"id":"es-meal-pan-tomate","label":"pan con tomate","field":"meal_type","aliases":["pa amb tomàquet"],"weight":8,"locale":"es_ES","market":"ES"}

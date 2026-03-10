@@ -1,0 +1,20 @@
+{
+  "name": "mixed case punctuation and spacing",
+  "input": {
+    "query": "  CHEAP!!!   Chiken   BURGER.  ",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "  CHEAP!!!   Chiken   BURGER.  ",
+    "normalizedQuery": "cheap chiken burger",
+    "tokens": [
+      {"value": "cheap", "normalized": "cheap", "position": 0},
+      {"value": "chiken", "normalized": "chiken", "position": 1},
+      {"value": "burger", "normalized": "burger", "position": 2}
+    ],
+    "rewrites": ["cheap chiken burger"],
+    "concepts": [],
+    "filters": []
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "unicode diacritics stripped",
+  "input": {
+    "query": "Café Crème Brûlée",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Café Crème Brûlée",
+    "normalizedQuery": "cafe creme brulee",
+    "tokens": [
+      {"value": "cafe", "normalized": "cafe", "position": 0},
+      {"value": "creme", "normalized": "creme", "position": 1},
+      {"value": "brulee", "normalized": "brulee", "position": 2}
+    ],
+    "rewrites": ["cafe creme brulee"],
+    "concepts": [],
+    "filters": []
+  }
+}

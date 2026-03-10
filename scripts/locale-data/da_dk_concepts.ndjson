@@ -1,0 +1,200 @@
+{"index":{"_id":"dk-cat-kylling"}}
+{"id":"dk-cat-kylling","label":"kylling","field":"category","aliases":["fjerkræ","kyllingebryst","kyllingelår"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-oksekød"}}
+{"id":"dk-cat-oksekød","label":"oksekød","field":"category","aliases":["okse","rødt kød","bøf"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-svinekød"}}
+{"id":"dk-cat-svinekød","label":"svinekød","field":"category","aliases":["svin","grisekød","bacon"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-kalvekød"}}
+{"id":"dk-cat-kalvekød","label":"kalvekød","field":"category","aliases":["kalv"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-laks"}}
+{"id":"dk-cat-laks","label":"laks","field":"category","aliases":["laksefilet","graved laks"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-torsk"}}
+{"id":"dk-cat-torsk","label":"torsk","field":"category","aliases":["torskefilet"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-hvid-fisk"}}
+{"id":"dk-cat-hvid-fisk","label":"hvid fisk","field":"category","aliases":["sej","ørred","fisk"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-rejer"}}
+{"id":"dk-cat-rejer","label":"rejer","field":"category","aliases":["kongerejer","tigerrejer"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-and"}}
+{"id":"dk-cat-and","label":"and","field":"category","aliases":["andelår","andebryst"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-halloumi"}}
+{"id":"dk-cat-halloumi","label":"halloumi","field":"category","aliases":["grilleost"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cat-tofu"}}
+{"id":"dk-cat-tofu","label":"tofu","field":"category","aliases":["soja"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-cherrytomater"}}
+{"id":"dk-ing-cherrytomater","label":"cherrytomater","field":"ingredient","aliases":["tomater","cocktailtomater"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-blomkål"}}
+{"id":"dk-ing-blomkål","label":"blomkål","field":"ingredient","aliases":[],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-zucchini"}}
+{"id":"dk-ing-zucchini","label":"zucchini","field":"ingredient","aliases":["squash"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-aubergine"}}
+{"id":"dk-ing-aubergine","label":"aubergine","field":"ingredient","aliases":["æggeplante"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-broccoli"}}
+{"id":"dk-ing-broccoli","label":"broccoli","field":"ingredient","aliases":["broccolini"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-pak-choi"}}
+{"id":"dk-ing-pak-choi","label":"pak choi","field":"ingredient","aliases":["kinakål"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-spinat"}}
+{"id":"dk-ing-spinat","label":"spinat","field":"ingredient","aliases":["babyspinat"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-rucola"}}
+{"id":"dk-ing-rucola","label":"rucola","field":"ingredient","aliases":["rucolasalat","ruccola"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-kål"}}
+{"id":"dk-ing-kål","label":"kål","field":"ingredient","aliases":["glaskål","spidskål","hvidkål"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-rødkål"}}
+{"id":"dk-ing-rødkål","label":"rødkål","field":"ingredient","aliases":["blåkål"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-grønkål"}}
+{"id":"dk-ing-grønkål","label":"grønkål","field":"ingredient","aliases":["grønnkål"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-peberfrugt"}}
+{"id":"dk-ing-peberfrugt","label":"peberfrugt","field":"ingredient","aliases":["peber","paprika"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-porre"}}
+{"id":"dk-ing-porre","label":"porre","field":"ingredient","aliases":["purløg"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-agurk"}}
+{"id":"dk-ing-agurk","label":"agurk","field":"ingredient","aliases":["agurkesalat"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-radise"}}
+{"id":"dk-ing-radise","label":"radise","field":"ingredient","aliases":["radiser"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-champignon"}}
+{"id":"dk-ing-champignon","label":"champignon","field":"ingredient","aliases":["champignoner","svampe"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-østershatte"}}
+{"id":"dk-ing-østershatte","label":"østershatte","field":"ingredient","aliases":["østershat"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-forårsløg"}}
+{"id":"dk-ing-forårsløg","label":"forårsløg","field":"ingredient","aliases":["vårløg"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-kartofler"}}
+{"id":"dk-ing-kartofler","label":"kartofler","field":"ingredient","aliases":["kartoffel","pommes frites","fritter"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-rodfrugter"}}
+{"id":"dk-ing-rodfrugter","label":"rodfrugter","field":"ingredient","aliases":["gulerødder","pastinak","persillerod"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-fennikel"}}
+{"id":"dk-ing-fennikel","label":"fennikel","field":"ingredient","aliases":[],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-pasta"}}
+{"id":"dk-ing-pasta","label":"pasta","field":"ingredient","aliases":["linguine","spaghetti","tortelloni","penne"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-udonnudler"}}
+{"id":"dk-ing-udonnudler","label":"udonnudler","field":"ingredient","aliases":["udon","nudler"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-ris"}}
+{"id":"dk-ing-ris","label":"ris","field":"ingredient","aliases":["basmatiris","jasminris"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-couscous"}}
+{"id":"dk-ing-couscous","label":"couscous","field":"ingredient","aliases":[],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-bulgur"}}
+{"id":"dk-ing-bulgur","label":"bulgur","field":"ingredient","aliases":[],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-polenta"}}
+{"id":"dk-ing-polenta","label":"polenta","field":"ingredient","aliases":["majsgryn"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-kikærter"}}
+{"id":"dk-ing-kikærter","label":"kikærter","field":"ingredient","aliases":[],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-kidneybønner"}}
+{"id":"dk-ing-kidneybønner","label":"kidneybønner","field":"ingredient","aliases":["røde bønner","bønner"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-mozzarella"}}
+{"id":"dk-ing-mozzarella","label":"mozzarella","field":"ingredient","aliases":["mozarella"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-parmigiano-reggiano"}}
+{"id":"dk-ing-parmigiano-reggiano","label":"parmigiano reggiano","field":"ingredient","aliases":["parmesan","grana padano"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-gruyère"}}
+{"id":"dk-ing-gruyère","label":"gruyère","field":"ingredient","aliases":[],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-gedeost"}}
+{"id":"dk-ing-gedeost","label":"gedeost","field":"ingredient","aliases":["gederost"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-feta"}}
+{"id":"dk-ing-feta","label":"feta","field":"ingredient","aliases":["fetaost"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-ricotta"}}
+{"id":"dk-ing-ricotta","label":"ricotta","field":"ingredient","aliases":[],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-prosciutto"}}
+{"id":"dk-ing-prosciutto","label":"prosciutto","field":"ingredient","aliases":["parmaskinke"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-ing-rugbrød"}}
+{"id":"dk-ing-rugbrød","label":"rugbrød","field":"ingredient","aliases":["rugbrød","rugkerner"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-italiensk"}}
+{"id":"dk-cui-italiensk","label":"italiensk","field":"cuisine","aliases":["italien","pizza","pasta"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-thailandsk"}}
+{"id":"dk-cui-thailandsk","label":"thailandsk","field":"cuisine","aliases":["thailand","thai"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-græsk"}}
+{"id":"dk-cui-græsk","label":"græsk","field":"cuisine","aliases":["grækenland","græskkøkken"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-svensk"}}
+{"id":"dk-cui-svensk","label":"svensk","field":"cuisine","aliases":["sverige","svensk mad"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-amerikansk"}}
+{"id":"dk-cui-amerikansk","label":"amerikansk","field":"cuisine","aliases":["usa","amerikansk mad"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-tex-mex"}}
+{"id":"dk-cui-tex-mex","label":"tex-mex","field":"cuisine","aliases":["mexicansk","mexico"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-middelhavs"}}
+{"id":"dk-cui-middelhavs","label":"middelhavs","field":"cuisine","aliases":["middelhavet","middelhavskøkken"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-japansk"}}
+{"id":"dk-cui-japansk","label":"japansk","field":"cuisine","aliases":["japan","sushi"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-koreansk"}}
+{"id":"dk-cui-koreansk","label":"koreansk","field":"cuisine","aliases":["korea"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-vietnamesisk"}}
+{"id":"dk-cui-vietnamesisk","label":"vietnamesisk","field":"cuisine","aliases":["vietnam"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-kinesisk"}}
+{"id":"dk-cui-kinesisk","label":"kinesisk","field":"cuisine","aliases":["kina","wok"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-caribisk"}}
+{"id":"dk-cui-caribisk","label":"caribisk","field":"cuisine","aliases":["caribien"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-fransk"}}
+{"id":"dk-cui-fransk","label":"fransk","field":"cuisine","aliases":["frankrig","fransk mad"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-indisk"}}
+{"id":"dk-cui-indisk","label":"indisk","field":"cuisine","aliases":["indien","curry"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-portugisisk"}}
+{"id":"dk-cui-portugisisk","label":"portugisisk","field":"cuisine","aliases":["portugal"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-tyrkisk"}}
+{"id":"dk-cui-tyrkisk","label":"tyrkisk","field":"cuisine","aliases":["tyrkiet","kebab"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cui-dansk"}}
+{"id":"dk-cui-dansk","label":"dansk","field":"cuisine","aliases":["danmark","dansk mad","traditionel dansk"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-vegetarisk"}}
+{"id":"dk-die-vegetarisk","label":"vegetarisk","field":"dietary","aliases":["vegetar","veggie"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-mælkefri"}}
+{"id":"dk-die-mælkefri","label":"mælkefri","field":"dietary","aliases":["laktosefri","uden mælk"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-hvedefri"}}
+{"id":"dk-die-hvedefri","label":"hvedefri","field":"dietary","aliases":["glutenfri","uden hvede"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-lynhurtig"}}
+{"id":"dk-die-lynhurtig","label":"lynhurtig","field":"dietary","aliases":["hurtig","ekstra hurtig"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-stærk"}}
+{"id":"dk-die-stærk","label":"stærk","field":"dietary","aliases":["spicy","hot","krydret"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-børnevenlig"}}
+{"id":"dk-die-børnevenlig","label":"børnevenlig","field":"dietary","aliases":["familievenlig","for børn"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-comfort-food"}}
+{"id":"dk-die-comfort-food","label":"comfort food","field":"dietary","aliases":["hyggemad","trøstemad"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-proteinrig"}}
+{"id":"dk-die-proteinrig","label":"proteinrig","field":"dietary","aliases":["højt proteinindhold","protein"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-under-650-kcal"}}
+{"id":"dk-die-under-650-kcal","label":"under 650 kcal","field":"dietary","aliases":["lavt kalorieindhold","low calorie"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-max-50g-kulhydrater"}}
+{"id":"dk-die-max-50g-kulhydrater","label":"max 50g kulhydrater","field":"dietary","aliases":["low carb","lavt kulhydratindhold"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-die-mere-grønt"}}
+{"id":"dk-die-mere-grønt","label":"mere grønt","field":"dietary","aliases":["grøntsager","ekstra grønt"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-stegt"}}
+{"id":"dk-cook-stegt","label":"stegt","field":"cooking_method","aliases":["pande","pandestegt"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-paneret"}}
+{"id":"dk-cook-paneret","label":"paneret","field":"cooking_method","aliases":["rasp","paneringsmel"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-ovnbagt"}}
+{"id":"dk-cook-ovnbagt","label":"ovnbagt","field":"cooking_method","aliases":["bagt","i ovnen"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-gratineret"}}
+{"id":"dk-cook-gratineret","label":"gratineret","field":"cooking_method","aliases":["gratin","ost på"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-dampet"}}
+{"id":"dk-cook-dampet","label":"dampet","field":"cooking_method","aliases":["damp"],"weight":7,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-marineret"}}
+{"id":"dk-cook-marineret","label":"marineret","field":"cooking_method","aliases":["marinade"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-confiteret"}}
+{"id":"dk-cook-confiteret","label":"confiteret","field":"cooking_method","aliases":["confit"],"weight":6,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-karamelliseret"}}
+{"id":"dk-cook-karamelliseret","label":"karamelliseret","field":"cooking_method","aliases":["karamelliserede løg"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-cook-grillet"}}
+{"id":"dk-cook-grillet","label":"grillet","field":"cooking_method","aliases":["grill","på grillen"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-hakkebøf"}}
+{"id":"dk-meal-hakkebøf","label":"hakkebøf","field":"meal_type","aliases":["hakkebøffer","hakket kød"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-suppe"}}
+{"id":"dk-meal-suppe","label":"suppe","field":"meal_type","aliases":["soppa","bouillon"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-salat"}}
+{"id":"dk-meal-salat","label":"salat","field":"meal_type","aliases":["grøn salat"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-burger"}}
+{"id":"dk-meal-burger","label":"burger","field":"meal_type","aliases":["burgere","hamburger"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-tacos"}}
+{"id":"dk-meal-tacos","label":"tacos","field":"meal_type","aliases":["taco"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-gryderet"}}
+{"id":"dk-meal-gryderet","label":"gryderet","field":"meal_type","aliases":["gryde","stew"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-pasta"}}
+{"id":"dk-meal-pasta","label":"pasta","field":"meal_type","aliases":["pastaret"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-wok"}}
+{"id":"dk-meal-wok","label":"wok","field":"meal_type","aliases":["wokret","stir-fry"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-sandwich"}}
+{"id":"dk-meal-sandwich","label":"sandwich","field":"meal_type","aliases":[],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-gratin"}}
+{"id":"dk-meal-gratin","label":"gratin","field":"meal_type","aliases":["gratineret"],"weight":8,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-smørrebrød"}}
+{"id":"dk-meal-smørrebrød","label":"smørrebrød","field":"meal_type","aliases":["dansk smørrebrød"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-frikadeller"}}
+{"id":"dk-meal-frikadeller","label":"frikadeller","field":"meal_type","aliases":["frikadelle","danske frikadeller"],"weight":10,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-flæskesteg"}}
+{"id":"dk-meal-flæskesteg","label":"flæskesteg","field":"meal_type","aliases":["dansk flæskesteg"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-stegt-flæsk"}}
+{"id":"dk-meal-stegt-flæsk","label":"stegt flæsk","field":"meal_type","aliases":["stegt flæsk med persillesovs"],"weight":9,"locale":"da_DK","market":"DK"}
+{"index":{"_id":"dk-meal-biksemad"}}
+{"id":"dk-meal-biksemad","label":"biksemad","field":"meal_type","aliases":["dansk biksemad"],"weight":9,"locale":"da_DK","market":"DK"}

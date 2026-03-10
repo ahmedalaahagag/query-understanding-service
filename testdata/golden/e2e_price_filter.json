@@ -1,0 +1,33 @@
+{
+  "name": "price filter extraction: pizza under 15",
+  "input": {
+    "query": "Pizza Under 15",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Pizza Under 15",
+    "normalizedQuery": "pizza under 15",
+    "tokens": [
+      {"value": "pizza", "normalized": "pizza", "position": 0},
+      {"value": "under", "normalized": "under", "position": 1},
+      {"value": "15", "normalized": "15", "position": 2}
+    ],
+    "rewrites": ["pizza under 15"],
+    "concepts": [
+      {
+        "id": "c-pizza",
+        "label": "pizza",
+        "matchedText": "pizza",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 0,
+        "end": 0
+      }
+    ],
+    "filters": [
+      {"field": "price", "operator": "lt", "value": 15}
+    ]
+  }
+}

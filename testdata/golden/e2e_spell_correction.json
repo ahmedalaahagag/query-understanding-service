@@ -1,0 +1,31 @@
+{
+  "name": "spell correction: chiken → chicken",
+  "input": {
+    "query": "Cheap CHIKEN Burger",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Cheap CHIKEN Burger",
+    "normalizedQuery": "cheap chicken burger",
+    "tokens": [
+      {"value": "cheap", "normalized": "cheap", "position": 0},
+      {"value": "chiken", "normalized": "chicken", "position": 1},
+      {"value": "burger", "normalized": "burger", "position": 2}
+    ],
+    "rewrites": ["cheap chicken burger"],
+    "concepts": [
+      {
+        "id": "c-chicken-burger",
+        "label": "chicken burger",
+        "matchedText": "chicken burger",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 1,
+        "end": 2
+      }
+    ],
+    "filters": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "ambiguity resolution: chicken burger preferred over chicken + burger",
+  "input": {
+    "query": "Chicken Burger",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Chicken Burger",
+    "normalizedQuery": "chicken burger",
+    "tokens": [
+      {"value": "chicken", "normalized": "chicken", "position": 0},
+      {"value": "burger", "normalized": "burger", "position": 1}
+    ],
+    "rewrites": ["chicken burger"],
+    "concepts": [
+      {
+        "id": "c-chicken-burger",
+        "label": "chicken burger",
+        "matchedText": "chicken burger",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 0,
+        "end": 1
+      }
+    ],
+    "filters": []
+  }
+}

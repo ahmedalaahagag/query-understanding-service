@@ -1,0 +1,132 @@
+{"index":{"_id":"nlbe-cat-kip"}}
+{"id":"nlbe-cat-kip","label":"kip","field":"category","aliases":["kippendij","kipfilet","gevogelte","kipgehakt"],"weight":10,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cat-rund"}}
+{"id":"nlbe-cat-rund","label":"rundvlees","field":"category","aliases":["rundergehakt","biefstuk","biefstukreepjes","stoofvlees"],"weight":10,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cat-varken"}}
+{"id":"nlbe-cat-varken","label":"varkensvlees","field":"category","aliases":["varkenshaas","varkensworstjes","varkensschnitzel","spekjes"],"weight":10,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cat-vis"}}
+{"id":"nlbe-cat-vis","label":"vis","field":"category","aliases":["zalm","zalmfilet","tilapia"],"weight":10,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cat-zeevruchten"}}
+{"id":"nlbe-cat-zeevruchten","label":"zeevruchten","field":"category","aliases":["garnalen","scampi","mosselen"],"weight":10,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cat-gehakt"}}
+{"id":"nlbe-cat-gehakt","label":"gehakt","field":"category","aliases":["gehaktballetjes","kipgehakt","rundergehakt"],"weight":10,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cat-worst"}}
+{"id":"nlbe-cat-worst","label":"worst","field":"category","aliases":["chorizo","varkensworstjes"],"weight":10,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cat-kaas"}}
+{"id":"nlbe-cat-kaas","label":"kaas","field":"category","aliases":["halloumi","burrata","geitenkaas","mozzarella","parmezaan"],"weight":10,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-courgette"}}
+{"id":"nlbe-ing-courgette","label":"courgette","field":"ingredient","aliases":["courgetteblokjes"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-paksoi"}}
+{"id":"nlbe-ing-paksoi","label":"paksoi","field":"ingredient","aliases":["bok choy","chinese kool"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-aubergine"}}
+{"id":"nlbe-ing-aubergine","label":"aubergine","field":"ingredient","aliases":["eierplant"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-bloemkool"}}
+{"id":"nlbe-ing-bloemkool","label":"bloemkool","field":"ingredient","aliases":["bloemkoolroosjes"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-pompoen"}}
+{"id":"nlbe-ing-pompoen","label":"pompoen","field":"ingredient","aliases":["pompoenblokjes","hokkaido"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-wortel"}}
+{"id":"nlbe-ing-wortel","label":"wortel","field":"ingredient","aliases":["wortelen","worteltjes","peen"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-spitskool"}}
+{"id":"nlbe-ing-spitskool","label":"spitskool","field":"ingredient","aliases":["spitskoolreepjes","witte kool"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-paprika"}}
+{"id":"nlbe-ing-paprika","label":"paprika","field":"ingredient","aliases":["rode paprika","groene paprika","gele paprika"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-champignons"}}
+{"id":"nlbe-ing-champignons","label":"champignons","field":"ingredient","aliases":["paddenstoelen","portobello"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-sperziebonen"}}
+{"id":"nlbe-ing-sperziebonen","label":"sperziebonen","field":"ingredient","aliases":["haricots verts","snijbonen"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-sugarsnaps"}}
+{"id":"nlbe-ing-sugarsnaps","label":"sugarsnaps","field":"ingredient","aliases":["peultjes"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-tomaten"}}
+{"id":"nlbe-ing-tomaten","label":"tomaten","field":"ingredient","aliases":["cherrytomaten","trostomaten"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-spinazie"}}
+{"id":"nlbe-ing-spinazie","label":"spinazie","field":"ingredient","aliases":["jonge spinazie"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-witlof"}}
+{"id":"nlbe-ing-witlof","label":"witlof","field":"ingredient","aliases":["witloof","brussels lof"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-mais"}}
+{"id":"nlbe-ing-mais","label":"mais","field":"ingredient","aliases":["maiskolven","suikermais"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-komkommer"}}
+{"id":"nlbe-ing-komkommer","label":"komkommer","field":"ingredient","aliases":[],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-avocado"}}
+{"id":"nlbe-ing-avocado","label":"avocado","field":"ingredient","aliases":[],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-rucola"}}
+{"id":"nlbe-ing-rucola","label":"rucola","field":"ingredient","aliases":["raket"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-rijst"}}
+{"id":"nlbe-ing-rijst","label":"rijst","field":"ingredient","aliases":["basmatirijst","jasmijnrijst"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-noedels"}}
+{"id":"nlbe-ing-noedels","label":"noedels","field":"ingredient","aliases":["udonnoedels","mihoen","rijstnoedels"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-pasta"}}
+{"id":"nlbe-ing-pasta","label":"pasta","field":"ingredient","aliases":["linguine","penne","tagliatelle","orecchiette","spaghetti","fusilli"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-couscous"}}
+{"id":"nlbe-ing-couscous","label":"couscous","field":"ingredient","aliases":["parelcouscous"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-bulgur"}}
+{"id":"nlbe-ing-bulgur","label":"bulgur","field":"ingredient","aliases":[],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-gnocchi"}}
+{"id":"nlbe-ing-gnocchi","label":"gnocchi","field":"ingredient","aliases":["aardappelgnocchi"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-aardappelen"}}
+{"id":"nlbe-ing-aardappelen","label":"aardappelen","field":"ingredient","aliases":["krieltjes","vastkokende aardappelen"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-ing-frieten"}}
+{"id":"nlbe-ing-frieten","label":"frieten","field":"ingredient","aliases":["friet","frites","patat"],"weight":8,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-italiaans"}}
+{"id":"nlbe-cuis-italiaans","label":"italiaans","field":"cuisine","aliases":["italie","italiaanse keuken"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-japans"}}
+{"id":"nlbe-cuis-japans","label":"japans","field":"cuisine","aliases":["japan","japanse keuken"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-indonesisch"}}
+{"id":"nlbe-cuis-indonesisch","label":"indonesisch","field":"cuisine","aliases":["indonesie"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-mexicaans"}}
+{"id":"nlbe-cuis-mexicaans","label":"mexicaans","field":"cuisine","aliases":["mexico","mexicaanse keuken"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-aziatisch"}}
+{"id":"nlbe-cuis-aziatisch","label":"aziatisch","field":"cuisine","aliases":["azie","aziatische keuken"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-grieks"}}
+{"id":"nlbe-cuis-grieks","label":"grieks","field":"cuisine","aliases":["griekenland","griekse keuken"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-indisch"}}
+{"id":"nlbe-cuis-indisch","label":"indisch","field":"cuisine","aliases":["india","indiase keuken"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-mediterraans"}}
+{"id":"nlbe-cuis-mediterraans","label":"mediterraans","field":"cuisine","aliases":["middellandse zee"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cuis-belgisch"}}
+{"id":"nlbe-cuis-belgisch","label":"belgisch","field":"cuisine","aliases":["belgie","belgische keuken"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-diet-veggie"}}
+{"id":"nlbe-diet-veggie","label":"veggie","field":"dietary","aliases":["vegetarisch"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-diet-plantaardig"}}
+{"id":"nlbe-diet-plantaardig","label":"plantaardig","field":"dietary","aliases":["vegan","veganistisch"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-diet-caloriebewust"}}
+{"id":"nlbe-diet-caloriebewust","label":"caloriebewust","field":"dietary","aliases":["lage calorieen","light"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-diet-eiwitrijk"}}
+{"id":"nlbe-diet-eiwitrijk","label":"eiwitrijk","field":"dietary","aliases":["high protein"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-diet-familie"}}
+{"id":"nlbe-diet-familie","label":"familie","field":"dietary","aliases":["gezin"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-diet-lowcarb"}}
+{"id":"nlbe-diet-lowcarb","label":"laag in koolhydraten","field":"dietary","aliases":["-30% koolhydraten","low carb"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-diet-extragroente"}}
+{"id":"nlbe-diet-extragroente","label":"extra groente","field":"dietary","aliases":["meer groente"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cook-geroosterd"}}
+{"id":"nlbe-cook-geroosterd","label":"geroosterd","field":"cooking_method","aliases":["roosteren","uit de oven"],"weight":7,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cook-gebakken"}}
+{"id":"nlbe-cook-gebakken","label":"gebakken","field":"cooking_method","aliases":["bakken"],"weight":7,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cook-krokant"}}
+{"id":"nlbe-cook-krokant","label":"krokant","field":"cooking_method","aliases":["crispy","knapperig"],"weight":7,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cook-romig"}}
+{"id":"nlbe-cook-romig","label":"romig","field":"cooking_method","aliases":["creme","room"],"weight":7,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-cook-gegratineerd"}}
+{"id":"nlbe-cook-gegratineerd","label":"gegratineerd","field":"cooking_method","aliases":["gratineren"],"weight":7,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-pasta"}}
+{"id":"nlbe-meal-pasta","label":"pasta","field":"meal_type","aliases":["pastagerecht","spaghetti"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-bowl"}}
+{"id":"nlbe-meal-bowl","label":"bowl","field":"meal_type","aliases":["rijstbowl","pokebowl"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-salade"}}
+{"id":"nlbe-meal-salade","label":"salade","field":"meal_type","aliases":["sla"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-soep"}}
+{"id":"nlbe-meal-soep","label":"soep","field":"meal_type","aliases":["tomatensoep","groentesoep","waterzooi"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-burger"}}
+{"id":"nlbe-meal-burger","label":"burger","field":"meal_type","aliases":["hamburger"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-tacos"}}
+{"id":"nlbe-meal-tacos","label":"tacos","field":"meal_type","aliases":["taco","wraps"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-curry"}}
+{"id":"nlbe-meal-curry","label":"curry","field":"meal_type","aliases":["curryschotel"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-gratin"}}
+{"id":"nlbe-meal-gratin","label":"gratin","field":"meal_type","aliases":["ovenschotel","gegratineerd"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-stoofvlees"}}
+{"id":"nlbe-meal-stoofvlees","label":"stoofvlees","field":"meal_type","aliases":["stoverij","carbonade","vlaamse stoverij"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-waterzooi"}}
+{"id":"nlbe-meal-waterzooi","label":"waterzooi","field":"meal_type","aliases":["gentse waterzooi"],"weight":9,"locale":"nl_BE","market":"BE"}
+{"index":{"_id":"nlbe-meal-volاوvent"}}
+{"id":"nlbe-meal-volاوvent","label":"vol-au-vent","field":"meal_type","aliases":["vol au vent","koninginnehapje"],"weight":9,"locale":"nl_BE","market":"BE"}

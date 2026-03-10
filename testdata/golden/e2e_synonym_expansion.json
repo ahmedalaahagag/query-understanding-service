@@ -1,0 +1,40 @@
+{
+  "name": "synonym expansion: veggie → vegetarian via YAML fallback",
+  "input": {
+    "query": "Veggie Burger",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Veggie Burger",
+    "normalizedQuery": "vegetarian burger",
+    "tokens": [
+      {"value": "veggie", "normalized": "vegetarian", "position": 0},
+      {"value": "burger", "normalized": "burger", "position": 1}
+    ],
+    "rewrites": ["vegetarian burger"],
+    "concepts": [
+      {
+        "id": "c-vegetarian",
+        "label": "vegetarian",
+        "matchedText": "vegetarian",
+        "field": "diet",
+        "score": 1.0,
+        "source": "exact",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "id": "c-burger",
+        "label": "burger",
+        "matchedText": "burger",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 1,
+        "end": 1
+      }
+    ],
+    "filters": []
+  }
+}

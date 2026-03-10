@@ -1,0 +1,198 @@
+{"index":{"_id":"au-cat-chicken"}}
+{"id":"au-cat-chicken","label":"chicken","field":"category","aliases":["poultry","chook"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-beef"}}
+{"id":"au-cat-beef","label":"beef","field":"category","aliases":["red meat"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-pork"}}
+{"id":"au-cat-pork","label":"pork","field":"category","aliases":[],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-lamb"}}
+{"id":"au-cat-lamb","label":"lamb","field":"category","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-duck"}}
+{"id":"au-cat-duck","label":"duck","field":"category","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-salmon"}}
+{"id":"au-cat-salmon","label":"salmon","field":"category","aliases":["fish"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-barramundi"}}
+{"id":"au-cat-barramundi","label":"barramundi","field":"category","aliases":["barra","fish"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-prawns"}}
+{"id":"au-cat-prawns","label":"prawns","field":"category","aliases":["seafood"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-basa"}}
+{"id":"au-cat-basa","label":"basa","field":"category","aliases":["fish"],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-halloumi"}}
+{"id":"au-cat-halloumi","label":"halloumi","field":"category","aliases":["cheese"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cat-tofu"}}
+{"id":"au-cat-tofu","label":"tofu","field":"category","aliases":["plant-based"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-sirloin"}}
+{"id":"au-ing-sirloin","label":"sirloin","field":"ingredient","aliases":["beef steak"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-rump"}}
+{"id":"au-ing-rump","label":"rump","field":"ingredient","aliases":["rump steak"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-mince"}}
+{"id":"au-ing-mince","label":"mince","field":"ingredient","aliases":["beef mince","pork mince"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-pork-ribs"}}
+{"id":"au-ing-pork-ribs","label":"pork ribs","field":"ingredient","aliases":["ribs"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-pork-belly"}}
+{"id":"au-ing-pork-belly","label":"pork belly","field":"ingredient","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-bangers"}}
+{"id":"au-ing-bangers","label":"bangers","field":"ingredient","aliases":["sausages","snags"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-potato"}}
+{"id":"au-ing-potato","label":"potato","field":"ingredient","aliases":["spud","tater"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-sweet-potato"}}
+{"id":"au-ing-sweet-potato","label":"sweet potato","field":"ingredient","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-broccoli"}}
+{"id":"au-ing-broccoli","label":"broccoli","field":"ingredient","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-capsicum"}}
+{"id":"au-ing-capsicum","label":"capsicum","field":"ingredient","aliases":["red capsicum","green capsicum","yellow capsicum"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-mushroom"}}
+{"id":"au-ing-mushroom","label":"mushroom","field":"ingredient","aliases":["mushies"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-zucchini"}}
+{"id":"au-ing-zucchini","label":"zucchini","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-cucumber"}}
+{"id":"au-ing-cucumber","label":"cucumber","field":"ingredient","aliases":["cuke"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-spinach"}}
+{"id":"au-ing-spinach","label":"spinach","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-rocket"}}
+{"id":"au-ing-rocket","label":"rocket","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-cauliflower"}}
+{"id":"au-ing-cauliflower","label":"cauliflower","field":"ingredient","aliases":["cauli"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-cabbage"}}
+{"id":"au-ing-cabbage","label":"cabbage","field":"ingredient","aliases":["red cabbage","green cabbage"],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-corn"}}
+{"id":"au-ing-corn","label":"corn","field":"ingredient","aliases":["sweet corn"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-green-beans"}}
+{"id":"au-ing-green-beans","label":"green beans","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-pea-pods"}}
+{"id":"au-ing-pea-pods","label":"pea pods","field":"ingredient","aliases":["snow peas","sugar snap peas"],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-cherry-tomatoes"}}
+{"id":"au-ing-cherry-tomatoes","label":"cherry tomatoes","field":"ingredient","aliases":["tomatoes"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-carrot"}}
+{"id":"au-ing-carrot","label":"carrot","field":"ingredient","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-pumpkin"}}
+{"id":"au-ing-pumpkin","label":"pumpkin","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-eggplant"}}
+{"id":"au-ing-eggplant","label":"eggplant","field":"ingredient","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-coriander"}}
+{"id":"au-ing-coriander","label":"coriander","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-cos-lettuce"}}
+{"id":"au-ing-cos-lettuce","label":"cos lettuce","field":"ingredient","aliases":["lettuce"],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-garlic"}}
+{"id":"au-ing-garlic","label":"garlic","field":"ingredient","aliases":[],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-onion"}}
+{"id":"au-ing-onion","label":"onion","field":"ingredient","aliases":["brown onion","red onion"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-ginger"}}
+{"id":"au-ing-ginger","label":"ginger","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-chilli"}}
+{"id":"au-ing-chilli","label":"chilli","field":"ingredient","aliases":["chili","red chilli","green chilli"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-lime"}}
+{"id":"au-ing-lime","label":"lime","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-lemon"}}
+{"id":"au-ing-lemon","label":"lemon","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-italian"}}
+{"id":"au-cuis-italian","label":"italian","field":"cuisine","aliases":[],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-mexican"}}
+{"id":"au-cuis-mexican","label":"mexican","field":"cuisine","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-indian"}}
+{"id":"au-cuis-indian","label":"indian","field":"cuisine","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-thai"}}
+{"id":"au-cuis-thai","label":"thai","field":"cuisine","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-chinese"}}
+{"id":"au-cuis-chinese","label":"chinese","field":"cuisine","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-japanese"}}
+{"id":"au-cuis-japanese","label":"japanese","field":"cuisine","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-middle-eastern"}}
+{"id":"au-cuis-middle-eastern","label":"middle eastern","field":"cuisine","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-vietnamese"}}
+{"id":"au-cuis-vietnamese","label":"vietnamese","field":"cuisine","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-greek"}}
+{"id":"au-cuis-greek","label":"greek","field":"cuisine","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-korean"}}
+{"id":"au-cuis-korean","label":"korean","field":"cuisine","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-french"}}
+{"id":"au-cuis-french","label":"french","field":"cuisine","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-caribbean"}}
+{"id":"au-cuis-caribbean","label":"caribbean","field":"cuisine","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cuis-australian"}}
+{"id":"au-cuis-australian","label":"australian","field":"cuisine","aliases":["aussie"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-diet-vegetarian"}}
+{"id":"au-diet-vegetarian","label":"vegetarian","field":"dietary","aliases":["veggo"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-diet-vegan"}}
+{"id":"au-diet-vegan","label":"vegan","field":"dietary","aliases":["plant-based"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-diet-calorie-smart"}}
+{"id":"au-diet-calorie-smart","label":"calorie smart","field":"dietary","aliases":["low calorie"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-diet-high-protein"}}
+{"id":"au-diet-high-protein","label":"high protein","field":"dietary","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-diet-low-carb"}}
+{"id":"au-diet-low-carb","label":"low carb","field":"dietary","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-diet-family-friendly"}}
+{"id":"au-diet-family-friendly","label":"family friendly","field":"dietary","aliases":["kid friendly"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-diet-gluten-free"}}
+{"id":"au-diet-gluten-free","label":"gluten free","field":"dietary","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-diet-dairy-free"}}
+{"id":"au-diet-dairy-free","label":"dairy free","field":"dietary","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-burger"}}
+{"id":"au-meal-burger","label":"burger","field":"meal_type","aliases":[],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-taco"}}
+{"id":"au-meal-taco","label":"taco","field":"meal_type","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-stir-fry"}}
+{"id":"au-meal-stir-fry","label":"stir fry","field":"meal_type","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-curry"}}
+{"id":"au-meal-curry","label":"curry","field":"meal_type","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-pasta"}}
+{"id":"au-meal-pasta","label":"pasta","field":"meal_type","aliases":[],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-bowl"}}
+{"id":"au-meal-bowl","label":"bowl","field":"meal_type","aliases":["rice bowl","noodle bowl"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-wrap"}}
+{"id":"au-meal-wrap","label":"wrap","field":"meal_type","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-pie"}}
+{"id":"au-meal-pie","label":"pie","field":"meal_type","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-salad"}}
+{"id":"au-meal-salad","label":"salad","field":"meal_type","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-soup"}}
+{"id":"au-meal-soup","label":"soup","field":"meal_type","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-pizza"}}
+{"id":"au-meal-pizza","label":"pizza","field":"meal_type","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-sandwich"}}
+{"id":"au-meal-sandwich","label":"sandwich","field":"meal_type","aliases":["sanga"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-risotto"}}
+{"id":"au-meal-risotto","label":"risotto","field":"meal_type","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-meal-schnitzel"}}
+{"id":"au-meal-schnitzel","label":"schnitzel","field":"meal_type","aliases":["schnitty"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-quick"}}
+{"id":"au-cook-quick","label":"quick","field":"cooking_method","aliases":["fast","easy"],"weight":10,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-one-pan"}}
+{"id":"au-cook-one-pan","label":"one pan","field":"cooking_method","aliases":[],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-oven"}}
+{"id":"au-cook-oven","label":"oven","field":"cooking_method","aliases":["baked"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-pan-fried"}}
+{"id":"au-cook-pan-fried","label":"pan fried","field":"cooking_method","aliases":["fried"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-grilled"}}
+{"id":"au-cook-grilled","label":"grilled","field":"cooking_method","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-bbq"}}
+{"id":"au-cook-bbq","label":"bbq","field":"cooking_method","aliases":["barbie","barbecue"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-air-fryer"}}
+{"id":"au-cook-air-fryer","label":"air fryer","field":"cooking_method","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-roasted"}}
+{"id":"au-cook-roasted","label":"roasted","field":"cooking_method","aliases":["roast"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-slow-cooked"}}
+{"id":"au-cook-slow-cooked","label":"slow cooked","field":"cooking_method","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-cook-steamed"}}
+{"id":"au-cook-steamed","label":"steamed","field":"cooking_method","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-rice"}}
+{"id":"au-ing-rice","label":"rice","field":"ingredient","aliases":["basmati","jasmine"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-noodles"}}
+{"id":"au-ing-noodles","label":"noodles","field":"ingredient","aliases":["egg noodles","rice noodles"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-pasta"}}
+{"id":"au-ing-pasta","label":"pasta","field":"ingredient","aliases":["spaghetti","penne","fettuccine"],"weight":9,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-chips"}}
+{"id":"au-ing-chips","label":"chips","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-feta"}}
+{"id":"au-ing-feta","label":"feta","field":"ingredient","aliases":["cheese"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-parmesan"}}
+{"id":"au-ing-parmesan","label":"parmesan","field":"ingredient","aliases":["cheese"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-cream"}}
+{"id":"au-ing-cream","label":"cream","field":"ingredient","aliases":["thickened cream"],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-butter"}}
+{"id":"au-ing-butter","label":"butter","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-coconut-milk"}}
+{"id":"au-ing-coconut-milk","label":"coconut milk","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-soy-sauce"}}
+{"id":"au-ing-soy-sauce","label":"soy sauce","field":"ingredient","aliases":[],"weight":8,"locale":"en_AU","market":"AU"}
+{"index":{"_id":"au-ing-peanut-butter"}}
+{"id":"au-ing-peanut-butter","label":"peanut butter","field":"ingredient","aliases":[],"weight":7,"locale":"en_AU","market":"AU"}

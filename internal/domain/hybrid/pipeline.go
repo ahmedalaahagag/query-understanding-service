@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/hellofresh/qus/pkg/model"
-	"github.com/hellofresh/qus/internal/domain/pipeline"
-	"github.com/hellofresh/qus/internal/infra/observability"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/observability"
 	"github.com/sirupsen/logrus"
 )
 
@@ -195,10 +195,15 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 		}
 	}
 
+	tokens := model.MergeConceptTokens(state.Tokens, concepts)
+	if tokens == nil {
+		tokens = []model.Token{}
+	}
+
 	resp := model.AnalyzeResponse{
 		OriginalQuery:   state.OriginalQuery,
 		NormalizedQuery: normalizedQuery,
-		Tokens:          state.Tokens,
+		Tokens:          tokens,
 		Rewrites:        rewrites,
 		Concepts:        concepts,
 		Filters:         filters,

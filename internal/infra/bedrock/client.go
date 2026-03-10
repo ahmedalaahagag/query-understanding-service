@@ -10,7 +10,7 @@ import (
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
-	"github.com/hellofresh/qus/internal/domain/hybrid"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
 	"github.com/sirupsen/logrus"
 )
 
@@ -118,6 +118,12 @@ func (c *Client) doConverse(ctx context.Context, systemPrompt, userMessage strin
 	if err := json.Unmarshal([]byte(raw), &result); err != nil {
 		return nil, fmt.Errorf("parsing LLM JSON output: %w", err)
 	}
+
+	c.logger.WithFields(logrus.Fields{
+		"parsed_confidence": result.Confidence,
+		"filters":           len(result.Filters),
+		"concepts":          len(result.CandidateConcepts),
+	}).Info("bedrock parsed LLM result")
 
 	return &result, nil
 }

@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/hellofresh/qus/internal/domain/hybrid"
-	"github.com/hellofresh/qus/internal/domain/pipeline"
-	"github.com/hellofresh/qus/internal/infra/bedrock"
-	"github.com/hellofresh/qus/internal/infra/observability"
-	"github.com/hellofresh/qus/internal/infra/ollama"
-	"github.com/hellofresh/qus/internal/infra/opensearch"
-	"github.com/hellofresh/qus/pkg/config"
-	"github.com/hellofresh/qus/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/bedrock"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/observability"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/ollama"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 	"github.com/sirupsen/logrus"
 )
 
@@ -134,6 +134,15 @@ func (a *Analyzer) AnalyzeV2(ctx context.Context, req model.AnalyzeRequest) (mod
 	}
 	resp, _ := a.v2.Run(ctx, req, false)
 	return resp, nil
+}
+
+// AnalyzeV2Debug runs the v2 hybrid pipeline with debug info.
+func (a *Analyzer) AnalyzeV2Debug(ctx context.Context, req model.AnalyzeRequest) (model.AnalyzeResponse, any, error) {
+	if a.v2 == nil {
+		return model.AnalyzeResponse{}, nil, fmt.Errorf("v2 hybrid pipeline is not enabled")
+	}
+	resp, debugInfo := a.v2.Run(ctx, req, true)
+	return resp, debugInfo, nil
 }
 
 // HasV2 reports whether the v2 hybrid pipeline is available.

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hellofresh/qus/internal/domain/hybrid"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

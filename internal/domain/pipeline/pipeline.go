@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hellofresh/qus/pkg/model"
-	"github.com/hellofresh/qus/internal/infra/observability"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/observability"
 	"github.com/sirupsen/logrus"
 )
 

@@ -3,7 +3,7 @@ package pipeline
 import (
 	"context"
 
-	"github.com/hellofresh/qus/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 )
 
 // Step is a single processing step in the query analysis pipeline.

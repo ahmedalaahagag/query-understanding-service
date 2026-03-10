@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/hellofresh/qus/pkg/model"
-	"github.com/hellofresh/qus/pkg/config"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 )
 
 // CompoundHandler is a pipeline step that splits single compound tokens

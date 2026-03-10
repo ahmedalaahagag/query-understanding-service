@@ -1,4 +1,4 @@
-module github.com/hellofresh/qus
+module github.com/ahmedalaahagag/query-understanding-service
 
 go 1.26.1
 

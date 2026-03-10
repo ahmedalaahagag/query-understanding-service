@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/hellofresh/qus/cmd"
+	"github.com/ahmedalaahagag/query-understanding-service/cmd"
 )
 
 func main() {

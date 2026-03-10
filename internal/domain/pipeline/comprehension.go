@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/hellofresh/qus/pkg/model"
-	"github.com/hellofresh/qus/pkg/config"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 )
 
 type compiledPriceRule struct {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hellofresh/qus/pkg/config"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 )
 
 // PromptBuilder constructs the system prompt and user message for the LLM.

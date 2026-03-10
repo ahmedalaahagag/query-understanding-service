@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/hellofresh/qus/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

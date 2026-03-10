@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hellofresh/qus/pkg/model"
-	"github.com/hellofresh/qus/internal/domain/pipeline"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

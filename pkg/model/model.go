@@ -133,7 +133,7 @@ func (s *QueryState) ToResponse() AnalyzeResponse {
 		rewrites = append(rewrites, s.NormalizedQuery)
 	}
 
-	tokens := mergeConceptTokens(s.Tokens, s.Concepts)
+	tokens := MergeConceptTokens(s.Tokens, s.Concepts)
 	if tokens == nil {
 		tokens = []Token{}
 	}
@@ -161,7 +161,7 @@ func (s *QueryState) ToResponse() AnalyzeResponse {
 // mergeConceptTokens merges tokens that are covered by concept spans into
 // compound tokens. For example, tokens ["high", "protein"] with a concept
 // spanning positions 0–1 become ["high protein"].
-func mergeConceptTokens(tokens []Token, concepts []ConceptMatch) []Token {
+func MergeConceptTokens(tokens []Token, concepts []ConceptMatch) []Token {
 	if len(concepts) == 0 || len(tokens) == 0 {
 		return tokens
 	}

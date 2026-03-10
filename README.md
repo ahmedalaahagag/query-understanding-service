@@ -45,16 +45,16 @@ internal/
 Add QUS as a dependency:
 
 ```bash
-go get github.com/hellofresh/qus
+go get github.com/ahmedalaahagag/query-understanding-service
 ```
 
 Use the `pkg/analyzer` package for in-process analysis (no HTTP):
 
 ```go
 import (
-    "github.com/hellofresh/qus/pkg/analyzer"
-    "github.com/hellofresh/qus/pkg/config"
-    "github.com/hellofresh/qus/pkg/model"
+    "github.com/ahmedalaahagag/query-understanding-service/pkg/analyzer"
+    "github.com/ahmedalaahagag/query-understanding-service/pkg/config"
+    "github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 )
 
 a, err := analyzer.New(ctx, analyzer.Config{
@@ -74,7 +74,7 @@ resp, err := a.Analyze(ctx, model.AnalyzeRequest{
 Or import just the types to use with the HTTP client:
 
 ```go
-import "github.com/hellofresh/qus/pkg/model"
+import "github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 
 var resp model.AnalyzeResponse
 ```

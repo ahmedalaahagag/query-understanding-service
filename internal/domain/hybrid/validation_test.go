@@ -3,7 +3,7 @@ package hybrid
 import (
 	"testing"
 
-	"github.com/hellofresh/qus/pkg/config"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 

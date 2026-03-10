@@ -3,7 +3,7 @@ package pipeline
 import (
 	"strings"
 
-	"github.com/hellofresh/qus/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 )
 
 // GenerateShingles produces n-grams of size 1..maxSize from the token list.

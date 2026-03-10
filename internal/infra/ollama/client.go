@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hellofresh/qus/internal/domain/hybrid"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
 )
 
 // ClientConfig holds Ollama connection settings.

@@ -25,3 +25,4 @@ vendor/
 
 # Ollama data
 ollama-data/
+search-service

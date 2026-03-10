@@ -3,7 +3,7 @@ package hybrid
 import (
 	"fmt"
 
-	"github.com/hellofresh/qus/pkg/config"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 )
 
 // ValidatedIntent holds the LLM output after validation — only safe fields survive.
@@ -82,6 +82,14 @@ func (v *Validator) validateFilters(filters []LLMFilter, warnings *[]string) []L
 		if f.Confidence < v.minConfidence {
 			*warnings = append(*warnings, fmt.Sprintf("filter %s %s confidence %.2f below threshold, dropped", f.Field, f.Operator, f.Confidence))
 			continue
+		}
+
+		// Reject non-numeric values for number-typed fields.
+		if allowed.Type == "number" {
+			if _, isNum := f.Value.(float64); !isNum {
+				*warnings = append(*warnings, fmt.Sprintf("filter %s value %v is not a number, dropped", f.Field, f.Value))
+				continue
+			}
 		}
 
 		valid = append(valid, f)

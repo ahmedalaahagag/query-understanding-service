@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/hellofresh/qus/pkg/model"
-	"github.com/hellofresh/qus/internal/infra/opensearch"
-	"github.com/hellofresh/qus/pkg/config"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

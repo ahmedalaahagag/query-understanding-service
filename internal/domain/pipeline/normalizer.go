@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 	"golang.org/x/text/unicode/norm"
 )
 

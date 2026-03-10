@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 	"github.com/hellofresh/qus/internal/infra/opensearch"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"

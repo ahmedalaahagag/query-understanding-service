@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 )
 
 // Tokenizer is a pipeline step that splits the normalized query on whitespace

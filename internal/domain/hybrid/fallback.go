@@ -1,7 +1,7 @@
 package hybrid
 
 import (
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 )
 
 // BuildFallbackResponse creates a minimal deterministic response when the LLM path fails.

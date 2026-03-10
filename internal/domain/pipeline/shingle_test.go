@@ -3,7 +3,7 @@ package pipeline
 import (
 	"testing"
 
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 

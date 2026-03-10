@@ -4,7 +4,7 @@ import (
 	"context"
 	"sort"
 
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 )
 
 // AmbiguityResolver is a pipeline step that removes overlapping concept matches,

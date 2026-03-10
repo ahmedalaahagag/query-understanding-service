@@ -3,7 +3,7 @@ package hybrid
 import (
 	"context"
 
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 	"github.com/hellofresh/qus/internal/infra/opensearch"
 	"github.com/sirupsen/logrus"
 )

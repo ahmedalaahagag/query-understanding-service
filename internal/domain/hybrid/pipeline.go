@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 	"github.com/hellofresh/qus/internal/domain/pipeline"
 	"github.com/hellofresh/qus/internal/infra/observability"
 	"github.com/sirupsen/logrus"

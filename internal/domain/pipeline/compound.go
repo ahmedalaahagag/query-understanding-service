@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 	"github.com/hellofresh/qus/pkg/config"
 )
 

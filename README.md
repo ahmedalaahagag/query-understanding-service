@@ -22,12 +22,15 @@ The v2 hybrid pipeline uses an LLM (AWS Bedrock or Ollama) as an **advisory** la
 ## Project Structure
 
 ```
+pkg/
+  model/                      # Public domain types (importable by consumers)
+  analyzer/                   # Public API for in-process analysis
+  config/                     # Configuration loading (envconfig)
 cmd/                          # Cobra CLI commands (http server)
 configs/                      # Allowed filters, sorts, LLM prompt
 internal/
   application/routes/         # Chi HTTP handlers
   domain/
-    model/                    # Shared domain types
     pipeline/                 # v1 deterministic pipeline
     hybrid/                   # v2 hybrid LLM pipeline
   infra/
@@ -35,7 +38,45 @@ internal/
     ollama/                   # Ollama local LLM client
     opensearch/               # OpenSearch concept search
     observability/            # Prometheus metrics
-pkg/config/                   # Configuration loading (envconfig)
+```
+
+## Using as a Library
+
+Add QUS as a dependency:
+
+```bash
+go get github.com/hellofresh/qus
+```
+
+Use the `pkg/analyzer` package for in-process analysis (no HTTP):
+
+```go
+import (
+    "github.com/hellofresh/qus/pkg/analyzer"
+    "github.com/hellofresh/qus/pkg/config"
+    "github.com/hellofresh/qus/pkg/model"
+)
+
+a, err := analyzer.New(ctx, analyzer.Config{
+    ConfigDir: "configs",
+    OpenSearch: config.OpenSearchConfig{
+        URL: "http://localhost:9200",
+    },
+})
+
+resp, err := a.Analyze(ctx, model.AnalyzeRequest{
+    Query:  "cheap chicken recipes",
+    Locale: "en-GB",
+    Market: "uk",
+})
+```
+
+Or import just the types to use with the HTTP client:
+
+```go
+import "github.com/hellofresh/qus/pkg/model"
+
+var resp model.AnalyzeResponse
 ```
 
 ## Getting Started

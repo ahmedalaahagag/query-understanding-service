@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/hellofresh/qus/internal/domain/hybrid"
-	"github.com/hellofresh/qus/internal/domain/model"
+	"github.com/hellofresh/qus/pkg/model"
 	"github.com/hellofresh/qus/internal/domain/pipeline"
 	"github.com/hellofresh/qus/internal/infra/observability"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

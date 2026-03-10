@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
-
-	"path/filepath"
 
 	"github.com/hellofresh/qus/internal/application/routes"
 	"github.com/hellofresh/qus/internal/domain/hybrid"
@@ -44,9 +43,9 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 	}
 
 	logger.WithFields(logrus.Fields{
-		"config_dir":    cfg.ConfigDir,
-		"opensearch":    cfg.OpenSearch.URL,
-		"port":          cfg.HTTP.Port,
+		"config_dir": cfg.ConfigDir,
+		"opensearch": cfg.OpenSearch.URL,
+		"port":       cfg.HTTP.Port,
 	}).Info("configuration loaded")
 
 	metrics := observability.NewMetrics()

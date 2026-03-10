@@ -114,8 +114,8 @@ func (c *Client) doConverse(ctx context.Context, systemPrompt, userMessage strin
 
 	raw := stripMarkdownFences(textBlock.Value)
 
-	var result hybrid.LLMParseResult
-	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+	result, err := parseLLMOutput(raw)
+	if err != nil {
 		return nil, fmt.Errorf("parsing LLM JSON output: %w", err)
 	}
 
@@ -125,6 +125,44 @@ func (c *Client) doConverse(ctx context.Context, systemPrompt, userMessage strin
 		"concepts":          len(result.CandidateConcepts),
 	}).Info("bedrock parsed LLM result")
 
+	return result, nil
+}
+
+// parseLLMOutput parses raw JSON from the LLM into an LLMParseResult.
+// It first unmarshals into a flexible map to normalize field name variations
+// (e.g. Nova returns "rewrite" instead of "rewrites"), then re-marshals into
+// the typed struct.
+func parseLLMOutput(raw string) (*hybrid.LLMParseResult, error) {
+	var flexible map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(raw), &flexible); err != nil {
+		return nil, err
+	}
+
+	// Nova sometimes returns "rewrite" (singular) or "rewrites" as an object
+	// instead of a string array. Normalize to ensure it's always an array.
+	if val, ok := flexible["rewrite"]; ok {
+		if _, exists := flexible["rewrites"]; !exists {
+			flexible["rewrites"] = val
+		}
+		delete(flexible, "rewrite")
+	}
+	if val, ok := flexible["rewrites"]; ok {
+		trimmed := strings.TrimSpace(string(val))
+		if !strings.HasPrefix(trimmed, "[") {
+			// Not an array — drop it to avoid unmarshal errors.
+			delete(flexible, "rewrites")
+		}
+	}
+
+	normalized, err := json.Marshal(flexible)
+	if err != nil {
+		return nil, err
+	}
+
+	var result hybrid.LLMParseResult
+	if err := json.Unmarshal(normalized, &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 

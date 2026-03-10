@@ -74,54 +74,6 @@ ambiguity:
 	assert.True(t, cfg.Ambiguity.PreferLongestSpan)
 }
 
-func TestLoadSynonymConfig(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "synonyms.yaml")
-
-	data := `
-locale: en-GB
-entries:
-  - canonical: vegetarian
-    variants: ["veggie"]
-  - canonical: coca cola
-    variants: ["coke"]
-`
-	require.NoError(t, os.WriteFile(path, []byte(data), 0644))
-
-	cfg, err := LoadSynonymConfig(path)
-	require.NoError(t, err)
-
-	assert.Equal(t, "en-GB", cfg.Locale)
-	assert.Len(t, cfg.Entries, 2)
-	assert.Equal(t, "vegetarian", cfg.Entries[0].Canonical)
-	assert.Equal(t, []string{"veggie"}, cfg.Entries[0].Variants)
-}
-
-func TestLoadCompoundConfig(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "compounds.yaml")
-
-	data := `
-locale: en-GB
-split:
-  - crewneck
-  - lunchbox
-join:
-  - source: ["ice", "cream"]
-    target: "icecream"
-`
-	require.NoError(t, os.WriteFile(path, []byte(data), 0644))
-
-	cfg, err := LoadCompoundConfig(path)
-	require.NoError(t, err)
-
-	assert.Equal(t, "en-GB", cfg.Locale)
-	assert.Equal(t, []string{"crewneck", "lunchbox"}, cfg.Split)
-	assert.Len(t, cfg.Join, 1)
-	assert.Equal(t, []string{"ice", "cream"}, cfg.Join[0].Source)
-	assert.Equal(t, "icecream", cfg.Join[0].Target)
-}
-
 func TestLoadPipelineConfig_FileNotFound(t *testing.T) {
 	_, err := LoadPipelineConfig("/nonexistent/path.yaml")
 	assert.Error(t, err)

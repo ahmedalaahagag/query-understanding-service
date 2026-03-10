@@ -320,6 +320,89 @@ func (c *Client) SearchConcepts(ctx context.Context, text, locale, market string
 	return hits, nil
 }
 
+// CompoundEntry represents a compound word rule from the linguistic index.
+type CompoundEntry struct {
+	Compound string // joined form (e.g., "icecream")
+	Parts    string // split form (e.g., "ice cream")
+}
+
+// CompoundLookup queries the linguistic dictionary for compound word rules.
+type CompoundLookup interface {
+	LookupCompounds(ctx context.Context, text, locale string) ([]CompoundEntry, error)
+}
+
+// LookupCompounds queries the linguistic index for compound word rules (type=CMP)
+// matching the given text against both the term (joined) and variant (split) fields.
+func (c *Client) LookupCompounds(ctx context.Context, text, locale string) ([]CompoundEntry, error) {
+	body := map[string]interface{}{
+		"size": 10,
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": []interface{}{
+					map[string]interface{}{
+						"term": map[string]interface{}{
+							"type": "CMP",
+						},
+					},
+				},
+				"should": []interface{}{
+					map[string]interface{}{
+						"term": map[string]interface{}{
+							"term": text,
+						},
+					},
+					map[string]interface{}{
+						"term": map[string]interface{}{
+							"variant": text,
+						},
+					},
+				},
+				"minimum_should_match": 1,
+			},
+		},
+	}
+
+	data, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("marshalling compound lookup: %w", err)
+	}
+
+	url := fmt.Sprintf("%s/%s/_search", c.cfg.URL, indexName(c.cfg.LinguisticIndexPrefix, locale))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if c.cfg.Username != "" {
+		req.SetBasicAuth(c.cfg.Username, c.cfg.Password)
+	}
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("executing compound lookup: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("opensearch returned %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var result linguisticSearchResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("decoding compound response: %w", err)
+	}
+
+	var entries []CompoundEntry
+	for _, hit := range result.Hits.Hits {
+		entries = append(entries, CompoundEntry{
+			Compound: hit.Source.Term,
+			Parts:    hit.Source.Variant,
+		})
+	}
+	return entries, nil
+}
+
 // FuzzySearcher provides fuzzy-matching search capabilities for the native pipeline.
 type FuzzySearcher interface {
 	FuzzySuggest(ctx context.Context, token, locale string) (string, float64, error)

@@ -72,16 +72,6 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		Timeout:               cfg.OpenSearch.Timeout,
 	})
 
-	synCfg, err := config.LoadSynonymConfig(filepath.Join(cfg.ConfigDir, "synonyms.en-GB.yaml"))
-	if err != nil {
-		logger.WithError(err).Warn("could not load synonym config")
-	}
-
-	compCfg, err := config.LoadCompoundConfig(filepath.Join(cfg.ConfigDir, "compounds.en-GB.yaml"))
-	if err != nil {
-		logger.WithError(err).Warn("could not load compound config")
-	}
-
 	comprehensionCfg, err := config.LoadComprehensionConfig(filepath.Join(cfg.ConfigDir, "comprehension.en-GB.yaml"))
 	if err != nil {
 		logger.WithError(err).Warn("could not load comprehension config")
@@ -91,8 +81,8 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		pipeline.Normalizer{},
 		pipeline.Tokenizer{},
 		pipeline.NewSpellResolver(osClient, pipelineCfg.Spell, logger),
-		pipeline.NewSynonymExpander(osClient, synCfg, logger),
-		pipeline.NewCompoundHandler(compCfg),
+		pipeline.NewSynonymExpander(osClient, logger),
+		pipeline.NewCompoundHandler(osClient, logger),
 		pipeline.NewConceptRecognizer(osClient, pipelineCfg.Concept, logger),
 		pipeline.AmbiguityResolver{},
 		pipeline.NewComprehensionEngine(comprehensionCfg),

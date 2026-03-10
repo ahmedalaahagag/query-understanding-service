@@ -101,6 +101,12 @@ func (v *Validator) validateFilters(filters []LLMFilter, warnings *[]string) []L
 					continue
 				}
 			}
+			// Apply multiplier (e.g. price in cents: user says 20, index stores 2000).
+			if allowed.Multiplier > 0 {
+				if num, ok := f.Value.(float64); ok {
+					f.Value = num * allowed.Multiplier
+				}
+			}
 		}
 
 		valid = append(valid, f)

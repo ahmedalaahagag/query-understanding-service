@@ -7,13 +7,11 @@
   },
   "expected": {
     "originalQuery": "Pizza Under 15",
-    "normalizedQuery": "pizza under 15",
+    "normalizedQuery": "pizza",
     "tokens": [
-      {"value": "pizza", "normalized": "pizza", "position": 0},
-      {"value": "under", "normalized": "under", "position": 1},
-      {"value": "15", "normalized": "15", "position": 2}
+      {"value": "pizza", "normalized": "pizza", "position": 0}
     ],
-    "rewrites": ["pizza under 15"],
+    "rewrites": ["pizza"],
     "concepts": [
       {
         "id": "c-pizza",

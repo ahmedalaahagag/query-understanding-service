@@ -25,7 +25,7 @@ type LLMConfig struct {
 	URL           string        `envconfig:"URL" default:"http://localhost:11434"`
 	Timeout       time.Duration `envconfig:"TIMEOUT" default:"30s"`
 	MaxRetries    int           `envconfig:"MAX_RETRIES" default:"1"`
-	MinConfidence float64       `envconfig:"MIN_CONFIDENCE" default:"0.65"`
+	MinConfidence float64       `envconfig:"MIN_CONFIDENCE" default:"0.8"`
 	FailOpen      bool          `envconfig:"FAIL_OPEN" default:"true"`
 }
 

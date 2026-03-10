@@ -198,37 +198,6 @@ ambiguity:
   min_score_delta: 0.05        # Score gap needed to pick one concept over another
 ```
 
-#### `synonyms.{locale}.yaml` — Synonym Mappings
-
-Maps variant terms to canonical forms. One file per locale.
-
-```yaml
-locale: en-GB
-entries:
-  - canonical: vegetarian
-    variants: ["veggie", "veg"]
-  - canonical: coca cola
-    variants: ["coke"]
-  - canonical: aubergine
-    variants: ["eggplant"]
-```
-
-#### `compounds.{locale}.yaml` — Compound Word Rules
-
-Defines words that should be split apart or joined together during tokenization.
-
-```yaml
-locale: en-GB
-split:
-  - crewneck       # "crewneck" → "crew" + "neck"
-  - lunchbox       # "lunchbox" → "lunch" + "box"
-join:
-  - source: ["ice", "cream"]
-    target: "icecream"
-  - source: ["peanut", "butter"]
-    target: "peanutbutter"
-```
-
 #### `comprehension.{locale}.yaml` — Filter & Sort Extraction Rules
 
 Regex-based rules for extracting filters and sort directives from natural language.
@@ -253,14 +222,12 @@ sort_rules:
 | Config File | v1 | v2 | v3 |
 |---|---|---|---|
 | `qus.yaml` | ✅ | — | ✅ |
-| `synonyms.{locale}.yaml` | ✅ | — | — |
-| `compounds.{locale}.yaml` | ✅ | — | — |
 | `comprehension.{locale}.yaml` | ✅ | — | ✅ |
 | `allowed_filters.yaml` | — | ✅ | — |
 | `allowed_sorts.yaml` | — | ✅ | — |
 | `llm_prompt.txt` | — | ✅ | — |
 
-v3 skips synonym and compound configs because OpenSearch handles those natively via fuzzy matching.
+Synonyms and compounds are stored in OpenSearch's linguistic index (types `SYN`, `HYP`, `CMP`) — no YAML data files needed.
 
 ### V2 Hybrid Pipeline Files (optional)
 
@@ -348,7 +315,18 @@ Stores synonym/hypernym relationships for spell-correction and expansion.
 }
 ```
 
-Type values: `SYN` (synonym), `HYP` (hypernym), `SW` (stopword).
+Type values: `SYN` (synonym), `HYP` (hypernym), `CMP` (compound), `SW` (stopword).
+
+**Compound example** — `term` is the joined form, `variant` is the split form:
+
+```json
+{
+  "term": "icecream",
+  "variant": "ice cream",
+  "type": "CMP",
+  "locale": "en_GB"
+}
+```
 
 ### Seeding
 

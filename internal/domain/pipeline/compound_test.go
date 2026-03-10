@@ -2,27 +2,49 @@ package pipeline
 
 import (
 	"context"
+	"errors"
 	"testing"
 
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
-	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func testCompoundConfig() config.CompoundConfig {
-	return config.CompoundConfig{
-		Locale: "en-GB",
-		Split:  []string{"crewneck", "lunchbox"},
-		Join: []config.CompoundJoin{
-			{Source: []string{"ice", "cream"}, Target: "icecream"},
-			{Source: []string{"peanut", "butter"}, Target: "peanutbutter"},
+type mockCompoundLookup struct {
+	entries map[string][]opensearch.CompoundEntry
+	err     error
+}
+
+func (m *mockCompoundLookup) LookupCompounds(_ context.Context, text, _ string) ([]opensearch.CompoundEntry, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	return m.entries[text], nil
+}
+
+func testCompoundLookup() *mockCompoundLookup {
+	return &mockCompoundLookup{
+		entries: map[string][]opensearch.CompoundEntry{
+			// Join rules: "ice cream" → "icecream", "peanut butter" → "peanutbutter"
+			"ice cream":     {{Compound: "icecream", Parts: "ice cream"}},
+			"peanut butter": {{Compound: "peanutbutter", Parts: "peanut butter"}},
+			// Split rules: "crewneck" → "crew neck", "lunchbox" → "lunch box"
+			"crewneck": {{Compound: "crewneck", Parts: "crew neck"}},
+			"lunchbox": {{Compound: "lunchbox", Parts: "lunch box"}},
 		},
 	}
 }
 
+func newTestLogger() *logrus.Logger {
+	l := logrus.New()
+	l.SetLevel(logrus.ErrorLevel)
+	return l
+}
+
 func TestCompoundHandler_Join(t *testing.T) {
-	step := NewCompoundHandler(testCompoundConfig())
+	step := NewCompoundHandler(testCompoundLookup(), newTestLogger())
 
 	state := &model.QueryState{
 		NormalizedQuery: "ice cream cake",
@@ -45,7 +67,7 @@ func TestCompoundHandler_Join(t *testing.T) {
 }
 
 func TestCompoundHandler_Split(t *testing.T) {
-	step := NewCompoundHandler(testCompoundConfig())
+	step := NewCompoundHandler(testCompoundLookup(), newTestLogger())
 
 	state := &model.QueryState{
 		NormalizedQuery: "crewneck sweater",
@@ -69,7 +91,7 @@ func TestCompoundHandler_Split(t *testing.T) {
 }
 
 func TestCompoundHandler_JoinAndSplit(t *testing.T) {
-	step := NewCompoundHandler(testCompoundConfig())
+	step := NewCompoundHandler(testCompoundLookup(), newTestLogger())
 
 	state := &model.QueryState{
 		NormalizedQuery: "ice cream lunchbox",
@@ -85,12 +107,12 @@ func TestCompoundHandler_JoinAndSplit(t *testing.T) {
 
 	require.Len(t, state.Tokens, 3)
 	assert.Equal(t, "icecream", state.Tokens[0].Normalized)
-	assert.Equal(t, "lunc", state.Tokens[1].Normalized)
-	assert.Equal(t, "hbox", state.Tokens[2].Normalized)
+	assert.Equal(t, "lunch", state.Tokens[1].Normalized)
+	assert.Equal(t, "box", state.Tokens[2].Normalized)
 }
 
 func TestCompoundHandler_NoMatch(t *testing.T) {
-	step := NewCompoundHandler(testCompoundConfig())
+	step := NewCompoundHandler(testCompoundLookup(), newTestLogger())
 
 	state := &model.QueryState{
 		NormalizedQuery: "chicken burger",
@@ -107,8 +129,8 @@ func TestCompoundHandler_NoMatch(t *testing.T) {
 	assert.Len(t, state.Tokens, 2)
 }
 
-func TestCompoundHandler_EmptyConfig(t *testing.T) {
-	step := NewCompoundHandler(config.CompoundConfig{})
+func TestCompoundHandler_NilLookup(t *testing.T) {
+	step := NewCompoundHandler(nil, newTestLogger())
 
 	state := &model.QueryState{
 		NormalizedQuery: "chicken burger",
@@ -125,7 +147,7 @@ func TestCompoundHandler_EmptyConfig(t *testing.T) {
 }
 
 func TestCompoundHandler_MultipleJoins(t *testing.T) {
-	step := NewCompoundHandler(testCompoundConfig())
+	step := NewCompoundHandler(testCompoundLookup(), newTestLogger())
 
 	state := &model.QueryState{
 		NormalizedQuery: "peanut butter ice cream",
@@ -144,4 +166,23 @@ func TestCompoundHandler_MultipleJoins(t *testing.T) {
 	assert.Equal(t, "peanutbutter", state.Tokens[0].Normalized)
 	assert.Equal(t, "icecream", state.Tokens[1].Normalized)
 	assert.Equal(t, "peanutbutter icecream", state.NormalizedQuery)
+}
+
+func TestCompoundHandler_LookupError(t *testing.T) {
+	lookup := &mockCompoundLookup{err: errors.New("opensearch down")}
+	step := NewCompoundHandler(lookup, newTestLogger())
+
+	state := &model.QueryState{
+		NormalizedQuery: "crewneck sweater",
+		Tokens: []model.Token{
+			{Value: "crewneck", Normalized: "crewneck", Position: 0},
+			{Value: "sweater", Normalized: "sweater", Position: 1},
+		},
+	}
+
+	err := step.Process(context.Background(), state)
+	require.NoError(t, err)
+
+	// No changes on error — tokens preserved
+	assert.Equal(t, "crewneck sweater", state.NormalizedQuery)
 }

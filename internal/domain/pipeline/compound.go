@@ -4,59 +4,38 @@ import (
 	"context"
 	"strings"
 
+	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
-	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
+	"github.com/sirupsen/logrus"
 )
 
+const maxJoinWindow = 3
+
 // CompoundHandler is a pipeline step that splits single compound tokens
-// and joins multi-token compounds based on configuration rules.
+// and joins multi-token compounds using OpenSearch linguistic index (type=CMP).
 type CompoundHandler struct {
-	splits   map[string][2]string // compound → [part1, part2]
-	joins    map[string]string    // "part1 part2" → joined
-	joinKeys []joinKey            // ordered list for scanning
+	lookup opensearch.CompoundLookup
+	logger *logrus.Logger
 }
 
-type joinKey struct {
-	source []string
-	target string
-}
-
-// NewCompoundHandler creates a CompoundHandler from configuration.
-func NewCompoundHandler(cfg config.CompoundConfig) *CompoundHandler {
-	splits := make(map[string][2]string, len(cfg.Split))
-	for _, word := range cfg.Split {
-		lower := strings.ToLower(word)
-		mid := findSplitPoint(lower)
-		if mid > 0 {
-			splits[lower] = [2]string{lower[:mid], lower[mid:]}
-		}
-	}
-
-	joins := make(map[string]string, len(cfg.Join))
-	var keys []joinKey
-	for _, j := range cfg.Join {
-		normalized := make([]string, len(j.Source))
-		for i, s := range j.Source {
-			normalized[i] = strings.ToLower(s)
-		}
-		key := strings.Join(normalized, " ")
-		joins[key] = strings.ToLower(j.Target)
-		keys = append(keys, joinKey{source: normalized, target: strings.ToLower(j.Target)})
-	}
-
+// NewCompoundHandler creates a CompoundHandler backed by OpenSearch.
+func NewCompoundHandler(lookup opensearch.CompoundLookup, logger *logrus.Logger) *CompoundHandler {
 	return &CompoundHandler{
-		splits:   splits,
-		joins:    joins,
-		joinKeys: keys,
+		lookup: lookup,
+		logger: logger,
 	}
 }
 
 func (c *CompoundHandler) Name() string { return "compound" }
 
-func (c *CompoundHandler) Process(_ context.Context, state *model.QueryState) error {
+func (c *CompoundHandler) Process(ctx context.Context, state *model.QueryState) error {
+	if c.lookup == nil {
+		return nil
+	}
+
 	// Apply joins first (multi-token → single), then splits (single → multi)
-	tokens := c.applyJoins(state.Tokens)
-	tokens = c.applySplits(tokens)
+	tokens := c.applyJoins(ctx, state.Tokens, state.Locale)
+	tokens = c.applySplits(ctx, tokens, state.Locale)
 
 	if !tokensEqual(state.Tokens, tokens) {
 		state.Tokens = tokens
@@ -66,37 +45,42 @@ func (c *CompoundHandler) Process(_ context.Context, state *model.QueryState) er
 	return nil
 }
 
-func (c *CompoundHandler) applyJoins(tokens []model.Token) []model.Token {
-	if len(c.joinKeys) == 0 {
-		return tokens
-	}
-
+func (c *CompoundHandler) applyJoins(ctx context.Context, tokens []model.Token, locale string) []model.Token {
 	var result []model.Token
 	i := 0
 	for i < len(tokens) {
 		matched := false
-		for _, jk := range c.joinKeys {
-			srcLen := len(jk.source)
-			if i+srcLen > len(tokens) {
+		// Try largest window first (e.g., 3 tokens, then 2)
+		for window := maxJoinWindow; window >= 2; window-- {
+			if i+window > len(tokens) {
 				continue
 			}
 
-			match := true
-			for j, src := range jk.source {
-				if tokens[i+j].Normalized != src {
-					match = false
+			parts := make([]string, window)
+			for j := 0; j < window; j++ {
+				parts[j] = tokens[i+j].Normalized
+			}
+			text := strings.Join(parts, " ")
+
+			entries, err := c.lookup.LookupCompounds(ctx, text, locale)
+			if err != nil {
+				c.logger.WithError(err).WithField("text", text).Warn("compound join lookup failed")
+				continue
+			}
+
+			for _, e := range entries {
+				if e.Parts == text {
+					result = append(result, model.Token{
+						Value:      e.Compound,
+						Normalized: e.Compound,
+						Position:   tokens[i].Position,
+					})
+					i += window
+					matched = true
 					break
 				}
 			}
-
-			if match {
-				result = append(result, model.Token{
-					Value:      jk.target,
-					Normalized: jk.target,
-					Position:   tokens[i].Position,
-				})
-				i += srcLen
-				matched = true
+			if matched {
 				break
 			}
 		}
@@ -109,33 +93,37 @@ func (c *CompoundHandler) applyJoins(tokens []model.Token) []model.Token {
 	return reindex(result)
 }
 
-func (c *CompoundHandler) applySplits(tokens []model.Token) []model.Token {
-	if len(c.splits) == 0 {
-		return tokens
-	}
-
+func (c *CompoundHandler) applySplits(ctx context.Context, tokens []model.Token, locale string) []model.Token {
 	var result []model.Token
 	for _, tok := range tokens {
-		if parts, ok := c.splits[tok.Normalized]; ok {
-			result = append(result,
-				model.Token{Value: parts[0], Normalized: parts[0], Position: tok.Position},
-				model.Token{Value: parts[1], Normalized: parts[1], Position: tok.Position + 1},
-			)
-		} else {
+		entries, err := c.lookup.LookupCompounds(ctx, tok.Normalized, locale)
+		if err != nil {
+			c.logger.WithError(err).WithField("token", tok.Normalized).Warn("compound split lookup failed")
+			result = append(result, tok)
+			continue
+		}
+
+		split := false
+		for _, e := range entries {
+			if e.Compound == tok.Normalized {
+				parts := strings.Fields(e.Parts)
+				for _, p := range parts {
+					result = append(result, model.Token{
+						Value:      p,
+						Normalized: p,
+						Position:   tok.Position,
+					})
+				}
+				split = true
+				break
+			}
+		}
+		if !split {
 			result = append(result, tok)
 		}
 	}
 
 	return reindex(result)
-}
-
-// findSplitPoint uses a simple midpoint heuristic for splitting compound words.
-// For production use, this should be config-driven with explicit split points.
-func findSplitPoint(word string) int {
-	if len(word) < 4 {
-		return 0
-	}
-	return len(word) / 2
 }
 
 func reindex(tokens []model.Token) []model.Token {

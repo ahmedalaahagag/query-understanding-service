@@ -40,29 +40,6 @@ type AmbiguityConfig struct {
 	MinScoreDelta     float64 `yaml:"min_score_delta"`
 }
 
-// SynonymConfig holds synonym expansion rules.
-type SynonymConfig struct {
-	Locale  string         `yaml:"locale"`
-	Entries []SynonymEntry `yaml:"entries"`
-}
-
-type SynonymEntry struct {
-	Canonical string   `yaml:"canonical"`
-	Variants  []string `yaml:"variants"`
-}
-
-// CompoundConfig holds compound word split/join rules.
-type CompoundConfig struct {
-	Locale string         `yaml:"locale"`
-	Split  []string       `yaml:"split"`
-	Join   []CompoundJoin `yaml:"join"`
-}
-
-type CompoundJoin struct {
-	Source []string `yaml:"source"`
-	Target string   `yaml:"target"`
-}
-
 // ComprehensionConfig holds comprehension rule definitions.
 type ComprehensionConfig struct {
 	PriceRules []PriceRule `yaml:"price_rules"`
@@ -70,9 +47,10 @@ type ComprehensionConfig struct {
 }
 
 type PriceRule struct {
-	Pattern  string `yaml:"pattern"`
-	Field    string `yaml:"field"`
-	Operator string `yaml:"operator"`
+	Pattern    string  `yaml:"pattern"`
+	Field      string  `yaml:"field"`
+	Operator   string  `yaml:"operator"`
+	Multiplier float64 `yaml:"multiplier,omitempty"`
 }
 
 type SortRule struct {
@@ -86,24 +64,6 @@ func LoadPipelineConfig(path string) (PipelineConfig, error) {
 	var cfg PipelineConfig
 	if err := loadYAML(path, &cfg); err != nil {
 		return PipelineConfig{}, fmt.Errorf("loading pipeline config: %w", err)
-	}
-	return cfg, nil
-}
-
-// LoadSynonymConfig loads synonym configuration from a YAML file.
-func LoadSynonymConfig(path string) (SynonymConfig, error) {
-	var cfg SynonymConfig
-	if err := loadYAML(path, &cfg); err != nil {
-		return SynonymConfig{}, fmt.Errorf("loading synonym config: %w", err)
-	}
-	return cfg, nil
-}
-
-// LoadCompoundConfig loads compound word configuration from a YAML file.
-func LoadCompoundConfig(path string) (CompoundConfig, error) {
-	var cfg CompoundConfig
-	if err := loadYAML(path, &cfg); err != nil {
-		return CompoundConfig{}, fmt.Errorf("loading compound config: %w", err)
 	}
 	return cfg, nil
 }
@@ -124,11 +84,12 @@ type AllowedFiltersConfig struct {
 
 // AllowedFilter defines a single allowed filter field with its operators and type.
 type AllowedFilter struct {
-	Field       string            `yaml:"field"`
-	Operators   []string          `yaml:"operators"`
-	Type        string            `yaml:"type"`
-	Description string            `yaml:"description,omitempty"`
-	Examples    []string          `yaml:"examples,omitempty"`
+	Field       string             `yaml:"field"`
+	Operators   []string           `yaml:"operators"`
+	Type        string             `yaml:"type"`
+	Multiplier  float64            `yaml:"multiplier,omitempty"`
+	Description string             `yaml:"description,omitempty"`
+	Examples    []string           `yaml:"examples,omitempty"`
 	WordValues  map[string]float64 `yaml:"word_values,omitempty"`
 }
 

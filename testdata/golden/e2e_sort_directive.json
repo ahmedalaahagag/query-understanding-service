@@ -7,12 +7,11 @@
   },
   "expected": {
     "originalQuery": "Cheapest Pizza",
-    "normalizedQuery": "cheapest pizza",
+    "normalizedQuery": "pizza",
     "tokens": [
-      {"value": "cheapest", "normalized": "cheapest", "position": 0},
-      {"value": "pizza", "normalized": "pizza", "position": 1}
+      {"value": "pizza", "normalized": "pizza", "position": 0}
     ],
-    "rewrites": ["cheapest pizza"],
+    "rewrites": ["pizza"],
     "concepts": [
       {
         "id": "c-pizza",

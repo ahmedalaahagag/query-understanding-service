@@ -68,7 +68,8 @@ func TestNativePipeline_FullFlow(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, "Chiken under 10", resp.OriginalQuery)
-	assert.Equal(t, "chicken under 10", resp.NormalizedQuery)
+	// Comprehension engine strips consumed filter/sort tokens from the query
+	assert.Equal(t, "chicken", resp.NormalizedQuery)
 	assert.True(t, len(resp.Concepts) > 0, "should find chicken concept")
 	assert.Equal(t, "chicken", resp.Concepts[0].Label)
 	require.Len(t, resp.Filters, 1)

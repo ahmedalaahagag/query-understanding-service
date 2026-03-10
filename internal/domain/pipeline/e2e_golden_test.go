@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -35,6 +35,18 @@ type e2eLinguisticLookup struct {
 func (m *e2eLinguisticLookup) Lookup(_ context.Context, term, _ string) ([]opensearch.LinguisticMatch, error) {
 	if matches, ok := m.entries[term]; ok {
 		return matches, nil
+	}
+	return nil, nil
+}
+
+// e2eCompoundLookup returns predefined compound entries.
+type e2eCompoundLookup struct {
+	entries map[string][]opensearch.CompoundEntry
+}
+
+func (m *e2eCompoundLookup) LookupCompounds(_ context.Context, text, _ string) ([]opensearch.CompoundEntry, error) {
+	if entries, ok := m.entries[text]; ok {
+		return entries, nil
 	}
 	return nil, nil
 }
@@ -69,10 +81,10 @@ func newE2EPipeline() *Pipeline {
 
 	spellChecker := &e2eSpellChecker{
 		corrections: map[string]opensearch.SpellSuggestion{
-			"chiken":  {Text: "chicken", Score: 0.95},
-			"burgar":  {Text: "burger", Score: 0.92},
-			"pizzza":  {Text: "pizza", Score: 0.90},
-			"cheeze":  {Text: "cheese", Score: 0.91},
+			"chiken":    {Text: "chicken", Score: 0.95},
+			"burgar":    {Text: "burger", Score: 0.92},
+			"pizzza":    {Text: "pizza", Score: 0.90},
+			"cheeze":    {Text: "cheese", Score: 0.91},
 			"vegitable": {Text: "vegetable", Score: 0.88},
 		},
 	}
@@ -81,6 +93,19 @@ func newE2EPipeline() *Pipeline {
 		entries: map[string][]opensearch.LinguisticMatch{
 			"sneakers": {{Term: "trainers", Type: "SYN"}},
 			"eggplant": {{Term: "aubergine", Type: "SYN"}},
+			"veggie":   {{Term: "vegetarian", Type: "SYN"}},
+			"veg":      {{Term: "vegetarian", Type: "SYN"}},
+			"coke":     {{Term: "coca cola", Type: "SYN"}},
+			"chips":    {{Term: "crisps", Type: "SYN"}},
+		},
+	}
+
+	compoundLookup := &e2eCompoundLookup{
+		entries: map[string][]opensearch.CompoundEntry{
+			"ice cream":     {{Compound: "icecream", Parts: "ice cream"}},
+			"peanut butter": {{Compound: "peanutbutter", Parts: "peanut butter"}},
+			"crewneck":      {{Compound: "crewneck", Parts: "crew neck"}},
+			"lunchbox":      {{Compound: "lunchbox", Parts: "lunch box"}},
 		},
 	}
 
@@ -122,28 +147,8 @@ func newE2EPipeline() *Pipeline {
 		ConfidenceThreshold: 0.85,
 	}
 
-	synCfg := config.SynonymConfig{
-		Locale: "en-GB",
-		Entries: []config.SynonymEntry{
-			{Canonical: "vegetarian", Variants: []string{"veggie", "veg"}},
-			{Canonical: "coca cola", Variants: []string{"coke"}},
-			{Canonical: "trainers", Variants: []string{"sneakers"}},
-			{Canonical: "crisps", Variants: []string{"chips"}},
-			{Canonical: "aubergine", Variants: []string{"eggplant"}},
-		},
-	}
-
-	compoundCfg := config.CompoundConfig{
-		Locale: "en-GB",
-		Split:  []string{"crewneck", "lunchbox"},
-		Join: []config.CompoundJoin{
-			{Source: []string{"ice", "cream"}, Target: "icecream"},
-			{Source: []string{"peanut", "butter"}, Target: "peanutbutter"},
-		},
-	}
-
 	conceptCfg := config.ConceptConfig{
-		ShingleMaxSize:   4,
+		ShingleMaxSize:    4,
 		MaxMatchesPerSpan: 3,
 	}
 
@@ -161,8 +166,8 @@ func newE2EPipeline() *Pipeline {
 		Normalizer{},
 		Tokenizer{},
 		NewSpellResolver(spellChecker, spellCfg, logger),
-		NewSynonymExpander(linguisticLookup, synCfg, logger),
-		NewCompoundHandler(compoundCfg),
+		NewSynonymExpander(linguisticLookup, logger),
+		NewCompoundHandler(compoundLookup, logger),
 		NewConceptRecognizer(conceptSearcher, conceptCfg, logger),
 		AmbiguityResolver{},
 		NewComprehensionEngine(comprehensionCfg),

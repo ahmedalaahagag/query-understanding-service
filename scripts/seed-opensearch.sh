@@ -1587,6 +1587,34 @@ cat > "${TMPDIR}/linguistic_en_gb.ndjson" << 'NDJSON'
 {"term":"really","variant":"","type":"SW","locale":"en_GB"}
 {"index":{}}
 {"term":"very","variant":"","type":"SW","locale":"en_GB"}
+{"index":{}}
+{"term":"icecream","variant":"ice cream","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"peanutbutter","variant":"peanut butter","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"crewneck","variant":"crew neck","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"lunchbox","variant":"lunch box","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"toothpaste","variant":"tooth paste","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"milkshake","variant":"milk shake","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"cheesecake","variant":"cheese cake","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"pancake","variant":"pan cake","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"meatball","variant":"meat ball","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"cornflakes","variant":"corn flakes","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"breadcrumbs","variant":"bread crumbs","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"grapefruit","variant":"grape fruit","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"butterscotch","variant":"butter scotch","type":"CMP","locale":"en_GB"}
+{"index":{}}
+{"term":"shortbread","variant":"short bread","type":"CMP","locale":"en_GB"}
 NDJSON
 
 bulk_index "linguistic_en_gb" "${TMPDIR}/linguistic_en_gb.ndjson"
@@ -2032,6 +2060,24 @@ cat > "${TMPDIR}/linguistic_en_us.ndjson" << 'NDJSON'
 {"term":"really","variant":"","type":"SW","locale":"en_US"}
 {"index":{}}
 {"term":"very","variant":"","type":"SW","locale":"en_US"}
+{"index":{}}
+{"term":"icecream","variant":"ice cream","type":"CMP","locale":"en_US"}
+{"index":{}}
+{"term":"peanutbutter","variant":"peanut butter","type":"CMP","locale":"en_US"}
+{"index":{}}
+{"term":"cheesecake","variant":"cheese cake","type":"CMP","locale":"en_US"}
+{"index":{}}
+{"term":"milkshake","variant":"milk shake","type":"CMP","locale":"en_US"}
+{"index":{}}
+{"term":"pancake","variant":"pan cake","type":"CMP","locale":"en_US"}
+{"index":{}}
+{"term":"meatball","variant":"meat ball","type":"CMP","locale":"en_US"}
+{"index":{}}
+{"term":"cornflakes","variant":"corn flakes","type":"CMP","locale":"en_US"}
+{"index":{}}
+{"term":"breadcrumbs","variant":"bread crumbs","type":"CMP","locale":"en_US"}
+{"index":{}}
+{"term":"grapefruit","variant":"grape fruit","type":"CMP","locale":"en_US"}
 NDJSON
 
 bulk_index "linguistic_en_us" "${TMPDIR}/linguistic_en_us.ndjson"

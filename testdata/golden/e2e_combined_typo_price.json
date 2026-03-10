@@ -7,14 +7,12 @@
   },
   "expected": {
     "originalQuery": "Cheapest Chiken Burgar Under 20",
-    "normalizedQuery": "cheapest chicken burger under 20",
+    "normalizedQuery": "chicken burger",
     "tokens": [
-      {"value": "cheapest", "normalized": "cheapest", "position": 0},
-      {"value": "chiken burgar", "normalized": "chicken burger", "position": 1},
-      {"value": "under", "normalized": "under", "position": 3},
-      {"value": "20", "normalized": "20", "position": 4}
+      {"value": "chiken", "normalized": "chicken", "position": 0},
+      {"value": "burgar", "normalized": "burger", "position": 1}
     ],
-    "rewrites": ["cheapest chicken burger under 20"],
+    "rewrites": ["chicken burger"],
     "concepts": [
       {
         "id": "c-chicken-burger",

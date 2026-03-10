@@ -21,6 +21,7 @@ type Pipeline struct {
 	promptBuilder   *PromptBuilder
 	validator       *Validator
 	conceptResolver *ConceptResolver
+	comprehension   *pipeline.ComprehensionEngine
 	metrics         *observability.HybridMetrics
 	logger          *logrus.Logger
 	failOpen        bool
@@ -32,6 +33,7 @@ type PipelineConfig struct {
 	PromptBuilder   *PromptBuilder
 	Validator       *Validator
 	ConceptResolver *ConceptResolver
+	Comprehension   *pipeline.ComprehensionEngine
 	Metrics         *observability.HybridMetrics
 	Logger          *logrus.Logger
 	FailOpen        bool
@@ -44,6 +46,7 @@ func NewPipeline(cfg PipelineConfig) *Pipeline {
 		promptBuilder:   cfg.PromptBuilder,
 		validator:       cfg.Validator,
 		conceptResolver: cfg.ConceptResolver,
+		comprehension:   cfg.Comprehension,
 		metrics:         cfg.Metrics,
 		logger:          cfg.Logger,
 		failOpen:        cfg.FailOpen,
@@ -159,13 +162,16 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 	if intent.NormalizedQuery != "" {
 		normalizedQuery = intent.NormalizedQuery
 		if normalizedQuery != state.NormalizedQuery {
-			reTokenized := &model.QueryState{
-				OriginalQuery:   state.OriginalQuery,
-				NormalizedQuery: normalizedQuery,
-			}
-			pipeline.Tokenizer{}.Process(ctx, reTokenized)
-			state.Tokens = reTokenized.Tokens
+			state.NormalizedQuery = normalizedQuery
+			pipeline.Tokenizer{}.Process(ctx, state)
 		}
+	}
+
+	// Strip tokens consumed by filters/sort (e.g. "under 20", "cheap") so
+	// only search-relevant terms remain.
+	if p.comprehension != nil {
+		p.comprehension.Process(ctx, state)
+		normalizedQuery = state.NormalizedQuery
 	}
 
 	rewrites := intent.Rewrites

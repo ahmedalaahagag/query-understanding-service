@@ -1,5 +1,5 @@
 {
-  "name": "synonym expansion: veggie → vegetarian via YAML fallback",
+  "name": "synonym expansion: veggie → vegetarian via OS linguistic lookup",
   "input": {
     "query": "Veggie Burger",
     "locale": "en-GB",

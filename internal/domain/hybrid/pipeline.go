@@ -104,8 +104,14 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 			p.metrics.FallbackTotal.Inc()
 		}
 
+		// Run comprehension on fallback so filter/sort tokens (e.g. "cheap",
+		// "under 20") are stripped before the orchestrator builds a text query.
+		if p.comprehension != nil {
+			p.comprehension.Process(ctx, state)
+		}
+
 		if p.failOpen {
-			resp := BuildFallbackResponse(state.OriginalQuery, state.NormalizedQuery, state.Tokens, err.Error())
+			resp := BuildFallbackResponse(state, err.Error())
 			if debug {
 				debugInfo.FallbackUsed = true
 				debugInfo.Warnings = resp.Warnings
@@ -113,7 +119,7 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 			}
 			return resp, debugInfo
 		}
-		return BuildFallbackResponse(state.OriginalQuery, state.NormalizedQuery, state.Tokens, err.Error()), debugInfo
+		return BuildFallbackResponse(state, err.Error()), debugInfo
 	}
 
 	if p.metrics != nil {

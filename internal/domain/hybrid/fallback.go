@@ -4,24 +4,33 @@ import (
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 )
 
-// BuildFallbackResponse creates a minimal deterministic response when the LLM path fails.
-func BuildFallbackResponse(originalQuery, normalizedQuery string, tokens []model.Token, reason string) model.AnalyzeResponse {
+// BuildFallbackResponse creates a deterministic response when the LLM path fails.
+// It uses filters/sort extracted by comprehension (if any) so the orchestrator
+// still applies price ranges, sort orders, etc.
+func BuildFallbackResponse(state *model.QueryState, reason string) model.AnalyzeResponse {
+	tokens := state.Tokens
 	if tokens == nil {
 		tokens = []model.Token{}
 	}
 
 	rewrites := []string{}
-	if normalizedQuery != originalQuery {
-		rewrites = append(rewrites, normalizedQuery)
+	if state.NormalizedQuery != state.OriginalQuery {
+		rewrites = append(rewrites, state.NormalizedQuery)
+	}
+
+	filters := state.Filters
+	if filters == nil {
+		filters = []model.Filter{}
 	}
 
 	return model.AnalyzeResponse{
-		OriginalQuery:   originalQuery,
-		NormalizedQuery: normalizedQuery,
+		OriginalQuery:   state.OriginalQuery,
+		NormalizedQuery: state.NormalizedQuery,
 		Tokens:          tokens,
 		Rewrites:        rewrites,
 		Concepts:        []model.ConceptMatch{},
-		Filters:         []model.Filter{},
+		Filters:         filters,
+		Sort:            state.Sort,
 		Warnings:        []string{"llm fallback: " + reason},
 	}
 }

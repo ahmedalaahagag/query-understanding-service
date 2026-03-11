@@ -180,7 +180,7 @@ func TestPipeline_DebugMode_Fallback(t *testing.T) {
 func TestPipeline_InvalidFilterDropped(t *testing.T) {
 	parser := &mockLLMParser{
 		result: &LLMParseResult{
-			NormalizedQuery: "test",
+			NormalizedQuery: "burger under 20",
 			Filters: []LLMFilter{
 				{Field: "price", Operator: "lt", Value: float64(20), Confidence: 0.96},
 				{Field: "invented", Operator: "eq", Value: "x", Confidence: 0.9},
@@ -190,7 +190,7 @@ func TestPipeline_InvalidFilterDropped(t *testing.T) {
 	}
 
 	p := testPipeline(parser, nil)
-	req := model.AnalyzeRequest{Query: "test", Locale: "en-GB", Market: "uk"}
+	req := model.AnalyzeRequest{Query: "burger under 20", Locale: "en-GB", Market: "uk"}
 
 	resp, _ := p.Run(context.Background(), req, false)
 	assert.Len(t, resp.Filters, 1)

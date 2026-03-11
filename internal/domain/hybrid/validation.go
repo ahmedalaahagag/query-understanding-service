@@ -89,17 +89,15 @@ func (v *Validator) validateFilters(filters []LLMFilter, query string, warnings 
 			continue
 		}
 
-		// For keyword filters, verify the value actually appears in the query.
-		// This prevents false inference like "burger" → recipe_cuisine "American".
-		if allowed.Type == "keyword" {
-			if str, ok := f.Value.(string); ok {
-				if !strings.Contains(queryLower, strings.ToLower(str)) {
-					*warnings = append(*warnings, fmt.Sprintf(
-						"filter %s value %q not found in query, dropped (possible false inference)",
-						f.Field, str))
-					continue
-				}
-			}
+		// Ground-truth check: the raw LLM value must trace back to something
+		// the user actually wrote. This prevents all false inference — not just
+		// keyword types (e.g. "burger" → cuisine "American", or an invented
+		// numeric threshold the user never mentioned).
+		if !isValueGrounded(f.Value, queryLower, allowed.WordValues) {
+			*warnings = append(*warnings, fmt.Sprintf(
+				"filter %s value %v not found in query, dropped (possible false inference)",
+				f.Field, f.Value))
+			continue
 		}
 
 		// Coerce non-numeric values for number-typed fields.
@@ -170,6 +168,35 @@ func (v *Validator) validateConcepts(concepts []LLMCandidateConcept, warnings *[
 		valid = append(valid, c)
 	}
 	return valid
+}
+
+// isValueGrounded checks whether a filter value can be traced back to the
+// user's query. This prevents the LLM from hallucinating filter values
+// that the user never mentioned (e.g. "burger" → cuisine "American").
+//
+// For string values: the string must appear in the query (case-insensitive).
+// For numeric values: the number (formatted as an integer or float) must appear.
+// Word-value aliases (e.g. "cheap" mapping to a number) are also accepted.
+func isValueGrounded(value interface{}, queryLower string, wordValues map[string]float64) bool {
+	switch v := value.(type) {
+	case string:
+		if strings.Contains(queryLower, strings.ToLower(v)) {
+			return true
+		}
+		// Check if it's a recognized word-value alias present in the query.
+		if _, ok := wordValues[strings.ToLower(v)]; ok {
+			return strings.Contains(queryLower, strings.ToLower(v))
+		}
+		return false
+	case float64:
+		// Check integer form first (20 vs 20.00).
+		if v == float64(int(v)) {
+			return strings.Contains(queryLower, fmt.Sprintf("%d", int(v)))
+		}
+		return strings.Contains(queryLower, fmt.Sprintf("%g", v))
+	default:
+		return false
+	}
 }
 
 func containsString(slice []string, s string) bool {

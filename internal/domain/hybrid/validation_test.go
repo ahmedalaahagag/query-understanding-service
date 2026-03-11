@@ -13,7 +13,6 @@ func testValidator() *Validator {
 			Filters: []config.AllowedFilter{
 				{Field: "price", Operators: []string{"lt", "lte", "gt", "gte", "eq"}, Type: "number"},
 				{Field: "dietary", Operators: []string{"eq", "in"}, Type: "string_list"},
-			{Field: "recipe_cuisine", Operators: []string{"eq", "in"}, Type: "keyword"},
 			},
 		},
 		config.AllowedSortsConfig{
@@ -31,14 +30,14 @@ func testValidator() *Validator {
 func TestValidator_ValidFilters(t *testing.T) {
 	v := testValidator()
 	result := &LLMParseResult{
-		NormalizedQuery: "chicken burger",
+		NormalizedQuery: "chicken burger under 20",
 		Filters: []LLMFilter{
 			{Field: "price", Operator: "lt", Value: float64(20), Confidence: 0.96},
 		},
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result, result.NormalizedQuery)
+	intent := v.Validate(result, "chicken burger under 20")
 	assert.Len(t, intent.Filters, 1)
 	assert.Equal(t, "price", intent.Filters[0].Field)
 	assert.Empty(t, intent.Warnings)
@@ -77,14 +76,14 @@ func TestValidator_InvalidOperator(t *testing.T) {
 func TestValidator_LowConfidenceFilter(t *testing.T) {
 	v := testValidator()
 	result := &LLMParseResult{
-		NormalizedQuery: "test",
+		NormalizedQuery: "burger under 10",
 		Filters: []LLMFilter{
 			{Field: "price", Operator: "lt", Value: float64(10), Confidence: 0.3},
 		},
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result, result.NormalizedQuery)
+	intent := v.Validate(result, "burger under 10")
 	assert.Empty(t, intent.Filters)
 	assert.Contains(t, intent.Warnings[0], "below threshold")
 }
@@ -130,7 +129,7 @@ func TestValidator_RelevanceSort(t *testing.T) {
 func TestValidator_LowOverallConfidence(t *testing.T) {
 	v := testValidator()
 	result := &LLMParseResult{
-		NormalizedQuery: "test",
+		NormalizedQuery: "burger under 20",
 		Filters: []LLMFilter{
 			{Field: "price", Operator: "lt", Value: float64(20), Confidence: 0.96},
 		},
@@ -138,7 +137,7 @@ func TestValidator_LowOverallConfidence(t *testing.T) {
 		Confidence: 0.3,
 	}
 
-	intent := v.Validate(result, result.NormalizedQuery)
+	intent := v.Validate(result, "burger under 20")
 	assert.Empty(t, intent.Filters)
 	assert.Nil(t, intent.Sort)
 	assert.Contains(t, intent.Warnings[0], "overall confidence")
@@ -163,7 +162,7 @@ func TestValidator_LowConfidenceConcept(t *testing.T) {
 func TestValidator_MixedValid_Invalid(t *testing.T) {
 	v := testValidator()
 	result := &LLMParseResult{
-		NormalizedQuery: "test",
+		NormalizedQuery: "vegan burger under 20",
 		Filters: []LLMFilter{
 			{Field: "price", Operator: "lt", Value: float64(20), Confidence: 0.96},
 			{Field: "bogus", Operator: "eq", Value: "x", Confidence: 0.9},
@@ -172,42 +171,55 @@ func TestValidator_MixedValid_Invalid(t *testing.T) {
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result, result.NormalizedQuery)
+	intent := v.Validate(result, "vegan burger under 20")
 	assert.Len(t, intent.Filters, 2)
 	assert.Equal(t, "price", intent.Filters[0].Field)
 	assert.Equal(t, "dietary", intent.Filters[1].Field)
 	assert.Len(t, intent.Warnings, 1)
 }
 
-func TestValidator_KeywordFilterDroppedWhenValueNotInQuery(t *testing.T) {
+func TestValidator_GroundingDropsUnmentionedStringValue(t *testing.T) {
 	v := testValidator()
 	result := &LLMParseResult{
-		NormalizedQuery: "chicken burger under 20",
+		NormalizedQuery: "chicken burger",
 		Filters: []LLMFilter{
-			{Field: "recipe_cuisine", Operator: "eq", Value: "American", Confidence: 0.85},
+			{Field: "dietary", Operator: "eq", Value: "vegan", Confidence: 0.9},
+		},
+		Confidence: 0.89,
+	}
+
+	intent := v.Validate(result, "chicken burger")
+	assert.Empty(t, intent.Filters)
+	assert.Contains(t, intent.Warnings[0], "not found in query")
+}
+
+func TestValidator_GroundingDropsUnmentionedNumber(t *testing.T) {
+	v := testValidator()
+	result := &LLMParseResult{
+		NormalizedQuery: "chicken burger",
+		Filters: []LLMFilter{
+			{Field: "price", Operator: "lt", Value: float64(15), Confidence: 0.9},
+		},
+		Confidence: 0.89,
+	}
+
+	intent := v.Validate(result, "chicken burger")
+	assert.Empty(t, intent.Filters)
+	assert.Contains(t, intent.Warnings[0], "not found in query")
+}
+
+func TestValidator_GroundingKeepsValueFoundInQuery(t *testing.T) {
+	v := testValidator()
+	result := &LLMParseResult{
+		NormalizedQuery: "vegan burger under 20",
+		Filters: []LLMFilter{
+			{Field: "dietary", Operator: "eq", Value: "vegan", Confidence: 0.9},
 			{Field: "price", Operator: "lt", Value: float64(20), Confidence: 0.96},
 		},
 		Confidence: 0.89,
 	}
 
-	intent := v.Validate(result, "chicken burger under 20")
-	assert.Len(t, intent.Filters, 1)
-	assert.Equal(t, "price", intent.Filters[0].Field)
-	assert.Contains(t, intent.Warnings[0], "not found in query")
-}
-
-func TestValidator_KeywordFilterKeptWhenValueInQuery(t *testing.T) {
-	v := testValidator()
-	result := &LLMParseResult{
-		NormalizedQuery: "Italian pasta",
-		Filters: []LLMFilter{
-			{Field: "recipe_cuisine", Operator: "eq", Value: "Italian", Confidence: 0.9},
-		},
-		Confidence: 0.89,
-	}
-
-	intent := v.Validate(result, "Italian pasta")
-	assert.Len(t, intent.Filters, 1)
-	assert.Equal(t, "recipe_cuisine", intent.Filters[0].Field)
+	intent := v.Validate(result, "vegan burger under 20")
+	assert.Len(t, intent.Filters, 2)
 	assert.Empty(t, intent.Warnings)
 }

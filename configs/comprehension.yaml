@@ -1,0 +1,517 @@
+# Comprehension rules per language.
+# Each rule extracts a filter or sort from natural language patterns.
+#
+# Filter rules:
+#   - Numeric: pattern must capture the number in group 2. E.g. (under)\s+(\d+)
+#   - Keyword: set "value" for a static extraction. E.g. "easy recipes" → difficulty_level eq "easy"
+#
+# Sort rules:
+#   - Pattern match triggers a sort directive. First match wins.
+#
+# IMPORTANT: More specific numeric rules (prep_time, calories) must come BEFORE
+# the generic price rule, which uses a negative lookahead to avoid matching
+# when followed by a unit (min, minute, cal, calorie, kcal, etc.).
+
+en:
+  filter_rules:
+    # --- Prep time (before price — more specific) ---
+    - pattern: '(under|less than)\s+(\d+)\s*(minutes?|mins?)'
+      field: prep_time
+      operator: lt
+    - pattern: '(\d+)\s*(minutes?|mins?)\s+(or less|max)'
+      field: prep_time
+      operator: lte
+    - pattern: '\b(quick|fast)\b'
+      field: prep_time
+      operator: lte
+      value: "30"
+
+    # --- Calories (before price — more specific) ---
+    - pattern: '(under|less than)\s+(\d+)\s*cal(ories?|s)?'
+      field: calories
+      operator: lt
+    - pattern: '\b(low calorie|low cal|light)\b'
+      field: calories
+      operator: lte
+      value: "400"
+    - pattern: '\b(high calorie|calorie rich)\b'
+      field: calories
+      operator: gte
+      value: "600"
+
+    # --- Price (generic — must come after time/calorie rules; overlap detection prevents double-match) ---
+    - pattern: '(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)'
+      field: price
+      operator: lt
+    - pattern: '(over|more than)\s+(\d+(?:\.\d+)?)'
+      field: price
+      operator: gt
+
+    # --- Difficulty ---
+    - pattern: '\b(easy|simple|beginner)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    - pattern: '\b(medium|intermediate|moderate)\b'
+      field: difficulty_level
+      operator: eq
+      value: medium
+    - pattern: '\b(hard|difficult|advanced|challenging)\b'
+      field: difficulty_level
+      operator: eq
+      value: hard
+
+    # --- Servings ---
+    - pattern: '(for|serves?|feeds?)\s+(\d+)\s*(people|persons?|servings?)?'
+      field: servings
+      operator: eq
+
+  sort_rules:
+    - pattern: '\b(cheapest|lowest price)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(most expensive|priciest)\b'
+      field: price
+      direction: desc
+    - pattern: '\b(newest|most recent|latest)\b'
+      field: created_at
+      direction: desc
+    - pattern: '\b(fastest|quickest)\b'
+      field: prep_time
+      direction: asc
+    - pattern: '\b(most popular|top rated|best rated|highest rated)\b'
+      field: rating
+      direction: desc
+    - pattern: '\b(lowest calorie|fewest calories)\b'
+      field: calories
+      direction: asc
+
+de:
+  filter_rules:
+    # --- Prep time (before price) ---
+    - pattern: '(unter|weniger als)\s+(\d+)\s*(Minuten|Min)'
+      field: prep_time
+      operator: lt
+    - pattern: '\b(schnell|fix)\b'
+      field: prep_time
+      operator: lte
+      value: "30"
+
+    # --- Calories (before price) ---
+    - pattern: '(unter|weniger als)\s+(\d+)\s*(Kalorien|kcal|cal)'
+      field: calories
+      operator: lt
+    - pattern: '\b(kalorienarm)\b'
+      field: calories
+      operator: lte
+      value: "400"
+
+    # --- Price (generic — after time/calorie rules) ---
+    - pattern: '(unter|weniger als|günstiger als|billiger als)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: lt
+    - pattern: '(über|mehr als|teurer als)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: gt
+
+    # --- Difficulty ---
+    - pattern: '\b(einfach|simpel)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    - pattern: '\b(mittel|mittelschwer)\b'
+      field: difficulty_level
+      operator: eq
+      value: medium
+    - pattern: '\b(schwer|schwierig|anspruchsvoll)\b'
+      field: difficulty_level
+      operator: eq
+      value: hard
+
+    # --- Servings ---
+    - pattern: '(für)\s+(\d+)\s*(Personen|Portionen)?'
+      field: servings
+      operator: eq
+
+  sort_rules:
+    - pattern: '\b(günstigste|billigste)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(teuerste)\b'
+      field: price
+      direction: desc
+    - pattern: '\b(neueste|aktuellste)\b'
+      field: created_at
+      direction: desc
+    - pattern: '\b(schnellste)\b'
+      field: prep_time
+      direction: asc
+    - pattern: '\b(beliebteste|am besten bewertet)\b'
+      field: rating
+      direction: desc
+
+fr:
+  filter_rules:
+    # --- Prep time (before price) ---
+    - pattern: '(moins de)\s+(\d+)\s*(minutes?|min)'
+      field: prep_time
+      operator: lt
+    - pattern: '\b(rapide|vite)\b'
+      field: prep_time
+      operator: lte
+      value: "30"
+
+    # --- Calories (before price) ---
+    - pattern: '(moins de)\s+(\d+)\s*(calories?|cal|kcal)'
+      field: calories
+      operator: lt
+    - pattern: '\b(peu calorique|léger|allégé)\b'
+      field: calories
+      operator: lte
+      value: "400"
+
+    # --- Price (generic — after time/calorie rules) ---
+    - pattern: '(moins de|moins cher que|en dessous de)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: lt
+    - pattern: '(plus de|au dessus de)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: gt
+
+    # --- Difficulty ---
+    - pattern: '\b(facile|simple)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    - pattern: '\b(moyen|intermédiaire)\b'
+      field: difficulty_level
+      operator: eq
+      value: medium
+    - pattern: '\b(difficile|avancé)\b'
+      field: difficulty_level
+      operator: eq
+      value: hard
+
+    # --- Servings ---
+    - pattern: '(pour)\s+(\d+)\s*(personnes?|portions?)?'
+      field: servings
+      operator: eq
+
+  sort_rules:
+    - pattern: '\b(moins cher|le moins cher)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(plus récent|dernier)\b'
+      field: created_at
+      direction: desc
+    - pattern: '\b(plus rapide)\b'
+      field: prep_time
+      direction: asc
+    - pattern: '\b(plus populaire|mieux noté)\b'
+      field: rating
+      direction: desc
+
+nl:
+  filter_rules:
+    # --- Prep time (before price) ---
+    - pattern: '(onder|minder dan)\s+(\d+)\s*(minuten|min)'
+      field: prep_time
+      operator: lt
+    - pattern: '\b(snel|vlug)\b'
+      field: prep_time
+      operator: lte
+      value: "30"
+
+    # --- Calories (before price) ---
+    - pattern: '(onder|minder dan)\s+(\d+)\s*(calorieën|cal|kcal)'
+      field: calories
+      operator: lt
+    - pattern: '\b(caloriearm)\b'
+      field: calories
+      operator: lte
+      value: "400"
+
+    # --- Price (generic — after time/calorie rules) ---
+    - pattern: '(onder|minder dan|goedkoper dan)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: lt
+    - pattern: '(boven|meer dan)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: gt
+
+    # --- Difficulty ---
+    - pattern: '\b(makkelijk|eenvoudig)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    - pattern: '\b(gemiddeld)\b'
+      field: difficulty_level
+      operator: eq
+      value: medium
+    - pattern: '\b(moeilijk|lastig|geavanceerd)\b'
+      field: difficulty_level
+      operator: eq
+      value: hard
+
+    # --- Servings ---
+    - pattern: '(voor)\s+(\d+)\s*(personen|porties)?'
+      field: servings
+      operator: eq
+
+  sort_rules:
+    - pattern: '\b(goedkoopste)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(nieuwste|meest recent)\b'
+      field: created_at
+      direction: desc
+    - pattern: '\b(snelste)\b'
+      field: prep_time
+      direction: asc
+    - pattern: '\b(populairste|best beoordeeld)\b'
+      field: rating
+      direction: desc
+
+it:
+  filter_rules:
+    # --- Prep time (before price) ---
+    - pattern: '(sotto|meno di)\s+(\d+)\s*(minuti|min)'
+      field: prep_time
+      operator: lt
+    - pattern: '\b(veloce|rapido)\b'
+      field: prep_time
+      operator: lte
+      value: "30"
+
+    # --- Calories (before price) ---
+    - pattern: '(sotto|meno di)\s+(\d+)\s*(calorie|cal|kcal)'
+      field: calories
+      operator: lt
+    - pattern: '\b(ipocalorico|leggero)\b'
+      field: calories
+      operator: lte
+      value: "400"
+
+    # --- Price (generic — after time/calorie rules) ---
+    - pattern: '(sotto|meno di|più economico di)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: lt
+    - pattern: '(sopra|più di)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: gt
+
+    # --- Difficulty ---
+    - pattern: '\b(facile|semplice)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    - pattern: '\b(medio|intermedio)\b'
+      field: difficulty_level
+      operator: eq
+      value: medium
+    - pattern: '\b(difficile|avanzato)\b'
+      field: difficulty_level
+      operator: eq
+      value: hard
+
+    # --- Servings ---
+    - pattern: '(per)\s+(\d+)\s*(persone|porzioni)?'
+      field: servings
+      operator: eq
+
+  sort_rules:
+    - pattern: '\b(più economico|meno caro)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(più recente|ultimo)\b'
+      field: created_at
+      direction: desc
+    - pattern: '\b(più veloce|più rapido)\b'
+      field: prep_time
+      direction: asc
+    - pattern: '\b(più popolare|meglio valutato)\b'
+      field: rating
+      direction: desc
+
+es:
+  filter_rules:
+    # --- Prep time (before price) ---
+    - pattern: '(menos de)\s+(\d+)\s*(minutos|min)'
+      field: prep_time
+      operator: lt
+    - pattern: '\b(rápido|veloz)\b'
+      field: prep_time
+      operator: lte
+      value: "30"
+
+    # --- Calories (before price) ---
+    - pattern: '(menos de)\s+(\d+)\s*(calorías|cal|kcal)'
+      field: calories
+      operator: lt
+    - pattern: '\b(bajo en calorías|ligero|light)\b'
+      field: calories
+      operator: lte
+      value: "400"
+
+    # --- Price (generic — after time/calorie rules) ---
+    - pattern: '(menos de|más barato que|por debajo de)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: lt
+    - pattern: '(más de|por encima de)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: gt
+
+    # --- Difficulty ---
+    - pattern: '\b(fácil|sencillo)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    - pattern: '\b(medio|intermedio|moderado)\b'
+      field: difficulty_level
+      operator: eq
+      value: medium
+    - pattern: '\b(difícil|avanzado|complicado)\b'
+      field: difficulty_level
+      operator: eq
+      value: hard
+
+    # --- Servings ---
+    - pattern: '(para)\s+(\d+)\s*(personas|porciones|raciones)?'
+      field: servings
+      operator: eq
+
+  sort_rules:
+    - pattern: '\b(más barato|más económico)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(más reciente|último|nuevo)\b'
+      field: created_at
+      direction: desc
+    - pattern: '\b(más rápido)\b'
+      field: prep_time
+      direction: asc
+    - pattern: '\b(más popular|mejor valorado)\b'
+      field: rating
+      direction: desc
+
+sv:
+  filter_rules:
+    # --- Prep time (before price) ---
+    - pattern: '(under|mindre än)\s+(\d+)\s*(minuter|min)'
+      field: prep_time
+      operator: lt
+    - pattern: '\b(snabb|kvick)\b'
+      field: prep_time
+      operator: lte
+      value: "30"
+
+    # --- Calories (before price) ---
+    - pattern: '(under|mindre än)\s+(\d+)\s*(kalorier|cal|kcal)'
+      field: calories
+      operator: lt
+    - pattern: '\b(kalorisnål)\b'
+      field: calories
+      operator: lte
+      value: "400"
+
+    # --- Price (generic — after time/calorie rules) ---
+    - pattern: '(under|mindre än|billigare än)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: lt
+    - pattern: '(över|mer än)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: gt
+
+    # --- Difficulty ---
+    - pattern: '\b(enkel)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    - pattern: '\b(medel|mellannivå)\b'
+      field: difficulty_level
+      operator: eq
+      value: medium
+    - pattern: '\b(svår|avancerad)\b'
+      field: difficulty_level
+      operator: eq
+      value: hard
+
+    # --- Servings ---
+    - pattern: '(för)\s+(\d+)\s*(personer|portioner)?'
+      field: servings
+      operator: eq
+
+  sort_rules:
+    - pattern: '\b(billigaste)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(nyaste|senaste)\b'
+      field: created_at
+      direction: desc
+    - pattern: '\b(snabbaste)\b'
+      field: prep_time
+      direction: asc
+    - pattern: '\b(populäraste|bäst betyg)\b'
+      field: rating
+      direction: desc
+
+da:
+  filter_rules:
+    # --- Prep time (before price) ---
+    - pattern: '(under|mindre end)\s+(\d+)\s*(minutter|min)'
+      field: prep_time
+      operator: lt
+    - pattern: '\b(hurtig|hurtigt)\b'
+      field: prep_time
+      operator: lte
+      value: "30"
+
+    # --- Calories (before price) ---
+    - pattern: '(under|mindre end)\s+(\d+)\s*(kalorier|cal|kcal)'
+      field: calories
+      operator: lt
+    - pattern: '\b(kalorielet)\b'
+      field: calories
+      operator: lte
+      value: "400"
+
+    # --- Price (generic — after time/calorie rules) ---
+    - pattern: '(under|mindre end|billigere end)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: lt
+    - pattern: '(over|mere end)\s+(\d+(?:[.,]\d+)?)'
+      field: price
+      operator: gt
+
+    # --- Difficulty ---
+    - pattern: '\b(nem|simpel)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    - pattern: '\b(mellem|middel)\b'
+      field: difficulty_level
+      operator: eq
+      value: medium
+    - pattern: '\b(svær|vanskelig|avanceret)\b'
+      field: difficulty_level
+      operator: eq
+      value: hard
+
+    # --- Servings ---
+    - pattern: '(til)\s+(\d+)\s*(personer|portioner)?'
+      field: servings
+      operator: eq
+
+  sort_rules:
+    - pattern: '\b(billigste)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(nyeste|seneste)\b'
+      field: created_at
+      direction: desc
+    - pattern: '\b(hurtigste)\b'
+      field: prep_time
+      direction: asc
+    - pattern: '\b(mest populære|bedst bedømt)\b'
+      field: rating
+      direction: desc

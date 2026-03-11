@@ -53,8 +53,10 @@ func TestNativePipeline_FullFlow(t *testing.T) {
 		FuzzySearcher: fuzzy,
 		Concept:       config.ConceptConfig{ShingleMaxSize: 3, MaxMatchesPerSpan: 3},
 		Comprehension: config.ComprehensionConfig{
-			PriceRules: []config.PriceRule{
-				{Pattern: `(under|less than)\s+(\d+(?:\.\d+)?)`, Field: "price", Operator: "lt"},
+			"en": {
+				FilterRules: []config.FilterRule{
+					{Pattern: `(under|less than)\s+(\d+(?:\.\d+)?)`, Field: "price", Operator: "lt"},
+				},
 			},
 		},
 		Logger: logrus.New(),
@@ -129,8 +131,10 @@ func TestNativePipeline_SortExtraction(t *testing.T) {
 	p := NewPipeline(PipelineConfig{
 		FuzzySearcher: fuzzy,
 		Comprehension: config.ComprehensionConfig{
-			SortRules: []config.SortRule{
-				{Pattern: `(cheapest|lowest price)`, Field: "price", Direction: "asc"},
+			"en": {
+				SortRules: []config.SortRule{
+					{Pattern: `(cheapest|lowest price)`, Field: "price", Direction: "asc"},
+				},
 			},
 		},
 		Logger: logrus.New(),

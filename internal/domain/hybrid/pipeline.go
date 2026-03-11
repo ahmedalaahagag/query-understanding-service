@@ -79,6 +79,8 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 	state := &model.QueryState{
 		OriginalQuery:   req.Query,
 		NormalizedQuery: req.Query,
+		Locale:          req.Locale,
+		Market:          req.Market,
 	}
 
 	pipeline.Normalizer{}.Process(ctx, state)

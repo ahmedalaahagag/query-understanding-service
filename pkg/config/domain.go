@@ -40,17 +40,25 @@ type AmbiguityConfig struct {
 	MinScoreDelta     float64 `yaml:"min_score_delta"`
 }
 
-// ComprehensionConfig holds comprehension rule definitions.
-type ComprehensionConfig struct {
-	PriceRules []PriceRule `yaml:"price_rules"`
-	SortRules  []SortRule  `yaml:"sort_rules"`
+// ComprehensionConfig holds comprehension rule definitions, keyed by language prefix.
+// The top-level map key is a language code (e.g. "en", "de", "fr").
+type ComprehensionConfig map[string]LocaleComprehensionRules
+
+// LocaleComprehensionRules holds all comprehension rules for a single language.
+type LocaleComprehensionRules struct {
+	FilterRules []FilterRule `yaml:"filter_rules"`
+	SortRules   []SortRule   `yaml:"sort_rules"`
 }
 
-type PriceRule struct {
+// FilterRule extracts a filter from the query via regex.
+// For numeric filters: the pattern must have a capture group for the number.
+// For keyword filters: Value is used directly (no capture group needed).
+type FilterRule struct {
 	Pattern    string  `yaml:"pattern"`
 	Field      string  `yaml:"field"`
 	Operator   string  `yaml:"operator"`
-	Multiplier float64 `yaml:"multiplier,omitempty"`
+	Value      string  `yaml:"value,omitempty"`      // static value for keyword filters
+	Multiplier float64 `yaml:"multiplier,omitempty"` // numeric multiplier (default 1)
 }
 
 type SortRule struct {
@@ -68,11 +76,11 @@ func LoadPipelineConfig(path string) (PipelineConfig, error) {
 	return cfg, nil
 }
 
-// LoadComprehensionConfig loads comprehension rules from a YAML file.
+// LoadComprehensionConfig loads locale-keyed comprehension rules from a YAML file.
 func LoadComprehensionConfig(path string) (ComprehensionConfig, error) {
-	var cfg ComprehensionConfig
+	cfg := make(ComprehensionConfig)
 	if err := loadYAML(path, &cfg); err != nil {
-		return ComprehensionConfig{}, fmt.Errorf("loading comprehension config: %w", err)
+		return nil, fmt.Errorf("loading comprehension config: %w", err)
 	}
 	return cfg, nil
 }

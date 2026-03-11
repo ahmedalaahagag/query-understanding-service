@@ -153,12 +153,14 @@ func newE2EPipeline() *Pipeline {
 	}
 
 	comprehensionCfg := config.ComprehensionConfig{
-		PriceRules: []config.PriceRule{
-			{Pattern: `(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)`, Field: "price", Operator: "lt"},
-		},
-		SortRules: []config.SortRule{
-			{Pattern: `(cheapest|lowest price)`, Field: "price", Direction: "asc"},
-			{Pattern: `(newest|most recent)`, Field: "created_at", Direction: "desc"},
+		"en": {
+			FilterRules: []config.FilterRule{
+				{Pattern: `(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)`, Field: "price", Operator: "lt"},
+			},
+			SortRules: []config.SortRule{
+				{Pattern: `(cheapest|lowest price)`, Field: "price", Direction: "asc"},
+				{Pattern: `(newest|most recent)`, Field: "created_at", Direction: "desc"},
+			},
 		},
 	}
 
@@ -193,6 +195,8 @@ func TestE2EGolden(t *testing.T) {
 			state := &model.QueryState{
 				OriginalQuery:   tc.Input.Query,
 				NormalizedQuery: tc.Input.Query,
+				Locale:          tc.Input.Locale,
+				Market:          tc.Input.Market,
 			}
 
 			err := p.Run(context.Background(), state, false)

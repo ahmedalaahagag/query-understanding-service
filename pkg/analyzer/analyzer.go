@@ -80,7 +80,7 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 		}
 	}
 
-	comprehensionCfg, err := config.LoadComprehensionConfig(filepath.Join(cfg.ConfigDir, "comprehension.en-GB.yaml"))
+	comprehensionCfg, err := config.LoadComprehensionConfig(filepath.Join(cfg.ConfigDir, "comprehension.yaml"))
 	if err != nil {
 		logger.WithError(err).Warn("could not load comprehension config")
 	}

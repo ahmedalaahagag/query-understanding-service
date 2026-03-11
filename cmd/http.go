@@ -72,7 +72,7 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		Timeout:               cfg.OpenSearch.Timeout,
 	})
 
-	comprehensionCfg, err := config.LoadComprehensionConfig(filepath.Join(cfg.ConfigDir, "comprehension.en-GB.yaml"))
+	comprehensionCfg, err := config.LoadComprehensionConfig(filepath.Join(cfg.ConfigDir, "comprehension.yaml"))
 	if err != nil {
 		logger.WithError(err).Warn("could not load comprehension config")
 	}

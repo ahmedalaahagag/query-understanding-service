@@ -246,31 +246,54 @@ ambiguity:
   min_score_delta: 0.05        # Score gap needed to pick one concept over another
 ```
 
-#### `comprehension.{locale}.yaml` — Filter & Sort Extraction Rules
+#### `comprehension.yaml` — Filter & Sort Extraction Rules
 
-Regex-based rules for extracting filters and sort directives from natural language.
+Locale-keyed regex rules for extracting filters and sort directives from natural language. Supports 8 languages (en, de, fr, nl, it, es, sv, da) with rules for price, prep time, calories, difficulty, and servings.
 
 ```yaml
-price_rules:
-  - pattern: '(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)'
-    field: price
-    operator: lt
+en:
+  filter_rules:
+    # Numeric: capture group 2 is the number
+    - pattern: '(under|less than)\s+(\d+)\s*(minutes?|mins?)'
+      field: prep_time
+      operator: lt
+    # Keyword: static value, no capture group needed
+    - pattern: '\b(easy|simple|beginner)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    # Generic price (after specific rules — overlap detection prevents conflicts)
+    - pattern: '(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)'
+      field: price
+      operator: lt
+  sort_rules:
+    - pattern: '\b(cheapest|lowest price)\b'
+      field: price
+      direction: asc
+    - pattern: '\b(fastest|quickest)\b'
+      field: prep_time
+      direction: asc
 
-sort_rules:
-  - pattern: '(cheapest|lowest price)'
-    field: price
-    direction: asc
-  - pattern: '(newest|most recent)'
-    field: created_at
-    direction: desc
+de:
+  filter_rules:
+    - pattern: '(unter|weniger als)\s+(\d+)\s*(Minuten|Min)'
+      field: prep_time
+      operator: lt
+    - pattern: '\b(einfach|simpel)\b'
+      field: difficulty_level
+      operator: eq
+      value: easy
+    # ... (same structure for all locales)
 ```
+
+More specific rules (prep_time, calories) must come before the generic price rule. The engine tracks consumed character regions so overlapping matches don't produce duplicate filters.
 
 ### Config Files per Pipeline
 
 | Config File | v1 | v2 | v3 |
 |---|---|---|---|
 | `qus.yaml` | ✅ | — | ✅ |
-| `comprehension.{locale}.yaml` | ✅ | — | ✅ |
+| `comprehension.yaml` | ✅ | — | ✅ |
 | `allowed_filters.yaml` | — | ✅ | — |
 | `allowed_sorts.yaml` | — | ✅ | — |
 | `llm_prompt.txt` | — | ✅ | — |

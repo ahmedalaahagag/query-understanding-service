@@ -204,12 +204,22 @@ func buildHybridPipeline(ctx context.Context, cfg Config, osClient *opensearch.C
 	conceptResolver := hybrid.NewConceptResolver(osClient, logger)
 	hybridMetrics := observability.NewHybridMetrics()
 
+	// Load stopwords from linguistic index (best-effort — empty map on failure).
+	stopwords, err := osClient.FetchStopwords(ctx, "en_us")
+	if err != nil {
+		logger.WithError(err).Warn("could not load stopwords, continuing without")
+		stopwords = map[string]bool{}
+	} else {
+		logger.WithField("count", len(stopwords)).Info("loaded stopwords from linguistic index")
+	}
+
 	return hybrid.NewPipeline(hybrid.PipelineConfig{
 		Parser:          parser,
 		PromptBuilder:   promptBuilder,
 		Validator:       validator,
 		ConceptResolver: conceptResolver,
 		Comprehension:   comprehension,
+		Stopwords:       stopwords,
 		Metrics:         hybridMetrics,
 		Logger:          logger,
 		FailOpen:        cfg.LLM.FailOpen,

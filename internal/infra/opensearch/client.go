@@ -256,6 +256,58 @@ type linguisticSource struct {
 	Locale  string `json:"locale"`
 }
 
+// FetchStopwords returns the set of stopwords from the linguistic index for the
+// given locale. Intended to be called once at init and cached.
+func (c *Client) FetchStopwords(ctx context.Context, locale string) (map[string]bool, error) {
+	body := map[string]interface{}{
+		"size": 500,
+		"query": map[string]interface{}{
+			"term": map[string]interface{}{
+				"type": "SW",
+			},
+		},
+		"_source": []string{"term"},
+	}
+
+	data, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("marshalling stopword query: %w", err)
+	}
+
+	url := fmt.Sprintf("%s/%s/_search", c.cfg.URL, indexName(c.cfg.LinguisticIndexPrefix, locale))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	if c.cfg.Username != "" {
+		req.SetBasicAuth(c.cfg.Username, c.cfg.Password)
+	}
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("stopword fetch: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading stopword response: %w", err)
+	}
+
+	var result linguisticSearchResponse
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		return nil, fmt.Errorf("parsing stopword response: %w", err)
+	}
+
+	stopwords := make(map[string]bool, len(result.Hits.Hits))
+	for _, hit := range result.Hits.Hits {
+		stopwords[strings.ToLower(hit.Source.Term)] = true
+	}
+	return stopwords, nil
+}
+
 // SearchConcepts queries the concept index for matching concepts.
 // It uses multi_match with cross_fields to search both label and aliases.
 func (c *Client) SearchConcepts(ctx context.Context, text, locale, market string) ([]ConceptHit, error) {

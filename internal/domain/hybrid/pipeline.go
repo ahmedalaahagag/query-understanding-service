@@ -2,6 +2,7 @@ package hybrid
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
@@ -22,6 +23,7 @@ type Pipeline struct {
 	validator       *Validator
 	conceptResolver *ConceptResolver
 	comprehension   *pipeline.ComprehensionEngine
+	stopwords       map[string]bool
 	metrics         *observability.HybridMetrics
 	logger          *logrus.Logger
 	failOpen        bool
@@ -34,6 +36,7 @@ type PipelineConfig struct {
 	Validator       *Validator
 	ConceptResolver *ConceptResolver
 	Comprehension   *pipeline.ComprehensionEngine
+	Stopwords       map[string]bool
 	Metrics         *observability.HybridMetrics
 	Logger          *logrus.Logger
 	FailOpen        bool
@@ -47,6 +50,7 @@ func NewPipeline(cfg PipelineConfig) *Pipeline {
 		validator:       cfg.Validator,
 		conceptResolver: cfg.ConceptResolver,
 		comprehension:   cfg.Comprehension,
+		stopwords:       cfg.Stopwords,
 		metrics:         cfg.Metrics,
 		logger:          cfg.Logger,
 		failOpen:        cfg.FailOpen,
@@ -108,6 +112,9 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 		// "under 20") are stripped before the orchestrator builds a text query.
 		if p.comprehension != nil {
 			p.comprehension.Process(ctx, state)
+		}
+		if len(p.stopwords) > 0 {
+			state.Tokens = filterStopwords(state.Tokens, p.stopwords)
 		}
 
 		if p.failOpen {
@@ -178,6 +185,12 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 	if p.comprehension != nil {
 		p.comprehension.Process(ctx, state)
 		normalizedQuery = state.NormalizedQuery
+	}
+
+	// Remove stopwords so the orchestrator doesn't try to match filler like
+	// "something", "for", "with", "and" that would cause 0-hit queries.
+	if len(p.stopwords) > 0 {
+		state.Tokens = filterStopwords(state.Tokens, p.stopwords)
 	}
 
 	rewrites := intent.Rewrites
@@ -253,4 +266,17 @@ func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest, debug bool
 	}).Info("hybrid pipeline completed")
 
 	return resp, debugInfo
+}
+
+// filterStopwords removes tokens whose normalized value is a stopword.
+// Tokens covered by a resolved concept are kept regardless.
+func filterStopwords(tokens []model.Token, stopwords map[string]bool) []model.Token {
+	var filtered []model.Token
+	for _, t := range tokens {
+		if stopwords[strings.ToLower(t.Normalized)] {
+			continue
+		}
+		filtered = append(filtered, t)
+	}
+	return filtered
 }

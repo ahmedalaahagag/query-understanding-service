@@ -308,6 +308,22 @@ func (c *Client) FetchStopwords(ctx context.Context, locale string) (map[string]
 	return stopwords, nil
 }
 
+// FetchAllStopwords loads stopwords for all given locales, returning a map
+// of locale → stopword set. Errors for individual locales are logged and skipped.
+func (c *Client) FetchAllStopwords(ctx context.Context, locales []string) map[string]map[string]bool {
+	result := make(map[string]map[string]bool, len(locales))
+	for _, locale := range locales {
+		sw, err := c.FetchStopwords(ctx, locale)
+		if err != nil {
+			continue
+		}
+		if len(sw) > 0 {
+			result[strings.ToLower(strings.ReplaceAll(locale, "-", "_"))] = sw
+		}
+	}
+	return result
+}
+
 // SearchConcepts queries the concept index for matching concepts.
 // It uses multi_match with cross_fields to search both label and aliases.
 func (c *Client) SearchConcepts(ctx context.Context, text, locale, market string) ([]ConceptHit, error) {

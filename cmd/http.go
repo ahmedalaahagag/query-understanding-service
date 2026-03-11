@@ -77,14 +77,17 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		logger.WithError(err).Warn("could not load comprehension config")
 	}
 
-	// Load stopwords from linguistic index (best-effort — empty map on failure).
-	stopwords, err := osClient.FetchStopwords(context.Background(), "en_gb")
-	if err != nil {
-		logger.WithError(err).Warn("could not load stopwords, continuing without")
-		stopwords = map[string]bool{}
-	} else {
-		logger.WithField("count", len(stopwords)).Info("loaded stopwords from linguistic index")
+	// Load stopwords for all supported locales (best-effort).
+	allLocales := []string{
+		"en_gb", "en_us", "en_ca", "en_au", "en_ie", "en_nz",
+		"en_be", "en_de", "en_dk", "en_nl", "en_se",
+		"de_de", "de_at", "de_ch",
+		"fr_fr", "fr_ca", "fr_be", "fr_lu",
+		"nl_nl", "nl_be",
+		"it_it", "es_es", "sv_se", "da_dk", "nb_no", "ja_jp",
 	}
+	allStopwords := osClient.FetchAllStopwords(context.Background(), allLocales)
+	logger.WithField("locales", len(allStopwords)).Info("loaded stopwords from linguistic index")
 
 	p := pipeline.New(logger, metrics,
 		pipeline.Normalizer{},
@@ -93,7 +96,7 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		pipeline.NewSpellResolver(osClient, pipelineCfg.Spell, logger),
 		pipeline.NewSynonymExpander(osClient, logger),
 		pipeline.NewCompoundHandler(osClient, logger),
-		pipeline.NewStopwordFilter(stopwords),
+		pipeline.NewStopwordFilter(allStopwords),
 		pipeline.NewConceptRecognizer(osClient, pipelineCfg.Concept, logger),
 		pipeline.AmbiguityResolver{},
 	)
@@ -103,7 +106,7 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		FuzzySearcher: osClient,
 		Concept:       pipelineCfg.Concept,
 		Comprehension: comprehensionCfg,
-		Stopwords:     stopwords,
+		Stopwords:     allStopwords,
 		Logger:        logger,
 	})
 
@@ -168,7 +171,7 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 			Validator:       validator,
 			ConceptResolver: conceptResolver,
 			Comprehension:   pipeline.NewComprehensionEngine(comprehensionCfg),
-			Stopwords:       stopwords,
+			Stopwords:       allStopwords,
 			Metrics:         hybridMetrics,
 			Logger:          logger,
 			FailOpen:        cfg.LLM.FailOpen,

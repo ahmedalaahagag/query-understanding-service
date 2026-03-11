@@ -25,7 +25,7 @@ type PipelineConfig struct {
 	ConceptSearcher opensearch.ConceptSearcher
 	Comprehension   config.ComprehensionConfig
 	Concept         config.ConceptConfig
-	Stopwords       map[string]bool
+	Stopwords       map[string]map[string]bool
 	Logger          *logrus.Logger
 }
 

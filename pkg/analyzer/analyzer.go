@@ -19,6 +19,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// supportedLocales lists all locales to load stopwords for at startup.
+var supportedLocales = []string{
+	"en_gb", "en_us", "en_ca", "en_au", "en_ie", "en_nz",
+	"en_be", "en_de", "en_dk", "en_nl", "en_se",
+	"de_de", "de_at", "de_ch",
+	"fr_fr", "fr_ca", "fr_be", "fr_lu",
+	"nl_nl", "nl_be",
+	"it_it", "es_es", "sv_se", "da_dk", "nb_no", "ja_jp",
+}
+
 // Analyzer runs query understanding analysis in-process.
 type Analyzer struct {
 	v1     *pipeline.Pipeline
@@ -77,14 +87,9 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 
 	comprehension := pipeline.NewComprehensionEngine(comprehensionCfg)
 
-	// Load stopwords from linguistic index (best-effort — empty map on failure).
-	stopwords, err := osClient.FetchStopwords(ctx, "en_gb")
-	if err != nil {
-		logger.WithError(err).Warn("could not load stopwords, continuing without")
-		stopwords = map[string]bool{}
-	} else {
-		logger.WithField("count", len(stopwords)).Info("loaded stopwords from linguistic index")
-	}
+	// Load stopwords for all supported locales (best-effort — empty map on failure).
+	allStopwords := osClient.FetchAllStopwords(ctx, supportedLocales)
+	logger.WithField("locales", len(allStopwords)).Info("loaded stopwords from linguistic index")
 
 	v1 := pipeline.New(logger, nil,
 		pipeline.Normalizer{},
@@ -93,7 +98,7 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 		pipeline.NewSpellResolver(osClient, pipelineCfg.Spell, logger),
 		pipeline.NewSynonymExpander(osClient, logger),
 		pipeline.NewCompoundHandler(osClient, logger),
-		pipeline.NewStopwordFilter(stopwords),
+		pipeline.NewStopwordFilter(allStopwords),
 		pipeline.NewConceptRecognizer(osClient, pipelineCfg.Concept, logger),
 		pipeline.AmbiguityResolver{},
 	)
@@ -102,7 +107,7 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 		FuzzySearcher: osClient,
 		Concept:       pipelineCfg.Concept,
 		Comprehension: comprehensionCfg,
-		Stopwords:     stopwords,
+		Stopwords:     allStopwords,
 		Logger:        logger,
 	})
 
@@ -113,7 +118,7 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 	}
 
 	if cfg.LLM.Enabled {
-		v2, err := buildHybridPipeline(ctx, cfg, osClient, comprehension, logger)
+		v2, err := buildHybridPipeline(ctx, cfg, osClient, comprehension, allStopwords, logger)
 		if err != nil {
 			return nil, fmt.Errorf("building hybrid pipeline: %w", err)
 		}
@@ -168,7 +173,7 @@ func (a *Analyzer) HasV2() bool {
 	return a.v2 != nil
 }
 
-func buildHybridPipeline(ctx context.Context, cfg Config, osClient *opensearch.Client, comprehension *pipeline.ComprehensionEngine, logger *logrus.Logger) (*hybrid.Pipeline, error) {
+func buildHybridPipeline(ctx context.Context, cfg Config, osClient *opensearch.Client, comprehension *pipeline.ComprehensionEngine, stopwords map[string]map[string]bool, logger *logrus.Logger) (*hybrid.Pipeline, error) {
 	filtersCfg, err := config.LoadAllowedFiltersConfig(filepath.Join(cfg.ConfigDir, "allowed_filters.yaml"))
 	if err != nil {
 		return nil, fmt.Errorf("loading allowed filters: %w", err)
@@ -214,15 +219,6 @@ func buildHybridPipeline(ctx context.Context, cfg Config, osClient *opensearch.C
 	validator := hybrid.NewValidator(filtersCfg, sortsCfg, cfg.LLM.MinConfidence)
 	conceptResolver := hybrid.NewConceptResolver(osClient, logger)
 	hybridMetrics := observability.NewHybridMetrics()
-
-	// Load stopwords from linguistic index (best-effort — empty map on failure).
-	stopwords, err := osClient.FetchStopwords(ctx, "en_us")
-	if err != nil {
-		logger.WithError(err).Warn("could not load stopwords, continuing without")
-		stopwords = map[string]bool{}
-	} else {
-		logger.WithField("count", len(stopwords)).Info("loaded stopwords from linguistic index")
-	}
 
 	return hybrid.NewPipeline(hybrid.PipelineConfig{
 		Parser:          parser,

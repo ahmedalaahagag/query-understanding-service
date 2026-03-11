@@ -40,22 +40,89 @@ for locale in ${ALL_LOCALES}; do
 done
 
 # ---------------------------------------------------------------------------
-# 2. Create per-locale concept indices
+# 2. Create per-locale indices with language-specific analyzers
 # ---------------------------------------------------------------------------
-CONCEPT_MAPPING='{
+
+# Maps locale prefix to OpenSearch language analyzer for stemming.
+# This ensures "veggies" matches "veggie", "burgers" matches "burger", etc.
+locale_to_language() {
+  case "$1" in
+    en_*) echo "english" ;;
+    de_*) echo "german" ;;
+    fr_*) echo "french" ;;
+    nl_*) echo "dutch" ;;
+    it_*) echo "italian" ;;
+    es_*) echo "spanish" ;;
+    sv_*) echo "swedish" ;;
+    da_*) echo "danish" ;;
+    nb_*) echo "norwegian" ;;
+    ja_*) echo "cjk" ;;
+    *)    echo "standard" ;;
+  esac
+}
+
+# Builds concept index mapping with a locale-aware analyzer.
+# Languages with stemmer support get a custom analyzer; CJK and standard
+# use their built-in analyzers without a custom stemmer filter.
+concept_mapping() {
+  local lang="$1"
+
+  if [ "${lang}" = "cjk" ] || [ "${lang}" = "standard" ]; then
+    # No stemmer available — use the built-in analyzer directly.
+    local analyzer="${lang}"
+    cat <<EOJSON
+{
   "settings": { "number_of_shards": 1, "number_of_replicas": 0 },
   "mappings": {
     "properties": {
       "id":      { "type": "keyword" },
-      "label":   { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+      "label":   { "type": "text", "analyzer": "${analyzer}", "fields": { "keyword": { "type": "keyword" } } },
       "field":   { "type": "keyword" },
-      "aliases": { "type": "text" },
+      "aliases": { "type": "text", "analyzer": "${analyzer}" },
       "weight":  { "type": "integer" },
       "locale":  { "type": "keyword" },
       "market":  { "type": "keyword" }
     }
   }
-}'
+}
+EOJSON
+  else
+    cat <<EOJSON
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "food_${lang}": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase", "food_${lang}_stemmer"]
+        }
+      },
+      "filter": {
+        "food_${lang}_stemmer": {
+          "type": "stemmer",
+          "language": "${lang}"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id":      { "type": "keyword" },
+      "label":   { "type": "text", "analyzer": "food_${lang}", "fields": { "keyword": { "type": "keyword" } } },
+      "field":   { "type": "keyword" },
+      "aliases": { "type": "text", "analyzer": "food_${lang}" },
+      "weight":  { "type": "integer" },
+      "locale":  { "type": "keyword" },
+      "market":  { "type": "keyword" }
+    }
+  }
+}
+EOJSON
+  fi
+}
 
 LINGUISTIC_MAPPING='{
   "settings": { "number_of_shards": 1, "number_of_replicas": 0 },
@@ -71,7 +138,8 @@ LINGUISTIC_MAPPING='{
 
 echo "==> Creating per-locale indices..."
 for locale in ${ALL_LOCALES}; do
-  curl -s -X PUT "${OS_URL}/concepts_${locale}" -H 'Content-Type: application/json' -d "${CONCEPT_MAPPING}" | jq -r '"  concepts_'"${locale}"': acknowledged=\(.acknowledged)"'
+  lang=$(locale_to_language "${locale}")
+  curl -s -X PUT "${OS_URL}/concepts_${locale}" -H 'Content-Type: application/json' -d "$(concept_mapping "${lang}")" | jq -r '"  concepts_'"${locale}"' ('"${lang}"'): acknowledged=\(.acknowledged)"'
   curl -s -X PUT "${OS_URL}/linguistic_${locale}" -H 'Content-Type: application/json' -d "${LINGUISTIC_MAPPING}" | jq -r '"  linguistic_'"${locale}"': acknowledged=\(.acknowledged)"'
 done
 

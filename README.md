@@ -5,29 +5,33 @@ A Go library and HTTP service that parses search queries into structured intent:
 ## Architecture
 
 ```
-┌─────────────┐     ┌─────────────────────────────────────────────────┐
-│  /v1/analyze│────▶│ Deterministic Pipeline                          │
-│             │     │ Normalize → Tokenize → Spell → Concepts → Sort  │
-└─────────────┘     └─────────────────────────────────────────────────┘
+┌─────────────┐     ┌─────────────────────────────────────────────────────────┐
+│  /v1/analyze│────▶│ Deterministic Pipeline                                  │
+│             │     │ Normalize → Tokenize → Spell → Synonym → Compound       │
+│             │     │   → Shingle → Concept → Ambiguity → Comprehension       │
+└─────────────┘     └─────────────────────────────────────────────────────────┘
 
-┌─────────────┐     ┌─────────────────────────────────────────────────┐
-│  /v2/analyze│────▶│ Hybrid Pipeline                                 │
-│             │     │ Normalize → Tokenize → LLM Parse → Validate     │
-│             │     │           → Resolve Concepts → Assemble          │
-└─────────────┘     └─────────────────────────────────────────────────┘
+┌─────────────┐     ┌─────────────────────────────────────────────────────────┐
+│  /v2/analyze│────▶│ Hybrid Pipeline                                         │
+│             │     │ Normalize → Tokenize → LLM Parse → Validate             │
+│             │     │   → Resolve Concepts → Assemble                         │
+│             │     │   (fallback: v1 deterministic + comprehension)           │
+└─────────────┘     └─────────────────────────────────────────────────────────┘
 
-┌─────────────┐     ┌─────────────────────────────────────────────────┐
-│  /v3/analyze│────▶│ Native OS Pipeline                              │
-│             │     │ Normalize → Tokenize → OS Fuzzy Spell           │
-│             │     │           → OS Fuzzy Concepts → Comprehension    │
-└─────────────┘     └─────────────────────────────────────────────────┘
+┌─────────────┐     ┌─────────────────────────────────────────────────────────┐
+│  /v3/analyze│────▶│ Native OS Pipeline                                      │
+│             │     │ Normalize → Tokenize → OS Fuzzy Spell                   │
+│             │     │   → OS Fuzzy Concepts → Comprehension                   │
+└─────────────┘     └─────────────────────────────────────────────────────────┘
 ```
 
-**v1** handles synonyms, compounds, and spell correction in Go application code using YAML configs.
+**v1** handles synonyms, compounds, and spell correction via OpenSearch-backed linguistic lookups (`LinguisticLookup`, `CompoundLookup`, `SpellChecker`). All dictionary data lives in OpenSearch — no YAML data files.
 
-**v2** uses an LLM (AWS Bedrock or Ollama) as an **advisory** layer. All LLM outputs are schema-validated against allowlists, and the service fails open to deterministic-only results on LLM failure.
+**v2** uses an LLM (AWS Bedrock or Ollama) as an **advisory** layer. All LLM outputs are schema-validated against allowlists. On LLM failure, falls back to the full v1 deterministic pipeline including comprehension. Handles Nova model quirks (field name normalization: `rewrite` vs `rewrites`).
 
-**v3** delegates spell correction, synonym matching, and compound handling to OpenSearch natively via `fuzziness: AUTO` + `cross_fields` multi_match. No YAML synonym/compound configs needed — OpenSearch handles it.
+**v3** delegates spell correction, synonym matching, and compound handling to OpenSearch natively via `fuzziness: AUTO` + `cross_fields` multi_match.
+
+All pipelines benefit from **locale-aware stemming** on the concept index — queries like "veggies" match "veggie", "burgers" matches "burger", etc. Each locale gets its own language-specific analyzer (English, German, French, Dutch, Italian, Spanish, Swedish, Danish, Norwegian, CJK).
 
 ## Project Structure
 
@@ -37,7 +41,7 @@ pkg/
   analyzer/                   # Public API for in-process analysis
   config/                     # Configuration types and loaders
 cmd/                          # Cobra CLI (HTTP server mode)
-configs/                      # YAML config files and LLM prompt
+configs/                      # YAML configs (qus.yaml, comprehension, LLM allowlists/prompt)
 internal/
   application/routes/         # Chi HTTP handlers
   domain/
@@ -45,15 +49,37 @@ internal/
     hybrid/                   # v2 hybrid LLM pipeline
     native/                   # v3 native OS-driven pipeline
   infra/
-    bedrock/                  # AWS Bedrock Converse API client
+    bedrock/                  # AWS Bedrock Converse API client (with Nova field normalization)
     ollama/                   # Ollama local LLM client
-    opensearch/               # OpenSearch concept/spell/linguistic search
+    opensearch/               # OS client: LinguisticLookup, CompoundLookup, FuzzySearcher
     observability/            # Prometheus metrics
+scripts/
+  seed-opensearch.sh          # Seed concept + linguistic indices (26 locales)
+  seed-compounds.sh           # Seed CMP entries from TSV files
+  compound-data/              # TSV compound word rules per locale
+  locale-data/                # Concept/linguistic ndjson per locale
+testdata/golden/              # Golden test fixtures (ndjson)
 ```
 
 ---
 
-## How to Use
+## Quick Start
+
+### Prerequisites
+
+- Go 1.26+
+- OpenSearch running locally (or remote)
+
+```bash
+# Start OpenSearch
+docker-compose up -d
+
+# Seed indices with concept + linguistic data (26 locales)
+./scripts/seed-opensearch.sh
+
+# Seed compound word rules (8 locales, 1,767 entries)
+./scripts/seed-compounds.sh
+```
 
 ### Installation
 
@@ -61,101 +87,93 @@ internal/
 go get github.com/ahmedalaahagag/query-understanding-service
 ```
 
-### Option A: Use as a Go Library (in-process)
+## How to Use
 
-Import the `pkg/analyzer` package to run query analysis directly in your service — no HTTP calls or separate deployment needed.
+### As a Go Library (recommended)
+
+Import `pkg/analyzer` to run query analysis in-process — no HTTP calls needed.
 
 ```go
-package main
-
 import (
-    "context"
-    "fmt"
-    "log"
-
     "github.com/ahmedalaahagag/query-understanding-service/pkg/analyzer"
     "github.com/ahmedalaahagag/query-understanding-service/pkg/config"
     "github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 )
 
-func main() {
-    ctx := context.Background()
+// 1. Create the analyzer (once at startup)
+a, err := analyzer.New(ctx, analyzer.Config{
+    ConfigDir: "configs",
+    OpenSearch: config.OpenSearchConfig{
+        URL: "http://localhost:9200",
+    },
+})
 
-    a, err := analyzer.New(ctx, analyzer.Config{
-        ConfigDir: "configs",
-        OpenSearch: config.OpenSearchConfig{
-            URL: "http://localhost:9200",
-        },
-        // Optional: enable v2 hybrid LLM pipeline
-        // LLM: config.LLMConfig{
-        //     Enabled:  true,
-        //     Provider: "bedrock",
-        //     Region:   "eu-west-1",
-        //     Model:    "eu.amazon.nova-micro-v1:0",
-        // },
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
+// 2. Analyze queries
+resp, err := a.Analyze(ctx, model.AnalyzeRequest{
+    Query:  "cheap chicken recipes",
+    Locale: "en-GB",
+    Market: "uk",
+})
+// resp.NormalizedQuery → "chicken recipes"
+// resp.Concepts       → [{id: "uk-cat-chicken", label: "chicken", ...}]
+// resp.Sort           → {field: "price", direction: "asc"}
+```
 
-    // v1: deterministic analysis
-    resp, err := a.Analyze(ctx, model.AnalyzeRequest{
-        Query:  "cheap chicken recipes",
-        Locale: "en-GB",
-        Market: "uk",
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Printf("Normalized: %s\n", resp.NormalizedQuery)
-    fmt.Printf("Tokens:     %d\n", len(resp.Tokens))
-    fmt.Printf("Concepts:   %d\n", len(resp.Concepts))
-    fmt.Printf("Filters:    %d\n", len(resp.Filters))
+#### Choosing a Pipeline
 
-    // v3: native OS pipeline (always available, no extra config)
-    resp, err = a.AnalyzeV3(ctx, model.AnalyzeRequest{
-        Query:  "chiken soup",  // typo corrected via OS fuzzy matching
-        Locale: "en-GB",
-        Market: "uk",
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Printf("V3 Normalized: %s\n", resp.NormalizedQuery)
+```go
+// v1: Deterministic — spell, synonym, compound, concept, comprehension
+resp, _ := a.Analyze(ctx, req)
 
-    // v2: hybrid LLM analysis (only if LLM is enabled)
-    if a.HasV2() {
-        resp, err := a.AnalyzeV2(ctx, model.AnalyzeRequest{
-            Query:  "chicken under 500 calories",
-            Locale: "en-GB",
-            Market: "uk",
-        })
-        if err != nil {
-            log.Fatal(err)
-        }
-        fmt.Printf("V2 Filters: %+v\n", resp.Filters)
-    }
+// v3: Native OS — fuzzy spell + concept matching via OpenSearch
+resp, _ := a.AnalyzeV3(ctx, req)
+
+// v2: LLM hybrid — requires LLM config, falls back to v1 on failure
+resp, _ := a.AnalyzeV2(ctx, req)
+```
+
+**When to use which:**
+
+| Pipeline | Best for | Latency | Requires |
+|---|---|---|---|
+| v1 | Production — predictable, testable | ~5–15ms | OpenSearch |
+| v3 | Typo-heavy queries, minimal config | ~10–20ms | OpenSearch |
+| v2 | Complex intent (calories, dietary) | ~200–500ms | OpenSearch + LLM |
+
+#### Enabling v2 (LLM hybrid)
+
+```go
+a, err := analyzer.New(ctx, analyzer.Config{
+    ConfigDir: "configs",
+    OpenSearch: config.OpenSearchConfig{URL: "http://localhost:9200"},
+    LLM: config.LLMConfig{
+        Enabled:  true,
+        Provider: "bedrock",               // or "ollama"
+        Region:   "eu-west-1",             // bedrock only
+        Model:    "eu.amazon.nova-micro-v1:0",
+        FailOpen: true,                     // fall back to v1 on LLM failure
+    },
+})
+if a.HasV2() {
+    resp, err := a.AnalyzeV2(ctx, req)
 }
 ```
 
-### Option B: Import Types Only
+#### Import Types Only
 
-If you prefer to call QUS over HTTP but want shared types (no duplication):
+If you call QUS over HTTP but want shared request/response types:
 
 ```go
 import "github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 
-// Use these in your HTTP client
 var req model.AnalyzeRequest
 var resp model.AnalyzeResponse
 ```
 
-### Option C: Run as a Standalone HTTP Service
+### As a Standalone HTTP Service
 
 ```bash
-cp .env.example env
-# Edit env with your settings
-
+cp .env.example env    # Edit with your settings
 docker-compose up -d   # Start OpenSearch
 make run               # Start QUS HTTP server on :8080
 ```
@@ -288,7 +306,21 @@ QUS expects two OpenSearch indexes per locale. Use the seed script to populate t
 
 ### Concept Index (`concepts_{locale}`)
 
-Stores known entities (categories, ingredients, tags) that QUS can recognize in queries.
+Stores known entities (categories, ingredients, tags) that QUS can recognize in queries. Each locale's index uses a **language-specific analyzer** with stemming so that inflected forms match (e.g. "veggies" → "veggie", "Hähnchen" → "hähnchen").
+
+| Locale prefix | Analyzer |
+|---|---|
+| `en_*` | English |
+| `de_*` | German |
+| `fr_*` | French |
+| `nl_*` | Dutch |
+| `it_*` | Italian |
+| `es_*` | Spanish |
+| `sv_*` | Swedish |
+| `da_*` | Danish |
+| `nb_*` | Norwegian |
+| `ja_*` | CJK |
+| other | Standard (no stemming) |
 
 ```json
 {
@@ -330,24 +362,41 @@ Type values: `SYN` (synonym), `HYP` (hypernym), `CMP` (compound), `SW` (stopword
 
 ### Seeding
 
+Run `seed-opensearch.sh` first (creates indices with locale-aware analyzers), then `seed-compounds.sh` (adds CMP entries to existing linguistic indices).
+
 ```bash
-# Seed all locale data (concepts + linguistic + compounds)
+# 1. Seed all concept + linguistic indices (26 locales, destructive — recreates indices)
 ./scripts/seed-opensearch.sh
 
-# Seed compound rules only (from scripts/compound-data/*.tsv)
+# 2. Seed compound rules from TSV files (1,767 entries across 8 locales)
 ./scripts/seed-compounds.sh
 
 # Seed compounds for a single locale
 ./scripts/seed-compounds.sh http://localhost:9200 en_gb
+
+# Custom OpenSearch URL
+./scripts/seed-opensearch.sh http://my-opensearch:9200
 ```
 
-Sample data is provided in `scripts/locale-data/` for 20+ locales and `scripts/compound-data/` for compound word rules.
+Sample data is provided in `scripts/locale-data/` for 20+ locales and `scripts/compound-data/` for 8 locales:
+
+| Locale | Entries | Language |
+|---|---|---|
+| `en_gb` | 472 | English (UK) |
+| `en_us` | 301 | English (US) |
+| `de_de` | 234 | German |
+| `nl_nl` | 177 | Dutch |
+| `sv_se` | 156 | Swedish |
+| `fr_fr` | 156 | French |
+| `es_es` | 136 | Spanish |
+| `it_it` | 135 | Italian |
 
 #### Adding Compound Words
 
-Add entries to `scripts/compound-data/{locale}.tsv` (tab-separated):
+Add entries to `scripts/compound-data/{locale}.tsv` (tab-separated, lines starting with `#` are ignored):
 
 ```
+# DAIRY
 icecream	ice cream
 peanutbutter	peanut butter
 ```
@@ -400,21 +449,22 @@ curl -X POST 'http://localhost:8080/v1/analyze?locale=en-GB&country=uk' \
 ```json
 {
   "originalQuery": "cheap chicken recipes",
-  "normalizedQuery": "cheap chicken recipes",
+  "normalizedQuery": "chicken recipes",
   "tokens": [
-    {"value": "cheap", "normalized": "cheap", "position": 0},
-    {"value": "chicken", "normalized": "chicken", "position": 1},
-    {"value": "recipes", "normalized": "recipes", "position": 2}
+    {"value": "chicken", "normalized": "chicken", "position": 0},
+    {"value": "recipes", "normalized": "recipes", "position": 1}
   ],
-  "rewrites": [],
+  "rewrites": ["chicken recipes"],
   "concepts": [
-    {"id": "uk-cat-chicken", "label": "chicken", "matchedText": "chicken", "field": "category", "score": 0.95, "source": "exact", "start": 1, "end": 1}
+    {"id": "uk-cat-chicken", "label": "chicken", "matchedText": "chicken", "field": "category", "score": 1.0, "source": "exact", "start": 1, "end": 1}
   ],
   "filters": [],
   "sort": {"field": "price", "direction": "asc"},
   "warnings": []
 }
 ```
+
+Note: The comprehension engine extracts "cheap" as a sort directive (`price asc`) and strips consumed tokens from the normalized query and token list. Concept positions (`start`/`end`) reflect pre-comprehension positions.
 
 ### POST /v2/analyze
 
@@ -430,7 +480,7 @@ curl -X POST 'http://localhost:8080/v2/analyze?locale=en-GB&country=uk' \
 
 ### POST /v3/analyze
 
-Native OpenSearch-driven analysis. Delegates spell correction and concept matching to OpenSearch via `fuzziness: AUTO` + `cross_fields` multi_match. No YAML synonym/compound configs needed.
+Native OpenSearch-driven analysis. Delegates spell correction and concept matching to OpenSearch via `fuzziness: AUTO` + `cross_fields` multi_match, with locale-aware stemming.
 
 **Query parameters:** `locale`, `country`
 

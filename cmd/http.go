@@ -77,15 +77,25 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		logger.WithError(err).Warn("could not load comprehension config")
 	}
 
+	// Load stopwords from linguistic index (best-effort — empty map on failure).
+	stopwords, err := osClient.FetchStopwords(context.Background(), "en_gb")
+	if err != nil {
+		logger.WithError(err).Warn("could not load stopwords, continuing without")
+		stopwords = map[string]bool{}
+	} else {
+		logger.WithField("count", len(stopwords)).Info("loaded stopwords from linguistic index")
+	}
+
 	p := pipeline.New(logger, metrics,
 		pipeline.Normalizer{},
 		pipeline.Tokenizer{},
+		pipeline.NewComprehensionEngine(comprehensionCfg),
 		pipeline.NewSpellResolver(osClient, pipelineCfg.Spell, logger),
 		pipeline.NewSynonymExpander(osClient, logger),
 		pipeline.NewCompoundHandler(osClient, logger),
+		pipeline.NewStopwordFilter(stopwords),
 		pipeline.NewConceptRecognizer(osClient, pipelineCfg.Concept, logger),
 		pipeline.AmbiguityResolver{},
-		pipeline.NewComprehensionEngine(comprehensionCfg),
 	)
 
 	// v3 native pipeline — uses OS fuzzy matching for spell/synonym/compound
@@ -93,6 +103,7 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		FuzzySearcher: osClient,
 		Concept:       pipelineCfg.Concept,
 		Comprehension: comprehensionCfg,
+		Stopwords:     stopwords,
 		Logger:        logger,
 	})
 
@@ -156,6 +167,8 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 			PromptBuilder:   promptBuilder,
 			Validator:       validator,
 			ConceptResolver: conceptResolver,
+			Comprehension:   pipeline.NewComprehensionEngine(comprehensionCfg),
+			Stopwords:       stopwords,
 			Metrics:         hybridMetrics,
 			Logger:          logger,
 			FailOpen:        cfg.LLM.FailOpen,

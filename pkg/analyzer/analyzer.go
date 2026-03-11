@@ -77,6 +77,15 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 
 	comprehension := pipeline.NewComprehensionEngine(comprehensionCfg)
 
+	// Load stopwords from linguistic index (best-effort — empty map on failure).
+	stopwords, err := osClient.FetchStopwords(ctx, "en_gb")
+	if err != nil {
+		logger.WithError(err).Warn("could not load stopwords, continuing without")
+		stopwords = map[string]bool{}
+	} else {
+		logger.WithField("count", len(stopwords)).Info("loaded stopwords from linguistic index")
+	}
+
 	v1 := pipeline.New(logger, nil,
 		pipeline.Normalizer{},
 		pipeline.Tokenizer{},
@@ -84,6 +93,7 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 		pipeline.NewSpellResolver(osClient, pipelineCfg.Spell, logger),
 		pipeline.NewSynonymExpander(osClient, logger),
 		pipeline.NewCompoundHandler(osClient, logger),
+		pipeline.NewStopwordFilter(stopwords),
 		pipeline.NewConceptRecognizer(osClient, pipelineCfg.Concept, logger),
 		pipeline.AmbiguityResolver{},
 	)
@@ -92,6 +102,7 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 		FuzzySearcher: osClient,
 		Concept:       pipelineCfg.Concept,
 		Comprehension: comprehensionCfg,
+		Stopwords:     stopwords,
 		Logger:        logger,
 	})
 

@@ -25,6 +25,7 @@ type PipelineConfig struct {
 	ConceptSearcher opensearch.ConceptSearcher
 	Comprehension   config.ComprehensionConfig
 	Concept         config.ConceptConfig
+	Stopwords       map[string]bool
 	Logger          *logrus.Logger
 }
 
@@ -40,6 +41,7 @@ func NewPipeline(cfg PipelineConfig) *Pipeline {
 			pipeline.Normalizer{},
 			pipeline.Tokenizer{},
 			NewNativeSpellCorrector(cfg.FuzzySearcher, logger),
+			pipeline.NewStopwordFilter(cfg.Stopwords),
 			NewNativeConceptRecognizer(cfg.FuzzySearcher, cfg.Concept, logger),
 			pipeline.AmbiguityResolver{},
 			pipeline.NewComprehensionEngine(cfg.Comprehension),

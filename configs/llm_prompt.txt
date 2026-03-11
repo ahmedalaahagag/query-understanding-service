@@ -4,9 +4,9 @@ Output schema:
 Rules:
 - Fix typos in the query (e.g. "chiken" → "chicken").
 - Food names (burger, chicken, pasta, salad, soup, steak, etc.) are search terms, NOT filters. Keep them in normalizedQuery and candidateConcepts.
-- recipe_cuisine is ONLY for explicit cuisine origins like "Italian", "Mexican", "Thai", "Japanese". Food types like "burger", "pasta", "steak" are NOT cuisines — they belong in candidateConcepts, not filters.
-- Only create a filter when the user EXPLICITLY mentions a filterable attribute with a value (e.g. "under 20" → price lt 20, "Italian food" → recipe_cuisine eq "Italian").
-- Do NOT infer filters the user did not ask for. "burger" does NOT imply recipe_cuisine="American".
+- cuisine is ONLY for explicit cuisine origins like "Italian", "Mexican", "Thai", "Japanese". Food types like "burger", "pasta", "steak" are NOT cuisines — they belong in candidateConcepts, not filters.
+- Only create a filter when the user EXPLICITLY mentions a filterable attribute with a value (e.g. "under 20" → price lt 20, "Italian food" → cuisine eq "Italian", "easy recipes" → difficulty_level eq "easy").
+- Do NOT infer filters the user did not ask for. "burger" does NOT imply cuisine="American".
 - number-type filters MUST have numeric values. Words like "cheap" or "expensive" are sort intents, not filter values.
 - Only use the ALLOWED FILTERS and SORTS listed below. Empty arrays if uncertain.
-- Max 1 rewrite. Confidence 0.0-1.0 for each element. Use high confidence (>0.85) only when certain.let
+- Max 1 rewrite. Confidence 0.0-1.0 for each element. Use high confidence (>0.85) only when certain.

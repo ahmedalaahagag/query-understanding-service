@@ -4,25 +4,55 @@ A Go library and HTTP service that parses search queries into structured intent:
 
 ## Architecture
 
-```
-┌─────────────┐     ┌─────────────────────────────────────────────────────────┐
-│  /v1/analyze│────▶│ Deterministic Pipeline                                  │
-│             │     │ Normalize → Tokenize → Spell → Synonym → Compound       │
-│             │     │   → Shingle → Concept → Ambiguity → Comprehension       │
-└─────────────┘     └─────────────────────────────────────────────────────────┘
+```mermaid
+graph LR
+    subgraph Input
+        Q[User Query]
+    end
 
-┌─────────────┐     ┌─────────────────────────────────────────────────────────┐
-│  /v2/analyze│────▶│ Hybrid Pipeline                                         │
-│             │     │ Normalize → Tokenize → LLM Parse → Validate             │
-│             │     │   → Resolve Concepts → Assemble                         │
-│             │     │   (fallback: v1 deterministic + comprehension)           │
-└─────────────┘     └─────────────────────────────────────────────────────────┘
+    subgraph "v1 — Deterministic"
+        V1_1[Normalize] --> V1_2[Tokenize]
+        V1_2 --> V1_3[Comprehension]
+        V1_3 --> V1_4[Spell]
+        V1_4 --> V1_5[Synonym]
+        V1_5 --> V1_6[Compound]
+        V1_6 --> V1_7[Stopword]
+        V1_7 --> V1_8[Concept]
+        V1_8 --> V1_9[Ambiguity]
+    end
 
-┌─────────────┐     ┌─────────────────────────────────────────────────────────┐
-│  /v3/analyze│────▶│ Native OS Pipeline                                      │
-│             │     │ Normalize → Tokenize → OS Fuzzy Spell                   │
-│             │     │   → OS Fuzzy Concepts → Comprehension                   │
-└─────────────┘     └─────────────────────────────────────────────────────────┘
+    subgraph "v2 — LLM Hybrid"
+        V2_1[Normalize] --> V2_2[Tokenize]
+        V2_2 --> V2_3[LLM Parse]
+        V2_3 --> V2_4[Validate]
+        V2_4 --> V2_5[Resolve Concepts]
+        V2_5 --> V2_6[Assemble]
+        V2_3 -.->|fallback| V2_F[v1 + Comprehension + Stopword]
+    end
+
+    subgraph "v3 — Native OS"
+        V3_1[Normalize] --> V3_2[Tokenize]
+        V3_2 --> V3_3[OS Fuzzy Spell]
+        V3_3 --> V3_4[Stopword]
+        V3_4 --> V3_5[OS Fuzzy Concepts]
+        V3_5 --> V3_6[Ambiguity]
+        V3_6 --> V3_7[Comprehension]
+    end
+
+    Q --> V1_1
+    Q --> V2_1
+    Q --> V3_1
+
+    subgraph "OpenSearch"
+        OS_L[(linguistic_locale)]
+        OS_C[(concepts_locale)]
+    end
+
+    V1_4 & V1_5 & V1_6 & V1_7 -.-> OS_L
+    V1_8 -.-> OS_C
+    V2_5 -.-> OS_C
+    V3_3 & V3_5 -.-> OS_C
+    V3_3 -.-> OS_L
 ```
 
 **v1** handles synonyms, compounds, and spell correction via OpenSearch-backed linguistic lookups (`LinguisticLookup`, `CompoundLookup`, `SpellChecker`). All dictionary data lives in OpenSearch — no YAML data files.
@@ -260,18 +290,36 @@ filters:
   - field: price
     operators: [lt, lte, gt, gte, eq]
     type: number
-
-  - field: dietary
-    operators: [eq, in]
-    type: string_list
-
-  - field: cuisine
-    operators: [eq, in]
-    type: string_list
-
+  - field: prep_time
+    operators: [lt, lte, gt, gte, eq]
+    type: number
   - field: calories
     operators: [lt, lte, gt, gte, eq]
     type: number
+  - field: dietary
+    operators: [eq, in]
+    type: keyword
+  - field: cuisine
+    operators: [eq, in]
+    type: keyword
+  - field: ingredient
+    operators: [eq, in]
+    type: keyword
+  - field: category
+    operators: [eq, in]
+    type: keyword
+  - field: meal_type
+    operators: [eq, in]
+    type: keyword
+  - field: cooking_method
+    operators: [eq, in]
+    type: keyword
+  - field: availability
+    operators: [eq, in]
+    type: keyword
+  - field: difficulty_level
+    operators: [eq, in]
+    type: keyword
 ```
 
 #### `allowed_sorts.yaml` — Sort Allowlist
@@ -336,29 +384,73 @@ Stores known entities (categories, ingredients, tags) that QUS can recognize in 
 
 ### Linguistic Index (`linguistic_{locale}`)
 
-Stores synonym/hypernym relationships for spell-correction and expansion.
+Stores all linguistic enrichment data that QUS uses to understand queries beyond simple tokenization. Each document has a `type` field that determines how it's used in the pipeline.
+
+#### Document Types
+
+| Type | Name | Purpose | Used by |
+|---|---|---|---|
+| `SYN` | Synonym | Maps alternate terms to canonical forms | v1 (SynonymExpander) |
+| `HYP` | Hypernym | Maps specific terms to broader categories | v1 (SynonymExpander) |
+| `CMP` | Compound | Joins/splits compound words | v1 (CompoundHandler) |
+| `SW` | Stopword | Common words to filter before concept matching | v1, v2, v3 (StopwordFilter) |
+
+#### Document Schema
+
+All types share the same document shape:
 
 ```json
 {
-  "term": "capsicum",
-  "variant": "bell pepper",
-  "type": "SYN",
-  "locale": "en_AU"
-}
-```
-
-Type values: `SYN` (synonym), `HYP` (hypernym), `CMP` (compound), `SW` (stopword).
-
-**Compound example** — `term` is the joined form, `variant` is the split form:
-
-```json
-{
-  "term": "icecream",
-  "variant": "ice cream",
-  "type": "CMP",
+  "term": "string",
+  "variant": "string",
+  "type": "SYN | HYP | CMP | SW",
   "locale": "en_GB"
 }
 ```
+
+#### SYN — Synonyms
+
+Maps alternate or regional terms to canonical forms. When QUS encounters the `term`, it expands the query to also search for the `variant`.
+
+```json
+{"term": "capsicum", "variant": "bell pepper", "type": "SYN", "locale": "en_AU"}
+{"term": "aubergine", "variant": "eggplant", "type": "SYN", "locale": "en_GB"}
+{"term": "courgette", "variant": "zucchini", "type": "SYN", "locale": "en_GB"}
+```
+
+#### HYP — Hypernyms
+
+Maps specific terms to broader parent categories. Used for query expansion — searching "chicken breast" could also match the broader "poultry" category.
+
+```json
+{"term": "chicken breast", "variant": "poultry", "type": "HYP", "locale": "en_GB"}
+{"term": "salmon fillet", "variant": "fish", "type": "HYP", "locale": "en_GB"}
+```
+
+#### CMP — Compounds
+
+Handles compound words that users may type as one word or two. The `term` is the joined form, the `variant` is the split form. The pipeline checks both directions.
+
+```json
+{"term": "icecream", "variant": "ice cream", "type": "CMP", "locale": "en_GB"}
+{"term": "peanutbutter", "variant": "peanut butter", "type": "CMP", "locale": "en_GB"}
+{"term": "eiskaffee", "variant": "eis kaffee", "type": "CMP", "locale": "de_DE"}
+```
+
+Compound data is managed as TSV files in `scripts/compound-data/` and seeded via `seed-compounds.sh`. Currently 1,767 entries across 8 locales.
+
+#### SW — Stopwords
+
+Common function words (articles, prepositions, conjunctions) that are stripped from queries before concept matching. This prevents false positive matches — e.g. "for" matching a concept alias like "for kids" → "family friendly".
+
+```json
+{"term": "the", "type": "SW", "locale": "en_GB"}
+{"term": "for", "type": "SW", "locale": "en_GB"}
+{"term": "der", "type": "SW", "locale": "de_DE"}
+{"term": "die", "type": "SW", "locale": "de_DE"}
+```
+
+Stopwords are loaded once at startup for all 26 supported locales via `FetchAllStopwords()`. Each locale gets its own stopword set, selected at runtime based on the request's locale.
 
 ### Seeding
 

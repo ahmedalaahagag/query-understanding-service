@@ -1,28 +1,76 @@
 filters:
+  # --- Numeric filters (from comprehension rules / LLM inference) ---
   - field: price
     operators: [lt, lte, gt, gte, eq]
     type: number
-
-  - field: dietary
-    operators: [eq, in]
-    type: string_list
-
-  - field: availability
-    operators: [eq, in]
-    type: string_list
-
-  - field: cuisine
-    operators: [eq, in]
-    type: string_list
-
-  - field: difficulty
-    operators: [eq, in]
-    type: string_list
+    description: "Recipe price in local currency."
+    examples: ["under 5", "less than 10"]
+    word_values:
+      cheap: 8
+      budget: 5
 
   - field: prep_time
     operators: [lt, lte, gt, gte, eq]
     type: number
+    description: "Preparation time in minutes."
+    examples: ["under 30 minutes", "quick"]
+    word_values:
+      quick: 30
+      fast: 20
 
   - field: calories
     operators: [lt, lte, gt, gte, eq]
     type: number
+    description: "Calories per serving."
+    examples: ["under 500 calories", "low calorie"]
+    word_values:
+      low calorie: 400
+
+  # --- Keyword filters (from concept index fields) ---
+  - field: dietary
+    operators: [eq, in]
+    type: keyword
+    description: "Dietary labels like vegan, gluten-free, etc."
+    examples: ["vegan", "gluten-free", "vegetarian", "dairy-free"]
+
+  - field: cuisine
+    operators: [eq, in]
+    type: keyword
+    description: "Cuisine or regional food style."
+    examples: ["italian", "mexican", "asian", "mediterranean"]
+
+  - field: ingredient
+    operators: [eq, in]
+    type: keyword
+    description: "Key ingredient in the recipe."
+    examples: ["chicken", "salmon", "tofu", "pasta"]
+
+  - field: category
+    operators: [eq, in]
+    type: keyword
+    description: "Recipe category or course type."
+    examples: ["soup", "salad", "dessert", "breakfast"]
+
+  - field: meal_type
+    operators: [eq, in]
+    type: keyword
+    description: "Meal occasion or time of day."
+    examples: ["dinner", "lunch", "snack", "brunch"]
+
+  - field: cooking_method
+    operators: [eq, in]
+    type: keyword
+    description: "How the dish is prepared."
+    examples: ["grilled", "baked", "fried", "slow-cooked"]
+
+  - field: availability
+    operators: [eq, in]
+    type: keyword
+    description: "Product availability / sold-out status."
+    examples: ["in stock", "sold out"]
+
+  - field: difficulty_level
+    operators: [eq, in]
+    type: keyword
+    description: "How hard the recipe is to make."
+    examples: ["easy", "medium", "hard"]

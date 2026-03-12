@@ -97,7 +97,7 @@ func (c *Client) Suggest(ctx context.Context, text, locale string) ([]SpellSugge
 				"text": text,
 				"term": map[string]interface{}{
 					"field":           "label",
-					"suggest_mode":    "popular",
+					"suggest_mode":    "missing",
 					"min_word_length": 3,
 					"max_edits":       2,
 				},

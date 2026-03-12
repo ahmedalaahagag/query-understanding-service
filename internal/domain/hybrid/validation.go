@@ -47,10 +47,13 @@ func NewValidator(filters config.AllowedFiltersConfig, sorts config.AllowedSorts
 // The query parameter is used to verify that inferred filter values actually
 // appear in the user's input (prevents false inference like "burger" → cuisine "American").
 func (v *Validator) Validate(result *LLMParseResult, query string) ValidatedIntent {
+	normalizedQuery := validateNormalizedQuery(result.NormalizedQuery, query, 2)
+
 	intent := ValidatedIntent{
-		NormalizedQuery: result.NormalizedQuery,
+		NormalizedQuery: normalizedQuery.query,
 		Rewrites:        result.Rewrites,
 	}
+	intent.Warnings = append(intent.Warnings, normalizedQuery.warnings...)
 
 	if result.Confidence < v.minConfidence {
 		intent.Warnings = append(intent.Warnings, fmt.Sprintf(
@@ -66,6 +69,91 @@ func (v *Validator) Validate(result *LLMParseResult, query string) ValidatedInte
 	intent.Warnings = append(intent.Warnings, result.Warnings...)
 
 	return intent
+}
+
+type normalizedQueryResult struct {
+	query    string
+	warnings []string
+}
+
+// validateNormalizedQuery checks that every word in the LLM's normalized query
+// either existed in the original query or is within maxEdits edit distance of an
+// original word (legitimate typo correction). If any word is a hallucinated
+// substitution, the entire normalized query is reverted to the original.
+func validateNormalizedQuery(llmQuery, originalQuery string, maxEdits int) normalizedQueryResult {
+	if llmQuery == "" || strings.EqualFold(llmQuery, originalQuery) {
+		return normalizedQueryResult{query: llmQuery}
+	}
+
+	origWords := strings.Fields(strings.ToLower(originalQuery))
+	llmWords := strings.Fields(strings.ToLower(llmQuery))
+
+	origSet := make(map[string]bool, len(origWords))
+	for _, w := range origWords {
+		origSet[w] = true
+	}
+
+	for _, w := range llmWords {
+		if origSet[w] {
+			continue
+		}
+		// Check if this is a plausible typo correction (within edit distance).
+		if closestEditDistance(w, origWords) <= maxEdits {
+			continue
+		}
+		// Word was not in original and is not a typo fix — hallucination.
+		return normalizedQueryResult{
+			query: strings.ToLower(originalQuery),
+			warnings: []string{fmt.Sprintf(
+				"LLM introduced word %q not found in original query, reverting normalizedQuery",
+				w,
+			)},
+		}
+	}
+
+	return normalizedQueryResult{query: llmQuery}
+}
+
+// closestEditDistance returns the minimum Levenshtein distance between word and
+// any word in candidates.
+func closestEditDistance(word string, candidates []string) int {
+	best := len(word) + 1
+	for _, c := range candidates {
+		d := levenshtein(word, c)
+		if d < best {
+			best = d
+		}
+	}
+	return best
+}
+
+// levenshtein computes the Levenshtein edit distance between two strings.
+func levenshtein(a, b string) int {
+	if len(a) == 0 {
+		return len(b)
+	}
+	if len(b) == 0 {
+		return len(a)
+	}
+
+	prev := make([]int, len(b)+1)
+	curr := make([]int, len(b)+1)
+	for j := range prev {
+		prev[j] = j
+	}
+
+	for i := 1; i <= len(a); i++ {
+		curr[0] = i
+		for j := 1; j <= len(b); j++ {
+			cost := 1
+			if a[i-1] == b[j-1] {
+				cost = 0
+			}
+			curr[j] = min(curr[j-1]+1, min(prev[j]+1, prev[j-1]+cost))
+		}
+		prev, curr = curr, prev
+	}
+	return prev[len(b)]
 }
 
 func (v *Validator) validateFilters(filters []LLMFilter, query string, warnings *[]string) []LLMFilter {

@@ -50,6 +50,12 @@ func (s *SynonymExpander) Process(ctx context.Context, state *model.QueryState) 
 		if best.IsCanonical {
 			continue
 		}
+		// Skip hypernym (HYP) replacements: these go from a broad category
+		// to a specific term (e.g. "pasta" → "spaghetti") which narrows
+		// the search incorrectly. Only true synonyms (SYN) should replace.
+		if best.Type == "HYP" {
+			continue
+		}
 		canonical := strings.ToLower(best.Term)
 		if canonical != tok.Normalized {
 			state.Tokens[i].Normalized = canonical

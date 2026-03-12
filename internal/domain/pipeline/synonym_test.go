@@ -120,6 +120,32 @@ func TestSynonymExpander_SkipsCanonicalForm(t *testing.T) {
 	assert.Equal(t, "burger", state.Tokens[0].Normalized)
 }
 
+func TestSynonymExpander_SkipsHypernymReplacement(t *testing.T) {
+	lookup := &mockLinguisticLookup{
+		results: map[string][]opensearch.LinguisticMatch{
+			"pasta": {{Term: "ravioli", Type: "HYP"}},
+		},
+	}
+
+	logger := logrus.New()
+	logger.SetLevel(logrus.ErrorLevel)
+	step := NewSynonymExpander(lookup, logger)
+
+	state := &model.QueryState{
+		NormalizedQuery: "pasta",
+		Tokens: []model.Token{
+			{Value: "pasta", Normalized: "pasta", Position: 0},
+		},
+	}
+
+	err := step.Process(context.Background(), state)
+	require.NoError(t, err)
+
+	// HYP should NOT replace — "pasta" must stay "pasta", not become "ravioli".
+	assert.Equal(t, "pasta", state.Tokens[0].Normalized)
+	assert.Equal(t, "pasta", state.NormalizedQuery)
+}
+
 func TestSynonymExpander_NilLookup(t *testing.T) {
 	logger := logrus.New()
 	logger.SetLevel(logrus.ErrorLevel)

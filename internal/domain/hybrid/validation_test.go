@@ -208,6 +208,54 @@ func TestValidator_GroundingDropsUnmentionedNumber(t *testing.T) {
 	assert.Contains(t, intent.Warnings[0], "not found in query")
 }
 
+func TestValidateNormalizedQuery_RevertsHallucinatedWord(t *testing.T) {
+	result := validateNormalizedQuery(
+		"i want something for my sunday ravioli with ravioli and vieggies",
+		"I want something for my sunday party with pasta and vieggies",
+		2,
+	)
+	// "ravioli" is not in the original and is >2 edits from any original word.
+	assert.Equal(t, "i want something for my sunday party with pasta and vieggies", result.query)
+	assert.Len(t, result.warnings, 1)
+	assert.Contains(t, result.warnings[0], "ravioli")
+}
+
+func TestValidateNormalizedQuery_AllowsTypoCorrection(t *testing.T) {
+	result := validateNormalizedQuery(
+		"i want chicken burger",
+		"I want chiken burger",
+		2,
+	)
+	// "chicken" is within 1 edit of "chiken" — allowed.
+	assert.Equal(t, "i want chicken burger", result.query)
+	assert.Empty(t, result.warnings)
+}
+
+func TestValidateNormalizedQuery_IdenticalQuery(t *testing.T) {
+	result := validateNormalizedQuery("chicken burger", "chicken burger", 2)
+	assert.Equal(t, "chicken burger", result.query)
+	assert.Empty(t, result.warnings)
+}
+
+func TestValidateNormalizedQuery_EmptyLLMQuery(t *testing.T) {
+	result := validateNormalizedQuery("", "chicken burger", 2)
+	assert.Equal(t, "", result.query)
+	assert.Empty(t, result.warnings)
+}
+
+func TestValidator_NormalizedQueryValidation(t *testing.T) {
+	v := testValidator()
+	result := &LLMParseResult{
+		NormalizedQuery: "i want ravioli with ravioli",
+		Confidence:      0.89,
+	}
+
+	intent := v.Validate(result, "i want pasta with pasta")
+	// Should revert to original since "ravioli" is a hallucination.
+	assert.Equal(t, "i want pasta with pasta", intent.NormalizedQuery)
+	assert.Contains(t, intent.Warnings[0], "ravioli")
+}
+
 func TestValidator_GroundingKeepsValueFoundInQuery(t *testing.T) {
 	v := testValidator()
 	result := &LLMParseResult{

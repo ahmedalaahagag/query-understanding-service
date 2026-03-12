@@ -46,10 +46,22 @@ func (n *NativeSpellCorrector) Process(ctx context.Context, state *model.QuerySt
 		}
 
 		corrected = strings.ToLower(corrected)
-		if corrected != tok.Value {
-			state.Tokens[i].Normalized = corrected
-			changed = true
+		if corrected == tok.Value {
+			continue
 		}
+		// Only accept corrections within a safe edit distance.
+		// Short words (≤5 chars) allow 1 edit; longer words allow 2.
+		// Prevents alias matches (e.g. "pasta" → label "ravioli") and
+		// valid non-food words from being "corrected" to food terms.
+		maxEdits := 2
+		if len(tok.Value) <= 5 {
+			maxEdits = 1
+		}
+		if levenshtein(corrected, tok.Value) > maxEdits {
+			continue
+		}
+		state.Tokens[i].Normalized = corrected
+		changed = true
 	}
 
 	if changed {
@@ -69,6 +81,35 @@ func shouldSkipToken(token string) bool {
 		}
 	}
 	return true // all digits
+}
+
+// levenshtein computes the Levenshtein edit distance between two strings.
+func levenshtein(a, b string) int {
+	if len(a) == 0 {
+		return len(b)
+	}
+	if len(b) == 0 {
+		return len(a)
+	}
+
+	prev := make([]int, len(b)+1)
+	curr := make([]int, len(b)+1)
+	for j := range prev {
+		prev[j] = j
+	}
+
+	for i := 1; i <= len(a); i++ {
+		curr[0] = i
+		for j := 1; j <= len(b); j++ {
+			cost := 1
+			if a[i-1] == b[j-1] {
+				cost = 0
+			}
+			curr[j] = min(curr[j-1]+1, min(prev[j]+1, prev[j-1]+cost))
+		}
+		prev, curr = curr, prev
+	}
+	return prev[len(b)]
 }
 
 func rebuildNormalizedQuery(state *model.QueryState) {

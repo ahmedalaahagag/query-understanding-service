@@ -2,46 +2,243 @@
 
 ## Overview
 
-The QUS pipeline transforms raw user queries into structured search intent. It uses a sequential step model — each step receives a mutable `QueryState` and enriches it.
+QUS transforms raw user queries into structured search intent. Three pipelines are available, each suited to different trade-offs between latency, accuracy, and infrastructure cost.
+
+| Pipeline | Endpoint | Strategy |
+|---|---|---|
+| **v1** (deterministic) | `/v1/analyze` | Sequential Go steps with OS dictionary lookups |
+| **v2** (hybrid LLM) | `/v2/analyze` | LLM semantic parse + validation + concept resolution |
+| **v3** (native OS) | `/v3/analyze` | Delegates spell/concept to OS fuzzy matching |
+
+All pipelines produce the same `AnalyzeResponse` shape.
+
+---
+
+## v1 — Deterministic Pipeline
 
 ```
-Input: "Cheap  CHIKEN  Burger under 20"
+Input: "Cheap  CHIKEN  Burger under 20"  (locale: en-GB)
   │
   ▼
-┌─────────────┐
-│ 1. Normalize │  lowercase, trim, collapse spaces, strip punctuation, unicode NFC, strip diacritics
-└──────┬──────┘
+┌──────────────┐
+│ 1. Normalize  │  lowercase, trim, collapse spaces, strip punctuation, unicode NFC, strip diacritics
+└──────┬───────┘
        ▼
-┌─────────────┐
-│ 2. Tokenize  │  whitespace split, position tracking
-└──────┬──────┘
+┌──────────────┐
+│ 2. Tokenize   │  whitespace split, position tracking
+└──────┬───────┘
        ▼
-┌─────────────┐
-│ 3. Spell     │  OpenSearch term suggester, per-token correction, confidence threshold
-└──────┬──────┘
+┌────────────────┐
+│ 3. Comprehend  │  regex filter/sort extraction, strips consumed tokens from query
+└──────┬─────────┘  "cheap" → difficulty_level=easy, "under 20" → price lt 20
+       ▼            normalizedQuery: "chiken burger"
+┌──────────────┐
+│ 4. Spell      │  OS term suggester (suggest_mode=missing), Levenshtein guard
+└──────┬───────┘  "chiken" → "chicken"
        ▼
-┌─────────────┐
-│ 4. Synonym   │  OpenSearch linguistic index (SYN/HYP) → YAML config fallback
-└──────┬──────┘
+┌──────────────┐
+│ 5. Synonym    │  OS linguistic index (SYN only, HYP skipped)
+└──────┬───────┘
        ▼
-┌─────────────┐
-│ 5. Compound  │  join multi-token compounds, split single compounds
-└──────┬──────┘
+┌──────────────┐
+│ 6. Compound   │  OS linguistic index (CMP): join "ice cream"→"icecream", split "crewneck"→"crew neck"
+└──────┬───────┘
        ▼
-┌─────────────┐
-│ 6. Concept   │  shingle → OpenSearch concept index, score by source
-└──────┬──────┘
+┌──────────────┐
+│ 7. Stopword   │  remove stopwords loaded from OS (type=SW), per-locale
+└──────┬───────┘
        ▼
-┌─────────────┐
-│ 7. Ambiguity │  remove overlapping concepts (longest span > highest score > earliest)
-└──────┬──────┘
+┌──────────────┐
+│ 8. Concept    │  shingle → OS concept index, score by source (exact/synonym/compound/spell)
+└──────┬───────┘
        ▼
-┌───────────────┐
-│ 8. Comprehend │  regex price/sort/filter extraction from config rules
-└──────┬────────┘
+┌──────────────┐
+│ 9. Ambiguity  │  greedy non-overlapping: longest span → highest score → earliest position
+└──────┬───────┘
        ▼
-Output: AnalyzeResponse JSON
+Output: AnalyzeResponse
 ```
+
+### Step Details
+
+#### 1. Normalizer (`normalizer.go`)
+
+| Operation | Example |
+|---|---|
+| Lowercase | `BURGER` → `burger` |
+| Trim + collapse spaces | `"  a    b  "` → `"a b"` |
+| Strip noise punctuation | `chicken!!` → `chicken` (keeps hyphens, apostrophes) |
+| Unicode NFC | Composed characters normalized |
+| Strip diacritics | `café` → `cafe`, `über` → `uber` |
+
+#### 2. Tokenizer (`tokenizer.go`)
+
+Splits `NormalizedQuery` on whitespace. Each token gets a sequential `Position` index. Both `Value` and `Normalized` start identical — later steps may update `Normalized`.
+
+#### 3. Comprehension Engine (`comprehension.go`)
+
+Multi-locale regex extraction from `configs/comprehension.yaml` (8 languages: en, de, fr, nl, it, es, sv, da).
+
+| Type | Pattern Example | Output |
+|---|---|---|
+| Prep time filter | `under 30 minutes` | `{field: "prep_time", operator: "lt", value: 30}` |
+| Calorie filter | `low calorie` | `{field: "calories", operator: "lte", value: 400}` |
+| Price filter | `under 20` | `{field: "price", operator: "lt", value: 20}` |
+| Difficulty filter | `easy` | `{field: "difficulty_level", operator: "eq", value: "easy"}` |
+| Servings filter | `for 4 people` | `{field: "servings", operator: "eq", value: 4}` |
+| Sort directive | `cheapest` | `{field: "price", direction: "asc"}` |
+
+Key behaviors:
+- **Overlap detection**: tracks consumed character ranges — "under 15 minutes" matches prep_time only, not price
+- **Rule ordering**: specific rules (prep_time, calories) before generic price
+- **Token stripping**: consumed tokens removed from `normalizedQuery` and `tokens`
+- **Locale selection**: "en-GB" → lang prefix "en" → picks `en` rules
+
+#### 4. Spell Resolver (`spell.go`)
+
+Uses OpenSearch `term` suggester via the `SpellChecker` interface.
+
+- **suggest_mode: `missing`** — only suggests when the term doesn't exist in the index. Prevents correcting valid words (e.g. "cheese" → "chinese").
+- **Levenshtein guard**: AUTO-like scaling — ≤5 chars allows max 1 edit, 6+ chars allows max 2 edits. Rejects corrections that are too far from the original (e.g. "party" → "pasta" = 2 edits on 5-char word → rejected).
+- **Skip rules**: tokens shorter than `min_token_length` (default: 4), numeric tokens, SKU patterns.
+- **Graceful degradation**: if OpenSearch is unavailable, keeps original token and adds a warning.
+
+#### 5. Synonym Expander (`synonym.go`)
+
+Queries OpenSearch linguistic index for SYN entries with locale filtering.
+
+- **HYP entries are skipped** — hypernyms go from broad to specific (e.g. "pasta" → "spaghetti") which narrows search incorrectly. Only true synonyms (SYN) replace tokens.
+- No YAML fallback — all synonym data lives in OpenSearch.
+
+#### 6. Compound Handler (`compound.go`)
+
+Queries OpenSearch linguistic index for CMP entries.
+
+| Operation | Example |
+|---|---|
+| **Join** | `ice cream` → `icecream` (adjacent tokens match a compound) |
+| **Split** | `crewneck` → `crew neck` (single token matches a compound variant) |
+
+Joins are applied first, then splits. Token positions are reindexed after changes.
+
+#### 7. Stopword Filter (`stopword.go`)
+
+Removes tokens whose normalized value is in the locale's stopword set. Stopwords are loaded once at startup from the OS linguistic index (type=SW) across all 26 supported locales.
+
+#### 8. Concept Recognizer (`concept.go`)
+
+1. Generates **shingles** (n-grams, 1..`shingle_max_size`) from tokens, longest first
+2. Queries OpenSearch concept index using `multi_match` with `cross_fields` on `label` and `aliases`
+3. Filters by `locale` and `market`
+4. Scores by source: exact > synonym > compound > spell
+5. Caps at `max_matches_per_span` per shingle
+
+#### 9. Ambiguity Resolver (`ambiguity.go`)
+
+Greedy non-overlapping selection:
+1. Sort concepts: longest span → highest score → earliest position
+2. Iterate; skip any concept overlapping already-claimed positions
+3. Result: clean, non-overlapping concept set
+
+---
+
+## v2 — Hybrid LLM Pipeline
+
+```
+Input: "cheap chicken burger under 20"  (locale: en-GB)
+  │
+  ▼
+┌───────────────────────┐
+│ 1. Normalize + Tokenize│  same as v1 steps 1-2
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 2. LLM Semantic Parse  │  Bedrock Nova / Ollama: extract normalized query, filters, sorts, concepts
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 3. Validate            │  ground-truth filters against query text, validate normalized query
+└──────────┬────────────┘  (Levenshtein check for hallucinated word substitutions)
+           ▼
+┌───────────────────────┐
+│ 4. Resolve Concepts    │  match LLM candidate labels against OS concept index
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 5. Comprehension       │  strip filter/sort tokens from normalized query (same engine as v1)
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 6. Stopword Filter     │  remove filler words per locale
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 7. Assemble Response   │  merge tokens, concepts, filters, sort, rewrites
+└──────────┬────────────┘
+           ▼
+Output: AnalyzeResponse
+```
+
+### Validation (`validation.go`)
+
+- **Filter grounding**: LLM filter values must appear in the original query text. Prevents hallucinated values (e.g. "burger" → cuisine "American").
+- **Normalized query validation**: `validateNormalizedQuery()` checks every word against the original. Words not in the original must be within edit distance (AUTO-like scaling). If any word is a hallucinated substitution, the entire query reverts to the original.
+- **Allowed filters/sorts**: checked against `allowed_filters.yaml` and `allowed_sorts.yaml`.
+
+### Fallback
+
+When the LLM fails (timeout, parse error, etc.), v2 falls back to the deterministic path:
+1. Run comprehension on the already-tokenized state
+2. Run stopword filter
+3. Return a `BuildFallbackResponse` with a warning
+
+Controlled by `fail_open` config (if false, returns error instead of fallback).
+
+### LLM Providers
+
+| Provider | Config |
+|---|---|
+| AWS Bedrock | Nova model, `parseLLMOutput()` normalizes inconsistent field names |
+| Ollama | Local LLM for development |
+
+---
+
+## v3 — Native OpenSearch Pipeline
+
+```
+Input: "chiken soup"  (locale: en-GB)
+  │
+  ▼
+┌───────────────────────┐
+│ 1. Normalize + Tokenize│  same as v1 steps 1-2
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 2. OS Fuzzy Spell      │  FuzzySuggest per token, Levenshtein guard (AUTO-like)
+└──────────┬────────────┘  "chiken" → "chicken"
+           ▼
+┌───────────────────────┐
+│ 3. Stopword Filter     │  same as v1
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 4. OS Fuzzy Concepts   │  FuzzySearchConcepts — OS does the fuzzy matching
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 5. Ambiguity           │  same as v1
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 6. Comprehension       │  same engine as v1
+└──────────┬────────────┘
+           ▼
+Output: AnalyzeResponse
+```
+
+v3 differs from v1 by delegating spell correction and concept matching to OS fuzzy queries instead of separate dictionary lookups for synonyms/compounds. This is simpler (fewer steps, fewer OS round-trips) but less controllable.
+
+---
 
 ## Pipeline State
 
@@ -51,6 +248,8 @@ All steps operate on a shared `QueryState`:
 type QueryState struct {
     OriginalQuery   string
     NormalizedQuery string
+    Locale          string
+    Market          string
     Tokens          []Token
     Concepts        []ConceptMatch
     Filters         []Filter
@@ -60,107 +259,22 @@ type QueryState struct {
 }
 ```
 
-## Step Details
-
-### 1. Normalizer (`normalizer.go`)
-
-| Operation | Example |
-|---|---|
-| Lowercase | `BURGER` → `burger` |
-| Trim + collapse spaces | `"  a    b  "` → `"a b"` |
-| Strip noise punctuation | `chicken!!` → `chicken` (keeps hyphens, apostrophes) |
-| Unicode NFC | Composed characters normalized |
-| Strip diacritics | `cafe` ← `café`, `uber` ← `über` |
-
-### 2. Tokenizer (`tokenizer.go`)
-
-Splits `NormalizedQuery` on whitespace. Each token gets a sequential `Position` index. Both `Value` and `Normalized` start identical — later steps may update `Normalized`.
-
-### 3. Spell Resolver (`spell.go`)
-
-Uses OpenSearch `term` suggester via the `SpellChecker` interface.
-
-**Skip rules:**
-- Token shorter than `min_token_length` (default: 4)
-- Numeric tokens (`123`, `45.99`)
-- SKU patterns (`AB1234`)
-
-**Threshold:** Only accepts suggestions with `score >= confidence_threshold` (default: 0.85).
-
-**Graceful degradation:** If OpenSearch is unavailable, keeps original token and adds a warning.
-
-### 4. Synonym Expander (`synonym.go`)
-
-Two-tier expansion strategy:
-
-1. **OpenSearch linguistic index** (primary) — queries for SYN/HYP entries with locale filtering
-2. **YAML config fallback** — static `variant → canonical` mapping from `configs/synonyms.en-GB.yaml`
-
-Linguistic index takes priority over config. This supports weighted boost differentiation:
-
-| Edge Type | Boost Weight |
-|---|---|
-| Exact | 1.0x |
-| Synonym (SYN) | 0.9x |
-| Hypernym (HYP) | 0.8x |
-| Compound | 0.8x |
-| Spell (SPELL1) | 0.6x |
-| Spell (SPELL2) | 0.3x |
-
-**Why not OpenSearch synonym token filters?** They're index/analyzer-time and don't support per-type weighted boosting. Application-level expansion lets synonyms rank below exact matches.
-
-### 5. Compound Handler (`compound.go`)
-
-Two operations from `configs/compounds.en-GB.yaml`:
-
-| Operation | Example |
-|---|---|
-| **Join** | `ice cream` → `icecream` |
-| **Split** | `crewneck` → `crew neck` |
-
-Joins are applied first, then splits. Token positions are reindexed after changes.
-
-### 6. Concept Recognizer (`concept.go`)
-
-1. Generates **shingles** (n-grams, 1..`shingle_max_size`) from tokens, longest first
-2. Queries OpenSearch concept index using `multi_match` with `cross_fields` on `label` and `aliases`
-3. Filters by `locale` and `market`
-4. Scores by source: exact=1.0, synonym=0.9, compound=0.8, spell=0.7
-5. Caps at `max_matches_per_span` per shingle
-
-### 7. Ambiguity Resolver (`ambiguity.go`)
-
-Greedy non-overlapping selection:
-
-1. Sort concepts: longest span → highest score → earliest position
-2. Iterate sorted list; skip any concept overlapping already-claimed positions
-3. Result: clean, non-overlapping concept set
-
-### 8. Comprehension Engine (`comprehension.go`)
-
-Regex-based extraction from `configs/comprehension.en-GB.yaml`:
-
-| Type | Pattern Example | Output |
-|---|---|---|
-| Price filter | `under 20`, `less than 10`, `cheaper than 5.99` | `{field: "price", operator: "lt", value: 20}` |
-| Sort directive | `cheapest`, `lowest price` | `{field: "price", direction: "asc"}` |
-| Sort directive | `newest`, `most recent` | `{field: "created_at", direction: "desc"}` |
-
 ## Configuration Files
 
 | File | Purpose |
 |---|---|
-| `configs/qus.yaml` | Pipeline settings (enabled steps, spell thresholds, concept limits) |
-| `configs/synonyms.en-GB.yaml` | Static synonym fallback (`variant → canonical`) |
-| `configs/compounds.en-GB.yaml` | Compound split/join rules |
-| `configs/comprehension.en-GB.yaml` | Price/sort regex extraction rules |
+| `configs/qus.yaml` | Pipeline settings (spell thresholds, concept limits) |
+| `configs/comprehension.yaml` | Multi-locale filter/sort regex rules (en, de, fr, nl, it, es, sv, da) |
+| `configs/allowed_filters.yaml` | v2 LLM: allowed filter fields, types, operators |
+| `configs/allowed_sorts.yaml` | v2 LLM: allowed sort fields and directions |
+| `configs/llm_prompt.txt` | v2 LLM: system prompt template |
 
 ## OpenSearch Dependencies
 
 | Index | Used By | Purpose |
 |---|---|---|
-| Concepts (`QUS_OPENSEARCH_INDEX`) | Spell, Concept | Spell suggest + concept search |
-| Linguistic (`QUS_OPENSEARCH_LINGUISTIC_INDEX`) | Synonym | SYN/HYP dictionary lookup |
+| `concepts_{locale}` | v1 Concept, v2 ConceptResolver, v3 FuzzyConcepts | Concept search with locale-aware stemming |
+| `linguistic_{locale}` | v1 Spell/Synonym/Compound/Stopword, v3 Spell | SYN/HYP/CMP/SW dictionary lookups |
 
 ## Running Locally
 
@@ -168,10 +282,14 @@ Regex-based extraction from `configs/comprehension.en-GB.yaml`:
 # Start OpenSearch
 docker compose up -d
 
+# Seed data
+./scripts/seed-opensearch.sh      # linguistic + concept indexes
+./scripts/seed-compounds.sh       # CMP entries from TSV files
+
 # Run QUS
 make run
 
-# Test
+# Test endpoints
 curl -s localhost:8080/healthz
 curl -s -X POST localhost:8080/v1/analyze \
   -H 'Content-Type: application/json' \

@@ -26,3 +26,7 @@ vendor/
 # Ollama data
 ollama-data/
 search-service
+
+# Data files (managed outside repo, seeded via scripts)
+scripts/compound-data/
+scripts/locale-data/

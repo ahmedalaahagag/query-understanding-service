@@ -182,7 +182,13 @@ In `pkg/analyzer/analyzer.go`, comprehension was correctly placed EARLY (after t
 2. **v2:** Add `validateNormalizedQuery()` — compares positionally when word counts match, set-based when they differ. Uses same AUTO-like edit distance scaling. Also strengthened LLM prompt to prohibit word substitutions. (`internal/domain/hybrid/validation.go`, `configs/llm_prompt.txt`)
 3. **v3:** Add Levenshtein distance check in `NativeSpellCorrector` with AUTO-like scaling. (`internal/domain/native/spell.go`)
 
-**Key insight:** Spell correction should only fix typos (small edit distance), never replace valid words with different ones. Short words (≤5 chars) are especially prone to false corrections (e.g. "party"→"pasta" is only 2 edits) so they get a stricter threshold of 1 edit. Concept/alias mapping is a separate concern handled by the concept recognizer.
+**Levenshtein implementation:** We implemented a standard dynamic-programming Levenshtein distance function (`levenshtein(a, b string) int`) in each package that needs it (`pipeline/spell.go`, `native/spell.go`, `hybrid/validation.go`). The function uses two rows (`prev`/`curr`) for O(n) space. We chose to inline rather than share via a utility package — three identical ~20-line functions is simpler than adding a shared dependency for a single function (merciless simplification).
+
+**AUTO-like scaling:** Inspired by OpenSearch's `fuzziness: AUTO` behavior — short words tolerate fewer edits because even 1-2 edits can produce a completely different word:
+- ≤5 chars: max 1 edit (e.g. "party"→"pasta" = 2 edits → rejected)
+- 6+ chars: max 2 edits (e.g. "chiken"→"chicken" = 1 edit → accepted)
+
+**Key insight:** Spell correction should only fix typos (small edit distance), never replace valid words with different ones. Short words (≤5 chars) are especially prone to false corrections so they get a stricter threshold of 1 edit. Concept/alias mapping is a separate concern handled by the concept recognizer.
 
 ---
 

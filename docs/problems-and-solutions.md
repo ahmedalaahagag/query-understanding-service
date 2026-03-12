@@ -229,16 +229,18 @@ This eliminates the need for lookaheads entirely and works across all locales.
 
 The `popular` mode is designed for "did you mean?" scenarios where the user might have typed a rare word. But in a food search context, "cheese" is a perfectly valid search term — it just happens to appear as part of compound labels rather than a standalone one.
 
-**Solution:** Changed `suggest_mode` from `"popular"` to `"missing"` in the OpenSearch suggest query.
+**First attempt (insufficient):** Changed `suggest_mode` from `"popular"` to `"missing"`. The `missing` mode only suggests when the original term does not exist in the index. Since "cheese" appears in multi-word labels ("cream cheese"), it should have been considered "existing". However, the term suggester operates **per shard** — with 5 shards and only 2 docs containing "cheese", some shards had no "cheese" token at all, so `missing` mode still returned "chinese" on those shards.
 
-- `popular`: suggest terms more frequent than the original, even if the original exists in the index
-- `missing`: only suggest when the original term **does not exist** in the index at all
+**Final solution:** Added a `termExistsInConcepts` pre-check in the `Suggest` method. Before querying the term suggester, it runs a quick `multi_match` search against `label` and `aliases` fields in the concept index. If the original token appears in any concept (even as part of a multi-word label), no suggestions are returned — the word is valid.
 
-Since "cheese" appears in the `label` field's inverted index (from "cream cheese", "cheddar cheese", "mac and cheese", etc.), the `missing` mode returns no suggestions for it → no correction. Genuinely misspelled words like "chiken" (not in the index at all) still get corrected to "chicken".
+This works regardless of shard count because `_search` aggregates results across all shards, unlike the term suggester which operates per-shard.
+
+Reverted `suggest_mode` back to `"popular"` since the existence check now handles the filtering.
 
 **Why not other fixes?**
-- **Add "cheese" as a standalone concept**: Doesn't scale — every valid English word that happens to not be a concept label would need adding
-- **Increase edit distance threshold**: Would prevent some legitimate corrections too
+- **`suggest_mode=missing`**: Doesn't work reliably on multi-shard indices when the term is sparse (per-shard term frequency)
+- **Reduce shard count to 1**: Would fix `missing` mode but requires reindexing and affects all queries
+- **Add "cheese" as a standalone concept**: Doesn't scale — every valid English word would need adding
 - **Blocklist common words**: Maintenance burden, language-specific, doesn't generalize
 
 **Files changed:** `internal/infra/opensearch/client.go`

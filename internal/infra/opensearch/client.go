@@ -90,14 +90,21 @@ func indexName(prefix, locale string) string {
 }
 
 // Suggest queries the OpenSearch term suggester for spelling corrections.
+// It first checks whether the token already exists in the concept index
+// (label or aliases). If it does, no suggestions are returned — the word
+// is valid and should not be "corrected" to a different concept.
 func (c *Client) Suggest(ctx context.Context, text, locale string) ([]SpellSuggestion, error) {
+	if c.termExistsInConcepts(ctx, text, locale) {
+		return nil, nil
+	}
+
 	body := map[string]interface{}{
 		"suggest": map[string]interface{}{
 			"spell-check": map[string]interface{}{
 				"text": text,
 				"term": map[string]interface{}{
 					"field":           "label",
-					"suggest_mode":    "missing",
+					"suggest_mode":    "popular",
 					"min_word_length": 3,
 					"max_edits":       2,
 				},
@@ -151,6 +158,55 @@ type suggestEntry struct {
 type suggestOption struct {
 	Text  string  `json:"text"`
 	Score float64 `json:"score"`
+}
+
+// termExistsInConcepts checks if a token appears in the concept index's label or
+// aliases fields. This prevents the spell checker from "correcting" valid words
+// (e.g. "cheese" → "chinese") that exist in multi-word concept labels.
+func (c *Client) termExistsInConcepts(ctx context.Context, text, locale string) bool {
+	body := map[string]interface{}{
+		"size": 0,
+		"query": map[string]interface{}{
+			"multi_match": map[string]interface{}{
+				"query":  text,
+				"fields": []string{"label", "aliases"},
+				"type":   "best_fields",
+			},
+		},
+	}
+
+	data, err := json.Marshal(body)
+	if err != nil {
+		return false
+	}
+
+	url := fmt.Sprintf("%s/%s/_search", c.cfg.URL, indexName(c.cfg.ConceptIndexPrefix, locale))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return false
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if c.cfg.Username != "" {
+		req.SetBasicAuth(c.cfg.Username, c.cfg.Password)
+	}
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		Hits struct {
+			Total struct {
+				Value int `json:"value"`
+			} `json:"total"`
+		} `json:"hits"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return false
+	}
+	return result.Hits.Total.Value > 0
 }
 
 // Lookup queries the linguistic dictionary index for synonyms/hypernyms of a term.

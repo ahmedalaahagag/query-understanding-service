@@ -263,7 +263,7 @@ func (c *Client) FetchStopwords(ctx context.Context, locale string) (map[string]
 		"size": 500,
 		"query": map[string]interface{}{
 			"term": map[string]interface{}{
-				"type": "SW",
+				"type.keyword": "SW",
 			},
 		},
 		"_source": []string{"term"},
@@ -409,7 +409,7 @@ func (c *Client) LookupCompounds(ctx context.Context, text, locale string) ([]Co
 				"must": []interface{}{
 					map[string]interface{}{
 						"term": map[string]interface{}{
-							"type": "CMP",
+							"type.keyword": "CMP",
 						},
 					},
 				},

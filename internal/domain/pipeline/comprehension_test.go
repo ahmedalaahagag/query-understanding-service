@@ -15,8 +15,11 @@ func testComprehensionConfig() config.ComprehensionConfig {
 		"en": {
 			FilterRules: []config.FilterRule{
 				{Pattern: `(under|less than)\s+(\d+)\s*(minutes?|mins?)`, Field: "prep_time", Operator: "lt"},
+				{Pattern: `()\b(\d+)\s*(?:minutes?|mins?)\s+(?:or less|max)`, Field: "prep_time", Operator: "lte"},
+				{Pattern: `()\b(\d+)\s*(?:minutes?|mins?)\b`, Field: "prep_time", Operator: "lte"},
 				{Pattern: `\b(quick|fast)\b`, Field: "prep_time", Operator: "lte", Value: "30"},
 				{Pattern: `(under|less than)\s+(\d+)\s*cal(ories?|s)?`, Field: "calories", Operator: "lt"},
+				{Pattern: `()\b(\d+)\s*(?:calories?|cals?|kcal)\b`, Field: "calories", Operator: "lte"},
 				{Pattern: `\b(low calorie|low cal)\b`, Field: "calories", Operator: "lte", Value: "400"},
 				{Pattern: `(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)`, Field: "price", Operator: "lt"},
 				{Pattern: `\b(easy|simple)\b`, Field: "difficulty_level", Operator: "eq", Value: "easy"},
@@ -318,6 +321,76 @@ func TestComprehension_GermanDifficulty(t *testing.T) {
 	assert.Equal(t, "difficulty_level", state.Filters[0].Field)
 	assert.Equal(t, "easy", state.Filters[0].Value)
 	assert.Equal(t, "hähnchen rezepte", state.NormalizedQuery)
+}
+
+func TestComprehension_BareMinutes(t *testing.T) {
+	step := NewComprehensionEngine(testComprehensionConfig())
+	state := &model.QueryState{
+		NormalizedQuery: "10 mins",
+		Locale:          "en-GB",
+		Tokens: []model.Token{
+			{Value: "10", Normalized: "10", Position: 0},
+			{Value: "mins", Normalized: "mins", Position: 1},
+		},
+	}
+
+	err := step.Process(context.Background(), state)
+	require.NoError(t, err)
+
+	require.Len(t, state.Filters, 1)
+	assert.Equal(t, "prep_time", state.Filters[0].Field)
+	assert.Equal(t, "lte", state.Filters[0].Operator)
+	assert.Equal(t, 10.0, state.Filters[0].Value)
+
+	// Both "10" and "mins" should be consumed.
+	assert.Empty(t, state.Tokens)
+}
+
+func TestComprehension_MinutesOrLess(t *testing.T) {
+	step := NewComprehensionEngine(testComprehensionConfig())
+	state := &model.QueryState{
+		NormalizedQuery: "10 minutes or less",
+		Locale:          "en-GB",
+		Tokens: []model.Token{
+			{Value: "10", Normalized: "10", Position: 0},
+			{Value: "minutes", Normalized: "minutes", Position: 1},
+			{Value: "or", Normalized: "or", Position: 2},
+			{Value: "less", Normalized: "less", Position: 3},
+		},
+	}
+
+	err := step.Process(context.Background(), state)
+	require.NoError(t, err)
+
+	require.Len(t, state.Filters, 1)
+	assert.Equal(t, "prep_time", state.Filters[0].Field)
+	assert.Equal(t, "lte", state.Filters[0].Operator)
+	assert.Equal(t, 10.0, state.Filters[0].Value)
+}
+
+func TestComprehension_BareCalories(t *testing.T) {
+	step := NewComprehensionEngine(testComprehensionConfig())
+	state := &model.QueryState{
+		NormalizedQuery: "chicken 500 calories",
+		Locale:          "en-GB",
+		Tokens: []model.Token{
+			{Value: "chicken", Normalized: "chicken", Position: 0},
+			{Value: "500", Normalized: "500", Position: 1},
+			{Value: "calories", Normalized: "calories", Position: 2},
+		},
+	}
+
+	err := step.Process(context.Background(), state)
+	require.NoError(t, err)
+
+	require.Len(t, state.Filters, 1)
+	assert.Equal(t, "calories", state.Filters[0].Field)
+	assert.Equal(t, "lte", state.Filters[0].Operator)
+	assert.Equal(t, 500.0, state.Filters[0].Value)
+
+	// "500" and "calories" consumed, "chicken" remains.
+	assert.Len(t, state.Tokens, 1)
+	assert.Equal(t, "chicken", state.Tokens[0].Value)
 }
 
 func TestComprehension_SortFastest(t *testing.T) {

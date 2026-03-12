@@ -76,10 +76,11 @@ type normalizedQueryResult struct {
 	warnings []string
 }
 
-// validateNormalizedQuery checks that every word in the LLM's normalized query
-// either existed in the original query or is within maxEdits edit distance of an
-// original word (legitimate typo correction). If any word is a hallucinated
-// substitution, the entire normalized query is reverted to the original.
+// validateNormalizedQuery checks the LLM's normalized query against the original.
+// When both have the same word count, it compares positionally — each changed word
+// must be a plausible typo correction (within edit distance). When word counts
+// differ (LLM added/removed words), it falls back to set-based checking.
+// If any word is a hallucinated substitution, the entire normalized query is reverted.
 func validateNormalizedQuery(llmQuery, originalQuery string, maxEdits int) normalizedQueryResult {
 	if llmQuery == "" || strings.EqualFold(llmQuery, originalQuery) {
 		return normalizedQueryResult{query: llmQuery}
@@ -88,6 +89,32 @@ func validateNormalizedQuery(llmQuery, originalQuery string, maxEdits int) norma
 	origWords := strings.Fields(strings.ToLower(originalQuery))
 	llmWords := strings.Fields(strings.ToLower(llmQuery))
 
+	// Same word count: compare positionally to catch substitutions like "party"→"pasta"
+	// even when the replacement word exists elsewhere in the query.
+	if len(origWords) == len(llmWords) {
+		for i, llmW := range llmWords {
+			origW := origWords[i]
+			if llmW == origW {
+				continue
+			}
+			wordMax := maxEdits
+			if len(origW) <= 5 {
+				wordMax = min(1, maxEdits)
+			}
+			if levenshtein(llmW, origW) > wordMax {
+				return normalizedQueryResult{
+					query: strings.ToLower(originalQuery),
+					warnings: []string{fmt.Sprintf(
+						"LLM replaced %q with %q (edit distance %d > %d), reverting normalizedQuery",
+						origW, llmW, levenshtein(llmW, origW), wordMax,
+					)},
+				}
+			}
+		}
+		return normalizedQueryResult{query: llmQuery}
+	}
+
+	// Different word counts: fall back to set-based check.
 	origSet := make(map[string]bool, len(origWords))
 	for _, w := range origWords {
 		origSet[w] = true
@@ -97,17 +124,13 @@ func validateNormalizedQuery(llmQuery, originalQuery string, maxEdits int) norma
 		if origSet[w] {
 			continue
 		}
-		// Scale max edits by word length (AUTO-like): short words ≤5 chars
-		// allow 1 edit, longer words allow the full maxEdits.
 		wordMax := maxEdits
 		if len(w) <= 5 {
 			wordMax = min(1, maxEdits)
 		}
-		// Check if this is a plausible typo correction (within edit distance).
 		if closestEditDistance(w, origWords) <= wordMax {
 			continue
 		}
-		// Word was not in original and is not a typo fix — hallucination.
 		return normalizedQueryResult{
 			query: strings.ToLower(originalQuery),
 			warnings: []string{fmt.Sprintf(

@@ -178,11 +178,11 @@ In `pkg/analyzer/analyzer.go`, comprehension was correctly placed EARLY (after t
 3. **v3 native spell corrector** used `FuzzySuggest` which returns the concept **label**, not the matched text. If "pasta" matched a concept alias, it returned the label (e.g. "ravioli") as a "correction" even though it wasn't a typo.
 
 **Fixes:**
-1. **v1:** Skip HYP-type replacements in synonym expander. Only SYN entries replace tokens. (`internal/domain/pipeline/synonym.go`)
-2. **v2:** Add `validateNormalizedQuery()` — checks every word in the LLM's normalized query against the original. Words not present in the original must be within edit distance 2 (actual typo fix), otherwise revert to original query. Also strengthened LLM prompt to prohibit word substitutions. (`internal/domain/hybrid/validation.go`, `configs/llm_prompt.txt`)
-3. **v3:** Add Levenshtein distance check in `NativeSpellCorrector`. Only accept fuzzy suggestions where the returned label is within 2 edits of the input token. (`internal/domain/native/spell.go`)
+1. **v1:** Skip HYP-type replacements in synonym expander. Only SYN entries replace tokens. Add Levenshtein guard in spell checker with AUTO-like scaling (≤5 chars → max 1 edit, 6+ chars → max 2 edits). (`internal/domain/pipeline/synonym.go`, `spell.go`)
+2. **v2:** Add `validateNormalizedQuery()` — compares positionally when word counts match, set-based when they differ. Uses same AUTO-like edit distance scaling. Also strengthened LLM prompt to prohibit word substitutions. (`internal/domain/hybrid/validation.go`, `configs/llm_prompt.txt`)
+3. **v3:** Add Levenshtein distance check in `NativeSpellCorrector` with AUTO-like scaling. (`internal/domain/native/spell.go`)
 
-**Key insight:** Spell correction should only fix typos (small edit distance), never replace valid words with different ones. Concept/alias mapping is a separate concern handled by the concept recognizer.
+**Key insight:** Spell correction should only fix typos (small edit distance), never replace valid words with different ones. Short words (≤5 chars) are especially prone to false corrections (e.g. "party"→"pasta" is only 2 edits) so they get a stricter threshold of 1 edit. Concept/alias mapping is a separate concern handled by the concept recognizer.
 
 ---
 

@@ -97,8 +97,14 @@ func validateNormalizedQuery(llmQuery, originalQuery string, maxEdits int) norma
 		if origSet[w] {
 			continue
 		}
+		// Scale max edits by word length (AUTO-like): short words ≤5 chars
+		// allow 1 edit, longer words allow the full maxEdits.
+		wordMax := maxEdits
+		if len(w) <= 5 {
+			wordMax = min(1, maxEdits)
+		}
 		// Check if this is a plausible typo correction (within edit distance).
-		if closestEditDistance(w, origWords) <= maxEdits {
+		if closestEditDistance(w, origWords) <= wordMax {
 			continue
 		}
 		// Word was not in original and is not a typo fix — hallucination.

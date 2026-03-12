@@ -217,3 +217,28 @@ This eliminates the need for lookaheads entirely and works across all locales.
 **Key insight:** When curl sends duplicate headers of the same name, the server may use either one. Always ensure bulk API calls use exactly one `Content-Type: application/x-ndjson` header. Also add an explicit `_refresh` call before verification counts, since auto-refresh may not have run yet for large imports.
 
 **Files changed:** `scripts/copy-indexes.sh`
+
+---
+
+## 15. Spell Checker Corrects Valid Words ("cheese" → "chinese")
+
+**Problem:** Searching "mac and cheese" produced `normalizedQuery: "mac chinese"`. The spell checker was replacing "cheese" with "chinese" because:
+1. The OpenSearch term suggester used `suggest_mode: "popular"`, which returns suggestions that are **more frequent** than the original term — even when the original exists in the index
+2. "chinese" is a standalone concept label (cuisine) with high doc frequency; "cheese" only appears as part of multi-word labels ("cream cheese", "cheddar cheese")
+3. `levenshtein("cheese", "chinese") = 2`, and "cheese" is 6 chars → maxEdits=2 → correction accepted
+
+The `popular` mode is designed for "did you mean?" scenarios where the user might have typed a rare word. But in a food search context, "cheese" is a perfectly valid search term — it just happens to appear as part of compound labels rather than a standalone one.
+
+**Solution:** Changed `suggest_mode` from `"popular"` to `"missing"` in the OpenSearch suggest query.
+
+- `popular`: suggest terms more frequent than the original, even if the original exists in the index
+- `missing`: only suggest when the original term **does not exist** in the index at all
+
+Since "cheese" appears in the `label` field's inverted index (from "cream cheese", "cheddar cheese", "mac and cheese", etc.), the `missing` mode returns no suggestions for it → no correction. Genuinely misspelled words like "chiken" (not in the index at all) still get corrected to "chicken".
+
+**Why not other fixes?**
+- **Add "cheese" as a standalone concept**: Doesn't scale — every valid English word that happens to not be a concept label would need adding
+- **Increase edit distance threshold**: Would prevent some legitimate corrections too
+- **Blocklist common words**: Maintenance burden, language-specific, doesn't generalize
+
+**Files changed:** `internal/infra/opensearch/client.go`

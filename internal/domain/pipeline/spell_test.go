@@ -285,6 +285,36 @@ func TestSpellResolver_MultipleCorrections(t *testing.T) {
 	assert.Equal(t, "cheap chicken burger", state.NormalizedQuery)
 }
 
+func TestSpellResolver_RejectsValidWordCorrection(t *testing.T) {
+	// "cheese" → "chinese" is 2 edits on a 6-char word. The spell checker
+	// should reject this: if the suggest API returns nothing (suggest_mode=missing
+	// means no suggestion when the term exists in the index), the token is kept.
+	checker := &mockSpellChecker{
+		suggestions: map[string][]opensearch.SpellSuggestion{
+			// No suggestions for "cheese" — it exists in the index
+		},
+	}
+
+	logger := logrus.New()
+	logger.SetLevel(logrus.ErrorLevel)
+	step := NewSpellResolver(checker, defaultSpellConfig(), logger)
+
+	state := &model.QueryState{
+		OriginalQuery:   "mac and cheese",
+		NormalizedQuery: "mac cheese",
+		Tokens: []model.Token{
+			{Value: "mac", Normalized: "mac", Position: 0},
+			{Value: "cheese", Normalized: "cheese", Position: 1},
+		},
+	}
+
+	err := step.Process(context.Background(), state)
+	require.NoError(t, err)
+
+	assert.Equal(t, "cheese", state.Tokens[1].Normalized)
+	assert.Equal(t, "mac cheese", state.NormalizedQuery)
+}
+
 func TestSpellResolver_RejectsTwoEditOnShortWord(t *testing.T) {
 	// "party" → "pasta" is 2 edits on a 5-char word. The spell checker should
 	// reject this because short words (≤5 chars) only allow 1 edit.

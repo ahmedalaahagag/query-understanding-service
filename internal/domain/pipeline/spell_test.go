@@ -284,3 +284,32 @@ func TestSpellResolver_MultipleCorrections(t *testing.T) {
 	assert.Equal(t, "burger", state.Tokens[2].Normalized)
 	assert.Equal(t, "cheap chicken burger", state.NormalizedQuery)
 }
+
+func TestSpellResolver_RejectsTwoEditOnShortWord(t *testing.T) {
+	// "party" → "pasta" is 2 edits on a 5-char word. The spell checker should
+	// reject this because short words (≤5 chars) only allow 1 edit.
+	checker := &mockSpellChecker{
+		suggestions: map[string][]opensearch.SpellSuggestion{
+			"party": {{Text: "pasta", Score: 0.8}},
+		},
+	}
+
+	logger := logrus.New()
+	logger.SetLevel(logrus.ErrorLevel)
+	step := NewSpellResolver(checker, defaultSpellConfig(), logger)
+
+	state := &model.QueryState{
+		OriginalQuery:   "sunday party",
+		NormalizedQuery: "sunday party",
+		Tokens: []model.Token{
+			{Value: "sunday", Normalized: "sunday", Position: 0},
+			{Value: "party", Normalized: "party", Position: 1},
+		},
+	}
+
+	err := step.Process(context.Background(), state)
+	require.NoError(t, err)
+
+	assert.Equal(t, "party", state.Tokens[1].Normalized)
+	assert.Equal(t, "sunday party", state.NormalizedQuery)
+}

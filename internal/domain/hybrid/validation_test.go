@@ -231,6 +231,17 @@ func TestValidateNormalizedQuery_AllowsTypoCorrection(t *testing.T) {
 	assert.Empty(t, result.warnings)
 }
 
+func TestValidateNormalizedQuery_RejectsTwoEditOnShortWord(t *testing.T) {
+	result := validateNormalizedQuery(
+		"i want something for my sunday pasta with pasta and vieggies",
+		"I want something for my sunday party with pasta and vieggies",
+		2,
+	)
+	// "pasta" replacing "party" is 2 edits on a 5-char word — rejected.
+	assert.Equal(t, "i want something for my sunday party with pasta and vieggies", result.query)
+	assert.Len(t, result.warnings, 1)
+}
+
 func TestValidateNormalizedQuery_IdenticalQuery(t *testing.T) {
 	result := validateNormalizedQuery("chicken burger", "chicken burger", 2)
 	assert.Equal(t, "chicken burger", result.query)

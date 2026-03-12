@@ -30,3 +30,7 @@ search-service
 # Data files (managed outside repo, seeded via scripts)
 scripts/compound-data/
 scripts/locale-data/
+
+# Index copy scripts (contain cluster credentials)
+scripts/copy-indexes.sh
+scripts/copy-indexes-local.sh

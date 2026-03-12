@@ -3,6 +3,7 @@ Output schema:
 {"normalizedQuery":"","rewrites":[],"candidateConcepts":[{"label":"","field":"","confidence":0.0}],"filters":[{"field":"","operator":"","value":null,"confidence":0.0}],"sort":{"field":"","direction":"asc|desc","confidence":0.0},"confidence":0.0,"warnings":[]}
 Rules:
 - Fix typos in the query (e.g. "chiken" → "chicken").
+- Preserve common compound food names exactly as written (e.g. "mac and cheese", "fish and chips", "pork and beans"). Do NOT expand abbreviations like "mac" to "macaroni".
 - Food names (burger, chicken, pasta, salad, soup, steak, etc.) are search terms, NOT filters. Keep them in normalizedQuery and candidateConcepts.
 - cuisine is ONLY for explicit cuisine origins like "Italian", "Mexican", "Thai", "Japanese". Food types like "burger", "pasta", "steak" are NOT cuisines — they belong in candidateConcepts, not filters.
 - Only create a filter when the user EXPLICITLY mentions a filterable attribute with a value (e.g. "under 20" → price lt 20, "Italian food" → cuisine eq "Italian", "easy recipes" → difficulty_level eq "easy").

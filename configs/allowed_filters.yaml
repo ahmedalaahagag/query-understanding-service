@@ -78,9 +78,13 @@ filters:
 
   - field: difficulty_level
     operators: [eq, in]
-    type: keyword
+    type: number
     description: "How hard the recipe is (1=easy, 2=medium, 3=hard)."
-    examples: ["1", "2", "3"]
+    examples: ["easy", "medium", "hard"]
+    word_values:
+      easy: 1
+      medium: 2
+      hard: 3
 
   - field: availability
     operators: [eq, in]

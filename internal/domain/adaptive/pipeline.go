@@ -111,8 +111,9 @@ func (p *Pipeline) escalate(ctx context.Context, req model.AnalyzeRequest, v3Res
 
 	v2Resp, _ := p.v2.Run(ctx, req, false)
 
-	// If v2 returned empty tokens, fall back to v3 result.
-	if len(v2Resp.Tokens) == 0 {
+	// If v2 returned no tokens AND no filters, it produced nothing useful.
+	// But 0 tokens + filters is a valid filter-only query (e.g. "show me something easy").
+	if len(v2Resp.Tokens) == 0 && len(v2Resp.Filters) == 0 {
 		p.logger.WithField("query", req.Query).Warn("adaptive: v2 returned empty, falling back to v3")
 		if p.metrics != nil {
 			p.metrics.V2FallbackTotal.Inc()

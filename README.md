@@ -1,6 +1,6 @@
 # QUS — Query Understanding Service
 
-A Go library and HTTP service that parses search queries into structured intent: normalized tokens, concept matches, filters, sorts, and rewrites. It provides three pipelines: deterministic (v1), LLM-augmented hybrid (v2), and native OpenSearch-driven (v3).
+A Go library and HTTP service that parses search queries into structured intent: normalized tokens, concept matches, filters, sorts, and rewrites. It provides four pipelines: deterministic (v1), LLM-augmented hybrid (v2), native OpenSearch-driven (v3), and adaptive (v4) which uses v3 as a fast path and escalates to v2 only for complex queries.
 
 ## Architecture
 
@@ -39,9 +39,18 @@ graph LR
         V3_6 --> V3_7[Comprehension]
     end
 
+    subgraph "v4 — Adaptive"
+        V4_1[Run v3] --> V4_2{Score Complexity}
+        V4_2 -->|simple| V4_3[Return v3 result]
+        V4_2 -->|complex| V4_4[Run v2 LLM]
+        V4_4 -->|success| V4_5[Return v2 result]
+        V4_4 -.->|failure| V4_3
+    end
+
     Q --> V1_1
     Q --> V2_1
     Q --> V3_1
+    Q --> V4_1
 
     subgraph "OpenSearch"
         OS_L[(linguistic_locale)]
@@ -61,6 +70,8 @@ graph LR
 
 **v3** delegates spell correction, synonym matching, and compound handling to OpenSearch natively via `fuzziness: AUTO` + `cross_fields` multi_match.
 
+**v4** (adaptive) runs v3 first as a fast path, then scores the result on four complexity signals: token coverage (0.4 weight), concept confidence (0.2), spell corrections (0.2), and conversational patterns (0.2). If the score exceeds 0.5 or a hard trigger fires (conversational phrasing, or 3+ tokens with zero concepts and zero filters), it escalates to v2's LLM. Falls back to v3 if v2 is unavailable or fails.
+
 All pipelines benefit from **locale-aware stemming** on the concept index — queries like "veggies" match "veggie", "burgers" matches "burger", etc. Each locale gets its own language-specific analyzer (English, German, French, Dutch, Italian, Spanish, Swedish, Danish, Norwegian, CJK).
 
 ## Project Structure
@@ -78,6 +89,7 @@ internal/
     pipeline/                 # v1 deterministic pipeline steps
     hybrid/                   # v2 hybrid LLM pipeline
     native/                   # v3 native OS-driven pipeline
+    adaptive/                 # v4 adaptive pipeline (v3 fast path + v2 escalation)
   infra/
     bedrock/                  # AWS Bedrock Converse API client (with Nova field normalization)
     ollama/                   # Ollama local LLM client
@@ -160,6 +172,9 @@ resp, _ := a.AnalyzeV3(ctx, req)
 
 // v2: LLM hybrid — requires LLM config, falls back to v1 on failure
 resp, _ := a.AnalyzeV2(ctx, req)
+
+// v4: Adaptive — v3 fast path, escalates to v2 for complex queries
+resp, _ := a.AnalyzeV4(ctx, req)
 ```
 
 **When to use which:**
@@ -169,6 +184,7 @@ resp, _ := a.AnalyzeV2(ctx, req)
 | v1 | Production — predictable, testable | ~5–15ms | OpenSearch |
 | v3 | Typo-heavy queries, minimal config | ~10–20ms | OpenSearch |
 | v2 | Complex intent (calories, dietary) | ~200–500ms | OpenSearch + LLM |
+| v4 | Best of both — fast for simple, smart for complex | ~10–500ms | OpenSearch + LLM (optional) |
 
 #### Enabling v2 (LLM hybrid)
 
@@ -290,13 +306,15 @@ More specific rules (prep_time, calories) must come before the generic price rul
 
 ### Config Files per Pipeline
 
-| Config File | v1 | v2 | v3 |
-|---|---|---|---|
-| `qus.yaml` | ✅ | — | ✅ |
-| `comprehension.yaml` | ✅ | — | ✅ |
-| `allowed_filters.yaml` | — | ✅ | — |
-| `allowed_sorts.yaml` | — | ✅ | — |
-| `llm_prompt.txt` | — | ✅ | — |
+| Config File | v1 | v2 | v3 | v4 |
+|---|---|---|---|---|
+| `qus.yaml` | ✅ | — | ✅ | ✅ |
+| `comprehension.yaml` | ✅ | — | ✅ | ✅ |
+| `allowed_filters.yaml` | — | ✅ | — | ✅* |
+| `allowed_sorts.yaml` | — | ✅ | — | ✅* |
+| `llm_prompt.txt` | — | ✅ | — | ✅* |
+
+*v4 uses these when escalating to v2.
 
 Synonyms and compounds are stored in OpenSearch's linguistic index (types `SYN`, `HYP`, `CMP`) — no YAML data files needed.
 
@@ -604,6 +622,25 @@ curl -X POST 'http://localhost:8080/v3/analyze?locale=en-GB&country=uk' \
   -H 'Content-Type: application/json' \
   -d '{"query": "chiken soup under 5"}'
 ```
+
+### POST /v4/analyze
+
+Adaptive pipeline. Runs v3 first and scores the result for complexity. Simple queries return the v3 result directly (~10–20ms). Complex queries (conversational phrasing, low concept coverage, many spell corrections) escalate to the v2 LLM pipeline. Falls back to v3 if LLM is unavailable or fails.
+
+**Query parameters:** `locale`, `country`
+
+```bash
+curl -X POST 'http://localhost:8080/v4/analyze?locale=en-GB&country=uk' \
+  -H 'Content-Type: application/json' \
+  -d '{"query": "show me something easy for dinner"}'
+```
+
+The response includes the standard `AnalyzeResponse` fields plus routing metadata:
+
+| Extra field | Type | Description |
+|---|---|---|
+| `escalated` | `bool` | Whether the query was escalated to v2 |
+| `complexityScore` | `float64` | Complexity score (0 = simple, 1 = complex) |
 
 ### POST /v2/analyze/debug
 

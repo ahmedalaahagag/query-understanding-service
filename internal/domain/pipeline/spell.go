@@ -74,6 +74,12 @@ func (s *SpellResolver) Process(ctx context.Context, state *model.QueryState) er
 		if levenshtein(corrected, tok.Value) > maxEdits {
 			continue
 		}
+		// Reject corrections that change the first letter.
+		// Valid typos almost never start with a different letter
+		// (e.g. "dinner" → "ginger" is a false correction).
+		if corrected[0] != tok.Value[0] {
+			continue
+		}
 		state.Tokens[i].Normalized = corrected
 		changed = true
 	}

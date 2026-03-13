@@ -312,3 +312,25 @@ All thresholds are configurable via `ScorerConfig`. To make the scorer more aggr
 
 **Files created:** `internal/domain/adaptive/scorer.go`, `scorer_test.go`, `pipeline.go`, `pipeline_test.go`
 **Files changed:** `pkg/analyzer/analyzer.go`, `internal/application/routes/routes.go`, `cmd/http.go`
+
+---
+
+## 17. Spell Correction First-Letter Guard
+
+**Problem:** The spell corrector changed "dinner" → "ginger" (edit distance 2, within the AUTO fuzziness limit for 6-char words). The concept index doesn't contain "dinner" so `suggest_mode: missing` returns "ginger" as a fuzzy match. This caused "show me something easy for dinner" to return ginger recipes instead of easy dinner recipes.
+
+**Root cause:** The Levenshtein guard (≤5 chars → 1 edit, 6+ → 2 edits) was necessary but not sufficient. "dinner" → "ginger" is only 2 substitutions (d→g, n→g) so it passed the distance check, despite being an obviously wrong correction.
+
+**Solution:** Added a first-letter guard to both v1 and v3 spell correctors. Valid typos almost never change the first character — users know what letter a word starts with, even when they misspell the middle. If `corrected[0] != token[0]`, the correction is rejected.
+
+```go
+if corrected[0] != tok.Value[0] {
+    continue
+}
+```
+
+**Why not add "dinner" to the concept index?** "Dinner" isn't a food concept — it's a meal occasion. Adding non-concepts to the concept index to prevent spell corrections is a data integrity smell. The spell corrector should be smart enough to reject bad suggestions on its own.
+
+**Why not tighten the Levenshtein limit?** Reducing max edits from 2 to 1 for 6-char words would break valid corrections like "chiken" → "chicken" (2 edits). The first-letter check is a more targeted constraint.
+
+**Files changed:** `internal/domain/native/spell.go`, `internal/domain/pipeline/spell.go`

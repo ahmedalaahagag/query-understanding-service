@@ -315,6 +315,32 @@ func TestSpellResolver_RejectsValidWordCorrection(t *testing.T) {
 	assert.Equal(t, "mac cheese", state.NormalizedQuery)
 }
 
+func TestSpellResolver_RejectsFirstLetterChange(t *testing.T) {
+	// "dinner" → "ginger" is 2 edits on a 6-char word (allowed by Levenshtein),
+	// but changes the first letter — almost never a valid correction.
+	checker := &mockSpellChecker{
+		suggestions: map[string][]opensearch.SpellSuggestion{
+			"dinner": {{Text: "ginger", Score: 0.90}},
+		},
+	}
+
+	logger := logrus.New()
+	logger.SetLevel(logrus.ErrorLevel)
+	step := NewSpellResolver(checker, defaultSpellConfig(), logger)
+
+	state := &model.QueryState{
+		NormalizedQuery: "dinner",
+		Tokens: []model.Token{
+			{Value: "dinner", Normalized: "dinner", Position: 0},
+		},
+	}
+
+	err := step.Process(context.Background(), state)
+	require.NoError(t, err)
+
+	assert.Equal(t, "dinner", state.Tokens[0].Normalized, "should reject correction that changes first letter")
+}
+
 func TestSpellResolver_RejectsTwoEditOnShortWord(t *testing.T) {
 	// "party" → "pasta" is 2 edits on a 5-char word. The spell checker should
 	// reject this because short words (≤5 chars) only allow 1 edit.

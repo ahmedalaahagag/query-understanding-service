@@ -210,6 +210,28 @@ func TestNativeSpellCorrector_SkipsNumericTokens(t *testing.T) {
 	assert.False(t, called, "should skip numeric tokens")
 }
 
+func TestNativeSpellCorrector_RejectsFirstLetterChange(t *testing.T) {
+	fuzzy := &mockFuzzySearcher{
+		suggestFn: func(_ context.Context, token, _ string) (string, float64, error) {
+			if token == "dinner" {
+				return "ginger", 5.0, nil // edit distance 2, but first letter differs
+			}
+			return "", 0, nil
+		},
+	}
+
+	corrector := NewNativeSpellCorrector(fuzzy, logrus.New())
+	state := &model.QueryState{
+		Tokens: []model.Token{
+			{Value: "dinner", Normalized: "dinner", Position: 0},
+		},
+	}
+
+	err := corrector.Process(context.Background(), state)
+	require.NoError(t, err)
+	assert.Equal(t, "dinner", state.Tokens[0].Normalized, "should reject correction that changes first letter")
+}
+
 func TestNativeConceptRecognizer_FuzzyMatch(t *testing.T) {
 	fuzzy := &mockFuzzySearcher{
 		searchFn: func(_ context.Context, text, _, _ string) ([]opensearch.ConceptHit, error) {

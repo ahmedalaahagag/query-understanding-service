@@ -1,7 +1,17 @@
 sorts:
   - key: relevance
   - key: price_asc
+    field: price
+    direction: asc
   - key: price_desc
+    field: price
+    direction: desc
   - key: newest
+    field: updated_at
+    direction: desc
   - key: prep_time_asc
+    field: preparation_time
+    direction: asc
   - key: calories_asc
+    field: total_calories
+    direction: asc

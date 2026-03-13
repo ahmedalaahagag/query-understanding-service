@@ -3,63 +3,166 @@
 #
 # Filter rules:
 #   - Numeric: pattern must capture the number in group 2. E.g. (under)\s+(\d+)
-#   - Keyword: set "value" for a static extraction. E.g. "easy recipes" → difficulty_level eq "easy"
+#   - Keyword: set "value" for a static extraction. E.g. "easy recipes" -> difficulty_level eq "easy"
 #
 # Sort rules:
 #   - Pattern match triggers a sort directive. First match wins.
 #
 # IMPORTANT: More specific numeric rules (prep_time, calories) must come BEFORE
-# the generic price rule, which uses a negative lookahead to avoid matching
-# when followed by a unit (min, minute, cal, calorie, kcal, etc.).
+# the generic price rule. Rule ordering + overlap detection prevents double-match.
+#
+# Field names must match the actual product index fields:
+#   preparation_time (keyword, seconds), total_calories (keyword, e.g. "560 kcal"),
+#   price (keyword, cents), difficulty_level (keyword, "1"/"2"/"3"),
+#   tags (keyword array), recipe_label (keyword)
 
 en:
   filter_rules:
     # --- Prep time (before price — more specific) ---
+    # Index field: preparation_time (keyword, seconds). Multiplier 60 converts minutes->seconds.
     - pattern: '(under|less than)\s+(\d+)\s*(minutes?|mins?)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    - pattern: '(\d+)\s*(minutes?|mins?)\s+(or less|max)'
-      field: prep_time
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:minutes?|mins?)\s+(?:or less|max)'
+      field: preparation_time
       operator: lte
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:minutes?|mins?)\b'
+      field: preparation_time
+      operator: lte
+      multiplier: 60
+    - pattern: '\b(super\s*quick|superquick)\b'
+      field: preparation_time
+      operator: lte
+      value: "1200"
     - pattern: '\b(quick|fast)\b'
-      field: prep_time
+      field: preparation_time
       operator: lte
-      value: "30"
+      value: "1800"
 
     # --- Calories (before price — more specific) ---
+    # Index field: total_calories (keyword, e.g. "560 kcal"). Painless strips suffix.
     - pattern: '(under|less than)\s+(\d+)\s*cal(ories?|s)?'
-      field: calories
+      field: total_calories
       operator: lt
-    - pattern: '\b(low calorie|low cal|light)\b'
-      field: calories
+    - pattern: '()\b(\d+)\s*(?:calories?|cals?|kcal)\b'
+      field: total_calories
       operator: lte
-      value: "400"
-    - pattern: '\b(high calorie|calorie rich)\b'
-      field: calories
-      operator: gte
-      value: "600"
 
-    # --- Price (generic — must come after time/calorie rules; overlap detection prevents double-match) ---
+    # --- Price (generic — must come after time/calorie rules) ---
+    # Index field: price (keyword, cents). Multiplier 100 converts user euros/dollars->cents.
+    # Note: Go regexp (RE2) does not support lookahead. Rule ordering handles
+    # disambiguation: prep_time and calorie rules above consume their regions
+    # first, so the generic price rules below only match leftovers.
     - pattern: '(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
     - pattern: '(over|more than)\s+(\d+(?:\.\d+)?)'
       field: price
       operator: gt
+      multiplier: 100
+    - pattern: '\b(low calories?|low cal|light)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+    - pattern: '\b(high calorie|calorie rich)\b'
+      field: total_calories
+      operator: gte
+      value: "600"
+
+    # --- Dietary / Nutritional tags ---
+    # Index field: tags (keyword array).
+    - pattern: '\b(low carb|low-carb)\b'
+      field: tags
+      operator: eq
+      value: "Low Carb"
+    - pattern: '\b(high protein|high-protein)\b'
+      field: tags
+      operator: eq
+      value: "High Protein"
+    - pattern: '\b(low sodium|low-sodium)\b'
+      field: tags
+      operator: eq
+      value: "Low Sodium"
+    - pattern: '\b(carb smart)\b'
+      field: tags
+      operator: eq
+      value: "Carb Smart"
+    - pattern: '\b(sodium smart)\b'
+      field: tags
+      operator: eq
+      value: "Sodium Smart"
+    - pattern: '\b(cal smart|calorie smart)\b'
+      field: tags
+      operator: eq
+      value: "Calorie Smart"
+    - pattern: '\b(carb conscious)\b'
+      field: tags
+      operator: eq
+      value: "Carb Conscious"
+
+    # --- Product types / Recipe labels ---
+    - pattern: '\b(ready\s*made(?:\s*meals?)?|ready\s*to\s*(?:heat|eat)|heat\s*and\s*eat|oven\s*ready|pre\s*-?\s*made|premade)\b'
+      field: tags
+      operator: eq
+      value: "Ready to Heat"
+    - pattern: '\b(prep\s*(?:and|&)\s*bake)\b'
+      field: tags
+      operator: eq
+      value: "Oven Ready"
+    - pattern: '\b(best\s*seller)\b'
+      field: tags
+      operator: eq
+      value: "Bestseller"
+
+    # --- Lifestyle / audience tags ---
+    - pattern: '\b(kid\s*friendly|kids?\s*meal)\b'
+      field: tags
+      operator: eq
+      value: "Kid Friendly"
+    - pattern: '\b(family\s*friendly)\b'
+      field: tags
+      operator: eq
+      value: "Family Friendly"
+    - pattern: '\b(big\s*batch)\b'
+      field: tags
+      operator: eq
+      value: "Big Batch"
+
+    # --- Cooking method / equipment ---
+    - pattern: '\b(one\s*-?\s*pan)\b'
+      field: tags
+      operator: eq
+      value: "One Pan"
+    - pattern: '\b(one\s*-?\s*pot)\b'
+      field: tags
+      operator: eq
+      value: "One Pot"
+    - pattern: '\b(sheet\s*pan)\b'
+      field: tags
+      operator: eq
+      value: "Sheet Pan"
+    - pattern: '\b(air\s*fryer)\b'
+      field: tags
+      operator: eq
+      value: "Air Fryer"
 
     # --- Difficulty ---
+    # Index field: difficulty_level (keyword, "1"=easy, "2"=medium, "3"=hard).
     - pattern: '\b(easy|simple|beginner)\b'
       field: difficulty_level
       operator: eq
-      value: easy
+      value: "1"
     - pattern: '\b(medium|intermediate|moderate)\b'
       field: difficulty_level
       operator: eq
-      value: medium
+      value: "2"
     - pattern: '\b(hard|difficult|advanced|challenging)\b'
       field: difficulty_level
       operator: eq
-      value: hard
+      value: "3"
 
     # --- Servings ---
     - pattern: '(for|serves?|feeds?)\s+(\d+)\s*(people|persons?|servings?)?'
@@ -74,59 +177,121 @@ en:
       field: price
       direction: desc
     - pattern: '\b(newest|most recent|latest)\b'
-      field: created_at
+      field: updated_at
       direction: desc
     - pattern: '\b(fastest|quickest)\b'
-      field: prep_time
+      field: preparation_time
       direction: asc
     - pattern: '\b(most popular|top rated|best rated|highest rated)\b'
       field: rating
       direction: desc
     - pattern: '\b(lowest calorie|fewest calories)\b'
-      field: calories
+      field: total_calories
       direction: asc
 
 de:
   filter_rules:
-    # --- Prep time (before price) ---
+    # --- Prep time ---
     - pattern: '(unter|weniger als)\s+(\d+)\s*(Minuten|Min)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    - pattern: '\b(schnell|fix)\b'
-      field: prep_time
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:Minuten|Min)\b'
+      field: preparation_time
       operator: lte
-      value: "30"
+      multiplier: 60
+    - pattern: '\b(schnell|fix)\b'
+      field: preparation_time
+      operator: lte
+      value: "1800"
 
-    # --- Calories (before price) ---
+    # --- Calories ---
     - pattern: '(unter|weniger als)\s+(\d+)\s*(Kalorien|kcal|cal)'
-      field: calories
+      field: total_calories
       operator: lt
-    - pattern: '\b(kalorienarm)\b'
-      field: calories
+    - pattern: '()\b(\d+)\s*(?:Kalorien|kcal|cal)\b'
+      field: total_calories
+      operator: lte
+    - pattern: '\b(kalorienarm|leicht)\b'
+      field: total_calories
       operator: lte
       value: "400"
 
-    # --- Price (generic — after time/calorie rules) ---
+    # --- Price ---
     - pattern: '(unter|weniger als|günstiger als|billiger als)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
     - pattern: '(über|mehr als|teurer als)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: gt
+      multiplier: 100
+
+    # --- Dietary / Tags ---
+    - pattern: '\b(wenig Kohlenhydrate|low carb)\b'
+      field: tags
+      operator: eq
+      value: "Low Carb"
+    - pattern: '\b(proteinreich|high protein)\b'
+      field: tags
+      operator: eq
+      value: "High Protein"
+    - pattern: '\b(natriumarm|wenig Salz)\b'
+      field: tags
+      operator: eq
+      value: "Low Sodium"
+    - pattern: '\b(kinderfreundlich)\b'
+      field: tags
+      operator: eq
+      value: "Kid Friendly"
+    - pattern: '\b(familienfreundlich)\b'
+      field: tags
+      operator: eq
+      value: "Family Friendly"
+    - pattern: '\b(eine Pfanne|Ein-Pfannen)\b'
+      field: tags
+      operator: eq
+      value: "One Pan"
+    - pattern: '\b(ein Topf|Ein-Topf)\b'
+      field: tags
+      operator: eq
+      value: "One Pot"
+    - pattern: '\b(Heißluftfritteuse|Airfryer|Air Fryer)\b'
+      field: tags
+      operator: eq
+      value: "Air Fryer"
+    - pattern: '\b(große Portion|große Menge)\b'
+      field: tags
+      operator: eq
+      value: "Big Batch"
+
+    # --- Product types ---
+    - pattern: '\b(fertiggericht|essfertig|aufwärmen und essen|ofenfertig|vorgefertigt)\b'
+      field: tags
+      operator: eq
+      value: "Ready to Heat"
+    - pattern: '\b(vorbereiten und backen)\b'
+      field: tags
+      operator: eq
+      value: "Oven Ready"
+    - pattern: '\b(Bestseller|meistverkauft)\b'
+      field: tags
+      operator: eq
+      value: "Bestseller"
 
     # --- Difficulty ---
     - pattern: '\b(einfach|simpel)\b'
       field: difficulty_level
       operator: eq
-      value: easy
+      value: "1"
     - pattern: '\b(mittel|mittelschwer)\b'
       field: difficulty_level
       operator: eq
-      value: medium
+      value: "2"
     - pattern: '\b(schwer|schwierig|anspruchsvoll)\b'
       field: difficulty_level
       operator: eq
-      value: hard
+      value: "3"
 
     # --- Servings ---
     - pattern: '(für)\s+(\d+)\s*(Personen|Portionen)?'
@@ -141,10 +306,10 @@ de:
       field: price
       direction: desc
     - pattern: '\b(neueste|aktuellste)\b'
-      field: created_at
+      field: updated_at
       direction: desc
     - pattern: '\b(schnellste)\b'
-      field: prep_time
+      field: preparation_time
       direction: asc
     - pattern: '\b(beliebteste|am besten bewertet)\b'
       field: rating
@@ -152,45 +317,107 @@ de:
 
 fr:
   filter_rules:
-    # --- Prep time (before price) ---
+    # --- Prep time ---
     - pattern: '(moins de)\s+(\d+)\s*(minutes?|min)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    - pattern: '\b(rapide|vite)\b'
-      field: prep_time
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:minutes?|min)\b'
+      field: preparation_time
       operator: lte
-      value: "30"
+      multiplier: 60
+    - pattern: '\b(rapide|vite)\b'
+      field: preparation_time
+      operator: lte
+      value: "1800"
 
-    # --- Calories (before price) ---
+    # --- Calories ---
     - pattern: '(moins de)\s+(\d+)\s*(calories?|cal|kcal)'
-      field: calories
+      field: total_calories
       operator: lt
+    - pattern: '()\b(\d+)\s*(?:calories?|cal|kcal)\b'
+      field: total_calories
+      operator: lte
     - pattern: '\b(peu calorique|léger|allégé)\b'
-      field: calories
+      field: total_calories
       operator: lte
       value: "400"
 
-    # --- Price (generic — after time/calorie rules) ---
+    # --- Price ---
     - pattern: '(moins de|moins cher que|en dessous de)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
     - pattern: '(plus de|au dessus de)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: gt
+      multiplier: 100
+
+    # --- Dietary / Tags ---
+    - pattern: '\b(faible en glucides|low carb)\b'
+      field: tags
+      operator: eq
+      value: "Low Carb"
+    - pattern: '\b(riche en protéines|high protein)\b'
+      field: tags
+      operator: eq
+      value: "High Protein"
+    - pattern: '\b(faible en sodium|pauvre en sel)\b'
+      field: tags
+      operator: eq
+      value: "Low Sodium"
+    - pattern: '\b(adapté aux enfants)\b'
+      field: tags
+      operator: eq
+      value: "Kid Friendly"
+    - pattern: '\b(familial|pour la famille)\b'
+      field: tags
+      operator: eq
+      value: "Family Friendly"
+    - pattern: '\b(une poêle|en une poêle)\b'
+      field: tags
+      operator: eq
+      value: "One Pan"
+    - pattern: '\b(un pot|en un pot|une casserole)\b'
+      field: tags
+      operator: eq
+      value: "One Pot"
+    - pattern: '\b(friteuse à air|air fryer)\b'
+      field: tags
+      operator: eq
+      value: "Air Fryer"
+    - pattern: '\b(grande quantité|grand lot)\b'
+      field: tags
+      operator: eq
+      value: "Big Batch"
+
+    # --- Product types ---
+    - pattern: '\b(prêt à manger|prêt à réchauffer|plat préparé|tout prêt)\b'
+      field: tags
+      operator: eq
+      value: "Ready to Heat"
+    - pattern: '\b(préparer et cuire)\b'
+      field: tags
+      operator: eq
+      value: "Oven Ready"
+    - pattern: '\b(meilleure vente|best seller)\b'
+      field: tags
+      operator: eq
+      value: "Bestseller"
 
     # --- Difficulty ---
     - pattern: '\b(facile|simple)\b'
       field: difficulty_level
       operator: eq
-      value: easy
+      value: "1"
     - pattern: '\b(moyen|intermédiaire)\b'
       field: difficulty_level
       operator: eq
-      value: medium
+      value: "2"
     - pattern: '\b(difficile|avancé)\b'
       field: difficulty_level
       operator: eq
-      value: hard
+      value: "3"
 
     # --- Servings ---
     - pattern: '(pour)\s+(\d+)\s*(personnes?|portions?)?'
@@ -202,10 +429,10 @@ fr:
       field: price
       direction: asc
     - pattern: '\b(plus récent|dernier)\b'
-      field: created_at
+      field: updated_at
       direction: desc
     - pattern: '\b(plus rapide)\b'
-      field: prep_time
+      field: preparation_time
       direction: asc
     - pattern: '\b(plus populaire|mieux noté)\b'
       field: rating
@@ -213,45 +440,107 @@ fr:
 
 nl:
   filter_rules:
-    # --- Prep time (before price) ---
+    # --- Prep time ---
     - pattern: '(onder|minder dan)\s+(\d+)\s*(minuten|min)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    - pattern: '\b(snel|vlug)\b'
-      field: prep_time
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:minuten|min)\b'
+      field: preparation_time
       operator: lte
-      value: "30"
+      multiplier: 60
+    - pattern: '\b(snel|vlug)\b'
+      field: preparation_time
+      operator: lte
+      value: "1800"
 
-    # --- Calories (before price) ---
+    # --- Calories ---
     - pattern: '(onder|minder dan)\s+(\d+)\s*(calorieën|cal|kcal)'
-      field: calories
+      field: total_calories
       operator: lt
-    - pattern: '\b(caloriearm)\b'
-      field: calories
+    - pattern: '()\b(\d+)\s*(?:calorieën|cal|kcal)\b'
+      field: total_calories
+      operator: lte
+    - pattern: '\b(caloriearm|licht)\b'
+      field: total_calories
       operator: lte
       value: "400"
 
-    # --- Price (generic — after time/calorie rules) ---
+    # --- Price ---
     - pattern: '(onder|minder dan|goedkoper dan)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
     - pattern: '(boven|meer dan)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: gt
+      multiplier: 100
+
+    # --- Dietary / Tags ---
+    - pattern: '\b(koolhydraatarm|low carb)\b'
+      field: tags
+      operator: eq
+      value: "Low Carb"
+    - pattern: '\b(eiwitrijk|high protein)\b'
+      field: tags
+      operator: eq
+      value: "High Protein"
+    - pattern: '\b(natriumarm|weinig zout)\b'
+      field: tags
+      operator: eq
+      value: "Low Sodium"
+    - pattern: '\b(kindvriendelijk)\b'
+      field: tags
+      operator: eq
+      value: "Kid Friendly"
+    - pattern: '\b(gezinsvriendelijk|voor het gezin)\b'
+      field: tags
+      operator: eq
+      value: "Family Friendly"
+    - pattern: '\b(één pan|een pan)\b'
+      field: tags
+      operator: eq
+      value: "One Pan"
+    - pattern: '\b(één pot|een pot)\b'
+      field: tags
+      operator: eq
+      value: "One Pot"
+    - pattern: '\b(airfryer|heteluchtfriteuse)\b'
+      field: tags
+      operator: eq
+      value: "Air Fryer"
+    - pattern: '\b(grote portie|groot batch)\b'
+      field: tags
+      operator: eq
+      value: "Big Batch"
+
+    # --- Product types ---
+    - pattern: '\b(kant-en-klaar|kant en klaar|voorbereid|klaar om te eten)\b'
+      field: tags
+      operator: eq
+      value: "Ready to Heat"
+    - pattern: '\b(voorbereiden en bakken)\b'
+      field: tags
+      operator: eq
+      value: "Oven Ready"
+    - pattern: '\b(bestseller|best verkocht)\b'
+      field: tags
+      operator: eq
+      value: "Bestseller"
 
     # --- Difficulty ---
-    - pattern: '\b(makkelijk|eenvoudig)\b'
+    - pattern: '\b(makkelijk|eenvoudig|simpel)\b'
       field: difficulty_level
       operator: eq
-      value: easy
-    - pattern: '\b(gemiddeld)\b'
+      value: "1"
+    - pattern: '\b(gemiddeld|gemiddelde)\b'
       field: difficulty_level
       operator: eq
-      value: medium
+      value: "2"
     - pattern: '\b(moeilijk|lastig|geavanceerd)\b'
       field: difficulty_level
       operator: eq
-      value: hard
+      value: "3"
 
     # --- Servings ---
     - pattern: '(voor)\s+(\d+)\s*(personen|porties)?'
@@ -263,10 +552,10 @@ nl:
       field: price
       direction: asc
     - pattern: '\b(nieuwste|meest recent)\b'
-      field: created_at
+      field: updated_at
       direction: desc
     - pattern: '\b(snelste)\b'
-      field: prep_time
+      field: preparation_time
       direction: asc
     - pattern: '\b(populairste|best beoordeeld)\b'
       field: rating
@@ -274,45 +563,107 @@ nl:
 
 it:
   filter_rules:
-    # --- Prep time (before price) ---
+    # --- Prep time ---
     - pattern: '(sotto|meno di)\s+(\d+)\s*(minuti|min)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    - pattern: '\b(veloce|rapido)\b'
-      field: prep_time
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:minuti|min)\b'
+      field: preparation_time
       operator: lte
-      value: "30"
+      multiplier: 60
+    - pattern: '\b(veloce|rapido)\b'
+      field: preparation_time
+      operator: lte
+      value: "1800"
 
-    # --- Calories (before price) ---
+    # --- Calories ---
     - pattern: '(sotto|meno di)\s+(\d+)\s*(calorie|cal|kcal)'
-      field: calories
+      field: total_calories
       operator: lt
+    - pattern: '()\b(\d+)\s*(?:calorie|cal|kcal)\b'
+      field: total_calories
+      operator: lte
     - pattern: '\b(ipocalorico|leggero)\b'
-      field: calories
+      field: total_calories
       operator: lte
       value: "400"
 
-    # --- Price (generic — after time/calorie rules) ---
+    # --- Price ---
     - pattern: '(sotto|meno di|più economico di)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
     - pattern: '(sopra|più di)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: gt
+      multiplier: 100
+
+    # --- Dietary / Tags ---
+    - pattern: '\b(pochi carboidrati|low carb)\b'
+      field: tags
+      operator: eq
+      value: "Low Carb"
+    - pattern: '\b(ricco di proteine|high protein)\b'
+      field: tags
+      operator: eq
+      value: "High Protein"
+    - pattern: '\b(poco sodio|basso sodio)\b'
+      field: tags
+      operator: eq
+      value: "Low Sodium"
+    - pattern: '\b(adatto ai bambini)\b'
+      field: tags
+      operator: eq
+      value: "Kid Friendly"
+    - pattern: '\b(per la famiglia|familiare)\b'
+      field: tags
+      operator: eq
+      value: "Family Friendly"
+    - pattern: '\b(una padella|in padella unica)\b'
+      field: tags
+      operator: eq
+      value: "One Pan"
+    - pattern: '\b(una pentola|in pentola unica)\b'
+      field: tags
+      operator: eq
+      value: "One Pot"
+    - pattern: '\b(friggitrice ad aria|air fryer)\b'
+      field: tags
+      operator: eq
+      value: "Air Fryer"
+    - pattern: '\b(grande quantità|grande porzione)\b'
+      field: tags
+      operator: eq
+      value: "Big Batch"
+
+    # --- Product types ---
+    - pattern: '\b(pronto da mangiare|pronto da scaldare|piatto pronto|già pronto)\b'
+      field: tags
+      operator: eq
+      value: "Ready to Heat"
+    - pattern: '\b(prepara e cuoci)\b'
+      field: tags
+      operator: eq
+      value: "Oven Ready"
+    - pattern: '\b(più venduto|best seller)\b'
+      field: tags
+      operator: eq
+      value: "Bestseller"
 
     # --- Difficulty ---
     - pattern: '\b(facile|semplice)\b'
       field: difficulty_level
       operator: eq
-      value: easy
+      value: "1"
     - pattern: '\b(medio|intermedio)\b'
       field: difficulty_level
       operator: eq
-      value: medium
+      value: "2"
     - pattern: '\b(difficile|avanzato)\b'
       field: difficulty_level
       operator: eq
-      value: hard
+      value: "3"
 
     # --- Servings ---
     - pattern: '(per)\s+(\d+)\s*(persone|porzioni)?'
@@ -324,10 +675,10 @@ it:
       field: price
       direction: asc
     - pattern: '\b(più recente|ultimo)\b'
-      field: created_at
+      field: updated_at
       direction: desc
     - pattern: '\b(più veloce|più rapido)\b'
-      field: prep_time
+      field: preparation_time
       direction: asc
     - pattern: '\b(più popolare|meglio valutato)\b'
       field: rating
@@ -335,45 +686,107 @@ it:
 
 es:
   filter_rules:
-    # --- Prep time (before price) ---
+    # --- Prep time ---
     - pattern: '(menos de)\s+(\d+)\s*(minutos|min)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    - pattern: '\b(rápido|veloz)\b'
-      field: prep_time
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:minutos|min)\b'
+      field: preparation_time
       operator: lte
-      value: "30"
+      multiplier: 60
+    - pattern: '\b(rápido|veloz)\b'
+      field: preparation_time
+      operator: lte
+      value: "1800"
 
-    # --- Calories (before price) ---
+    # --- Calories ---
     - pattern: '(menos de)\s+(\d+)\s*(calorías|cal|kcal)'
-      field: calories
+      field: total_calories
       operator: lt
+    - pattern: '()\b(\d+)\s*(?:calorías|cal|kcal)\b'
+      field: total_calories
+      operator: lte
     - pattern: '\b(bajo en calorías|ligero|light)\b'
-      field: calories
+      field: total_calories
       operator: lte
       value: "400"
 
-    # --- Price (generic — after time/calorie rules) ---
+    # --- Price ---
     - pattern: '(menos de|más barato que|por debajo de)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
     - pattern: '(más de|por encima de)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: gt
+      multiplier: 100
+
+    # --- Dietary / Tags ---
+    - pattern: '\b(bajo en carbohidratos|low carb)\b'
+      field: tags
+      operator: eq
+      value: "Low Carb"
+    - pattern: '\b(alto en proteínas|high protein)\b'
+      field: tags
+      operator: eq
+      value: "High Protein"
+    - pattern: '\b(bajo en sodio|poca sal)\b'
+      field: tags
+      operator: eq
+      value: "Low Sodium"
+    - pattern: '\b(apto para niños)\b'
+      field: tags
+      operator: eq
+      value: "Kid Friendly"
+    - pattern: '\b(para la familia|familiar)\b'
+      field: tags
+      operator: eq
+      value: "Family Friendly"
+    - pattern: '\b(una sartén|en una sartén)\b'
+      field: tags
+      operator: eq
+      value: "One Pan"
+    - pattern: '\b(una olla|en una olla)\b'
+      field: tags
+      operator: eq
+      value: "One Pot"
+    - pattern: '\b(freidora de aire|air fryer)\b'
+      field: tags
+      operator: eq
+      value: "Air Fryer"
+    - pattern: '\b(gran cantidad|gran lote)\b'
+      field: tags
+      operator: eq
+      value: "Big Batch"
+
+    # --- Product types ---
+    - pattern: '\b(listo para comer|listo para calentar|plato preparado|precocinado)\b'
+      field: tags
+      operator: eq
+      value: "Ready to Heat"
+    - pattern: '\b(preparar y hornear)\b'
+      field: tags
+      operator: eq
+      value: "Oven Ready"
+    - pattern: '\b(más vendido|best seller)\b'
+      field: tags
+      operator: eq
+      value: "Bestseller"
 
     # --- Difficulty ---
-    - pattern: '\b(fácil|sencillo)\b'
+    - pattern: '\b(fácil|sencillo|simple)\b'
       field: difficulty_level
       operator: eq
-      value: easy
+      value: "1"
     - pattern: '\b(medio|intermedio|moderado)\b'
       field: difficulty_level
       operator: eq
-      value: medium
+      value: "2"
     - pattern: '\b(difícil|avanzado|complicado)\b'
       field: difficulty_level
       operator: eq
-      value: hard
+      value: "3"
 
     # --- Servings ---
     - pattern: '(para)\s+(\d+)\s*(personas|porciones|raciones)?'
@@ -385,10 +798,10 @@ es:
       field: price
       direction: asc
     - pattern: '\b(más reciente|último|nuevo)\b'
-      field: created_at
+      field: updated_at
       direction: desc
     - pattern: '\b(más rápido)\b'
-      field: prep_time
+      field: preparation_time
       direction: asc
     - pattern: '\b(más popular|mejor valorado)\b'
       field: rating
@@ -396,45 +809,107 @@ es:
 
 sv:
   filter_rules:
-    # --- Prep time (before price) ---
+    # --- Prep time ---
     - pattern: '(under|mindre än)\s+(\d+)\s*(minuter|min)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    - pattern: '\b(snabb|kvick)\b'
-      field: prep_time
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:minuter|min)\b'
+      field: preparation_time
       operator: lte
-      value: "30"
+      multiplier: 60
+    - pattern: '\b(snabb|kvick)\b'
+      field: preparation_time
+      operator: lte
+      value: "1800"
 
-    # --- Calories (before price) ---
+    # --- Calories ---
     - pattern: '(under|mindre än)\s+(\d+)\s*(kalorier|cal|kcal)'
-      field: calories
+      field: total_calories
       operator: lt
-    - pattern: '\b(kalorisnål)\b'
-      field: calories
+    - pattern: '()\b(\d+)\s*(?:kalorier|cal|kcal)\b'
+      field: total_calories
+      operator: lte
+    - pattern: '\b(kalorisnål|lätt)\b'
+      field: total_calories
       operator: lte
       value: "400"
 
-    # --- Price (generic — after time/calorie rules) ---
+    # --- Price ---
     - pattern: '(under|mindre än|billigare än)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
     - pattern: '(över|mer än)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: gt
+      multiplier: 100
+
+    # --- Dietary / Tags ---
+    - pattern: '\b(lågkolhydrat|low carb)\b'
+      field: tags
+      operator: eq
+      value: "Low Carb"
+    - pattern: '\b(proteinrik|high protein)\b'
+      field: tags
+      operator: eq
+      value: "High Protein"
+    - pattern: '\b(låg natrium|lite salt)\b'
+      field: tags
+      operator: eq
+      value: "Low Sodium"
+    - pattern: '\b(barnvänlig)\b'
+      field: tags
+      operator: eq
+      value: "Kid Friendly"
+    - pattern: '\b(familjevänlig)\b'
+      field: tags
+      operator: eq
+      value: "Family Friendly"
+    - pattern: '\b(en panna|i en panna)\b'
+      field: tags
+      operator: eq
+      value: "One Pan"
+    - pattern: '\b(en gryta|i en gryta)\b'
+      field: tags
+      operator: eq
+      value: "One Pot"
+    - pattern: '\b(airfryer|varmluftsfritös)\b'
+      field: tags
+      operator: eq
+      value: "Air Fryer"
+    - pattern: '\b(stor sats|stor batch)\b'
+      field: tags
+      operator: eq
+      value: "Big Batch"
+
+    # --- Product types ---
+    - pattern: '\b(färdigmat|redo att äta|redo att värma|förberedd)\b'
+      field: tags
+      operator: eq
+      value: "Ready to Heat"
+    - pattern: '\b(förbered och baka)\b'
+      field: tags
+      operator: eq
+      value: "Oven Ready"
+    - pattern: '\b(bästsäljare|best seller)\b'
+      field: tags
+      operator: eq
+      value: "Bestseller"
 
     # --- Difficulty ---
-    - pattern: '\b(enkel)\b'
+    - pattern: '\b(enkel|lätt)\b'
       field: difficulty_level
       operator: eq
-      value: easy
+      value: "1"
     - pattern: '\b(medel|mellannivå)\b'
       field: difficulty_level
       operator: eq
-      value: medium
+      value: "2"
     - pattern: '\b(svår|avancerad)\b'
       field: difficulty_level
       operator: eq
-      value: hard
+      value: "3"
 
     # --- Servings ---
     - pattern: '(för)\s+(\d+)\s*(personer|portioner)?'
@@ -446,10 +921,10 @@ sv:
       field: price
       direction: asc
     - pattern: '\b(nyaste|senaste)\b'
-      field: created_at
+      field: updated_at
       direction: desc
     - pattern: '\b(snabbaste)\b'
-      field: prep_time
+      field: preparation_time
       direction: asc
     - pattern: '\b(populäraste|bäst betyg)\b'
       field: rating
@@ -457,45 +932,107 @@ sv:
 
 da:
   filter_rules:
-    # --- Prep time (before price) ---
+    # --- Prep time ---
     - pattern: '(under|mindre end)\s+(\d+)\s*(minutter|min)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    - pattern: '\b(hurtig|hurtigt)\b'
-      field: prep_time
+      multiplier: 60
+    - pattern: '()\b(\d+)\s*(?:minutter|min)\b'
+      field: preparation_time
       operator: lte
-      value: "30"
+      multiplier: 60
+    - pattern: '\b(hurtig|hurtigt)\b'
+      field: preparation_time
+      operator: lte
+      value: "1800"
 
-    # --- Calories (before price) ---
+    # --- Calories ---
     - pattern: '(under|mindre end)\s+(\d+)\s*(kalorier|cal|kcal)'
-      field: calories
+      field: total_calories
       operator: lt
-    - pattern: '\b(kalorielet)\b'
-      field: calories
+    - pattern: '()\b(\d+)\s*(?:kalorier|cal|kcal)\b'
+      field: total_calories
+      operator: lte
+    - pattern: '\b(kalorielet|let)\b'
+      field: total_calories
       operator: lte
       value: "400"
 
-    # --- Price (generic — after time/calorie rules) ---
+    # --- Price ---
     - pattern: '(under|mindre end|billigere end)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
     - pattern: '(over|mere end)\s+(\d+(?:[.,]\d+)?)'
       field: price
       operator: gt
+      multiplier: 100
+
+    # --- Dietary / Tags ---
+    - pattern: '\b(lavt kulhydrat|low carb)\b'
+      field: tags
+      operator: eq
+      value: "Low Carb"
+    - pattern: '\b(proteinrig|high protein)\b'
+      field: tags
+      operator: eq
+      value: "High Protein"
+    - pattern: '\b(lavt natrium|lidt salt)\b'
+      field: tags
+      operator: eq
+      value: "Low Sodium"
+    - pattern: '\b(børnevenlig)\b'
+      field: tags
+      operator: eq
+      value: "Kid Friendly"
+    - pattern: '\b(familievenlig)\b'
+      field: tags
+      operator: eq
+      value: "Family Friendly"
+    - pattern: '\b(én pande|i én pande)\b'
+      field: tags
+      operator: eq
+      value: "One Pan"
+    - pattern: '\b(én gryde|i én gryde)\b'
+      field: tags
+      operator: eq
+      value: "One Pot"
+    - pattern: '\b(airfryer|varmluftfriture)\b'
+      field: tags
+      operator: eq
+      value: "Air Fryer"
+    - pattern: '\b(stor portion|stor batch)\b'
+      field: tags
+      operator: eq
+      value: "Big Batch"
+
+    # --- Product types ---
+    - pattern: '\b(færdigret|klar til at spise|klar til opvarmning|forlavet)\b'
+      field: tags
+      operator: eq
+      value: "Ready to Heat"
+    - pattern: '\b(forbered og bag)\b'
+      field: tags
+      operator: eq
+      value: "Oven Ready"
+    - pattern: '\b(bedst sælgende|best seller)\b'
+      field: tags
+      operator: eq
+      value: "Bestseller"
 
     # --- Difficulty ---
     - pattern: '\b(nem|simpel)\b'
       field: difficulty_level
       operator: eq
-      value: easy
+      value: "1"
     - pattern: '\b(mellem|middel)\b'
       field: difficulty_level
       operator: eq
-      value: medium
+      value: "2"
     - pattern: '\b(svær|vanskelig|avanceret)\b'
       field: difficulty_level
       operator: eq
-      value: hard
+      value: "3"
 
     # --- Servings ---
     - pattern: '(til)\s+(\d+)\s*(personer|portioner)?'
@@ -507,10 +1044,10 @@ da:
       field: price
       direction: asc
     - pattern: '\b(nyeste|seneste)\b'
-      field: created_at
+      field: updated_at
       direction: desc
     - pattern: '\b(hurtigste)\b'
-      field: prep_time
+      field: preparation_time
       direction: asc
     - pattern: '\b(mest populære|bedst bedømt)\b'
       field: rating

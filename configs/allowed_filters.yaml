@@ -3,28 +3,35 @@ filters:
   - field: price
     operators: [lt, lte, gt, gte, eq]
     type: number
-    description: "Recipe price in local currency."
+    description: "Recipe price in cents."
     examples: ["under 5", "less than 10"]
     word_values:
-      cheap: 8
-      budget: 5
+      cheap: 800
+      budget: 500
 
-  - field: prep_time
+  - field: preparation_time
     operators: [lt, lte, gt, gte, eq]
     type: number
-    description: "Preparation time in minutes."
+    description: "Preparation time in seconds."
     examples: ["under 30 minutes", "quick"]
     word_values:
-      quick: 30
-      fast: 20
+      quick: 1800
+      fast: 1200
+      super quick: 1200
 
-  - field: calories
+  - field: total_calories
     operators: [lt, lte, gt, gte, eq]
     type: number
-    description: "Calories per serving."
+    description: "Total calories per serving (index stores as 'NNN kcal' string)."
     examples: ["under 500 calories", "low calorie"]
     word_values:
       low calorie: 400
+
+  - field: servings
+    operators: [eq]
+    type: number
+    description: "Number of servings."
+    examples: ["for 4 people", "serves 2"]
 
   # --- Keyword filters (from concept index fields) ---
   - field: dietary
@@ -63,14 +70,20 @@ filters:
     description: "How the dish is prepared."
     examples: ["grilled", "baked", "fried", "slow-cooked"]
 
+  - field: tags
+    operators: [eq, in]
+    type: keyword
+    description: "Product tags (dietary, cooking method, lifestyle)."
+    examples: ["High Protein", "Low Carb", "One Pan", "Kid Friendly", "Ready to Heat"]
+
+  - field: difficulty_level
+    operators: [eq, in]
+    type: keyword
+    description: "How hard the recipe is (1=easy, 2=medium, 3=hard)."
+    examples: ["1", "2", "3"]
+
   - field: availability
     operators: [eq, in]
     type: keyword
     description: "Product availability / sold-out status."
     examples: ["in stock", "sold out"]
-
-  - field: difficulty_level
-    operators: [eq, in]
-    type: keyword
-    description: "How hard the recipe is to make."
-    examples: ["easy", "medium", "hard"]

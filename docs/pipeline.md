@@ -154,7 +154,7 @@ Input: "cheap chicken burger under 20"  (locale: en-GB)
 └──────────┬────────────┘
            ▼
 ┌───────────────────────┐
-│ 2. LLM Semantic Parse  │  Bedrock Nova / Ollama: extract normalized query, filters, sorts, concepts
+│ 2. LLM Semantic Parse  │  Bedrock Nova: extract normalized query, filters, sorts, concepts
 └──────────┬────────────┘
            ▼
 ┌───────────────────────┐
@@ -195,12 +195,9 @@ When the LLM fails (timeout, parse error, etc.), v2 falls back to the determinis
 
 Controlled by `fail_open` config (if false, returns error instead of fallback).
 
-### LLM Providers
+### LLM Provider
 
-| Provider | Config |
-|---|---|
-| AWS Bedrock | Nova model, `parseLLMOutput()` normalizes inconsistent field names |
-| Ollama | Local LLM for development |
+AWS Bedrock (Nova model). `parseLLMOutput()` normalizes inconsistent field names (`rewrite` vs `rewrites`) and filter field aliases (`cuisine` → `recipe_cuisine`, `ingredient` → `ingredients`, etc.).
 
 ---
 

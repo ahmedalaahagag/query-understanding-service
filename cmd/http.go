@@ -17,7 +17,6 @@ import (
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/bedrock"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/observability"
-	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/ollama"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 	"github.com/sirupsen/logrus"
@@ -140,34 +139,20 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("loading LLM prompt: %w", err)
 		}
 
-		var parser hybrid.LLMParser
-		switch cfg.LLM.Provider {
-		case "bedrock":
-			bedrockClient, err := bedrock.NewClient(context.Background(), bedrock.ClientConfig{
-				Region:     cfg.LLM.Region,
-				ModelID:    cfg.LLM.Model,
-				MaxRetries: cfg.LLM.MaxRetries,
-			}, logger)
-			if err != nil {
-				return fmt.Errorf("creating bedrock client: %w", err)
-			}
-			parser = bedrockClient
-		case "ollama":
-			parser = ollama.NewClient(ollama.ClientConfig{
-				URL:        cfg.LLM.URL,
-				Model:      cfg.LLM.Model,
-				Timeout:    cfg.LLM.Timeout,
-				MaxRetries: cfg.LLM.MaxRetries,
-			})
-		default:
-			return fmt.Errorf("unknown LLM provider: %s (must be ollama or bedrock)", cfg.LLM.Provider)
+		bedrockClient, err := bedrock.NewClient(context.Background(), bedrock.ClientConfig{
+			Region:     cfg.LLM.Region,
+			ModelID:    cfg.LLM.Model,
+			MaxRetries: cfg.LLM.MaxRetries,
+		}, logger)
+		if err != nil {
+			return fmt.Errorf("creating bedrock client: %w", err)
 		}
 
 		validator := hybrid.NewValidator(filtersCfg, sortsCfg, cfg.LLM.MinConfidence)
 		conceptResolver := hybrid.NewConceptResolver(osClient, logger)
 
 		hybridPipeline := hybrid.NewPipeline(hybrid.PipelineConfig{
-			Parser:          parser,
+			Parser:          bedrockClient,
 			PromptBuilder:   promptBuilder,
 			Validator:       validator,
 			ConceptResolver: conceptResolver,
@@ -181,10 +166,7 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		routerCfg.HybridPipeline = hybridPipeline
 		routerCfg.HybridMetrics = hybridMetrics
 
-		logger.WithFields(logrus.Fields{
-			"llm_provider": cfg.LLM.Provider,
-			"llm_model":    cfg.LLM.Model,
-		}).Info("hybrid LLM pipeline enabled")
+		logger.WithField("llm_model", cfg.LLM.Model).Info("hybrid LLM pipeline enabled (bedrock)")
 	}
 
 	// v4 adaptive pipeline: v3 fast path, optional v2 LLM escalation.

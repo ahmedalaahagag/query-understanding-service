@@ -334,3 +334,17 @@ if corrected[0] != tok.Value[0] {
 **Why not tighten the Levenshtein limit?** Reducing max edits from 2 to 1 for 6-char words would break valid corrections like "chiken" → "chicken" (2 edits). The first-letter check is a more targeted constraint.
 
 **Files changed:** `internal/domain/native/spell.go`, `internal/domain/pipeline/spell.go`
+
+## 18. LLM Filter Field Names Don't Match Product Index
+
+**Problem:** The LLM returns filter field names like `meal_type`, `cooking_method`, `cuisine`, `ingredient`, `category` — but the product index has different field names (`recipe_cuisine`, `ingredients`, `categories`) or doesn't have the field at all (`meal_type`, `cooking_method`). This caused 0-hit searches because OpenSearch can't filter on non-existent fields.
+
+**Example:** "show me something easy for dinner" → LLM returns `meal_type eq "dinner"` + `difficulty_level eq "easy"`. The `meal_type` field doesn't exist in the product index → 0 results, even though `difficulty_level` alone would have worked.
+
+**Solution (three layers):**
+1. **Remove phantom fields from `allowed_filters.yaml`**: Deleted `meal_type` and `cooking_method` — these don't exist in the product index. Meal occasions and cooking methods are stored in the `tags` field instead.
+2. **Rename mismatched fields**: `cuisine` → `recipe_cuisine`, `ingredient` → `ingredients`, `category` → `categories` to match the actual product index field names.
+3. **Field name normalization in `parseLLMOutput()`**: Added `fieldAliases` map that translates old/wrong field names to correct ones. The LLM might still return `cuisine` despite the prompt saying `recipe_cuisine` — the normalizer catches this. Non-existent fields map to `""` which the validator then rejects.
+4. **Updated LLM prompt**: Explicitly tells the LLM not to use `meal_type` or `cooking_method` as filter fields.
+
+**Files changed:** `configs/allowed_filters.yaml`, `configs/llm_prompt.txt`, `internal/infra/bedrock/client.go`

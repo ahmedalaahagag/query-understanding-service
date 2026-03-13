@@ -16,14 +16,11 @@ type Config struct {
 	ConfigDir  string           `envconfig:"CONFIG_DIR" default:"configs"`
 }
 
-// LLMConfig holds LLM provider connection settings.
+// LLMConfig holds Bedrock LLM connection settings.
 type LLMConfig struct {
 	Enabled       bool          `envconfig:"ENABLED" default:"false"`
-	Provider      string        `envconfig:"PROVIDER" default:"ollama"` // ollama or bedrock
 	Region        string        `envconfig:"REGION" default:"eu-west-1"`
-	Model         string        `envconfig:"MODEL" default:"qwen2.5:3b"`
-	URL           string        `envconfig:"URL" default:"http://localhost:11434"`
-	Timeout       time.Duration `envconfig:"TIMEOUT" default:"30s"`
+	Model         string        `envconfig:"MODEL" default:"eu.amazon.nova-lite-v1:0"`
 	MaxRetries    int           `envconfig:"MAX_RETRIES" default:"1"`
 	MinConfidence float64       `envconfig:"MIN_CONFIDENCE" default:"0.8"`
 	FailOpen      bool          `envconfig:"FAIL_OPEN" default:"true"`

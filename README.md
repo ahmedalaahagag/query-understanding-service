@@ -66,7 +66,7 @@ graph LR
 
 **v1** handles synonyms, compounds, and spell correction via OpenSearch-backed linguistic lookups (`LinguisticLookup`, `CompoundLookup`, `SpellChecker`). All dictionary data lives in OpenSearch — no YAML data files.
 
-**v2** uses an LLM (AWS Bedrock or Ollama) as an **advisory** layer. All LLM outputs are schema-validated against allowlists. On LLM failure, falls back to the full v1 deterministic pipeline including comprehension. Handles Nova model quirks (field name normalization: `rewrite` vs `rewrites`).
+**v2** uses an LLM (AWS Bedrock) as an **advisory** layer. All LLM outputs are schema-validated against allowlists. On LLM failure, falls back to the full v1 deterministic pipeline including comprehension. Handles Nova model quirks (field name normalization: `rewrite` vs `rewrites`, filter field aliases).
 
 **v3** delegates spell correction, synonym matching, and compound handling to OpenSearch natively via `fuzziness: AUTO` + `cross_fields` multi_match.
 
@@ -92,7 +92,6 @@ internal/
     adaptive/                 # v4 adaptive pipeline (v3 fast path + v2 escalation)
   infra/
     bedrock/                  # AWS Bedrock Converse API client (with Nova field normalization)
-    ollama/                   # Ollama local LLM client
     opensearch/               # OS client: LinguisticLookup, CompoundLookup, FuzzySearcher
     observability/            # Prometheus metrics
 scripts/
@@ -194,9 +193,8 @@ a, err := analyzer.New(ctx, analyzer.Config{
     OpenSearch: config.OpenSearchConfig{URL: "http://localhost:9200"},
     LLM: config.LLMConfig{
         Enabled:  true,
-        Provider: "bedrock",               // or "ollama"
-        Region:   "eu-west-1",             // bedrock only
-        Model:    "eu.amazon.nova-micro-v1:0",
+        Region:   "eu-west-1",
+        Model:    "eu.amazon.nova-lite-v1:0",
         FailOpen: true,                     // fall back to v1 on LLM failure
     },
 })
@@ -552,11 +550,8 @@ For standalone HTTP mode, configure via environment (see `.env.example`):
 | `QUS_OPENSEARCH_LINGUISTIC_INDEX_PREFIX` | `linguistic` | Linguistic index prefix |
 | `QUS_CONFIG_DIR` | `configs` | Path to config files directory |
 | `QUS_LLM_ENABLED` | `false` | Enable v2 hybrid pipeline |
-| `QUS_LLM_PROVIDER` | `ollama` | LLM provider: `ollama` or `bedrock` |
-| `QUS_LLM_MODEL` | `qwen2.5:3b` | Model ID |
-| `QUS_LLM_URL` | `http://localhost:11434` | Ollama URL (ollama only) |
-| `QUS_LLM_REGION` | `eu-west-1` | AWS region (bedrock only) |
-| `QUS_LLM_TIMEOUT` | `30s` | LLM request timeout |
+| `QUS_LLM_REGION` | `eu-west-1` | AWS Bedrock region |
+| `QUS_LLM_MODEL` | `eu.amazon.nova-lite-v1:0` | Bedrock model ID |
 | `QUS_LLM_MAX_RETRIES` | `1` | Retry count on LLM failure |
 | `QUS_LLM_MIN_CONFIDENCE` | `0.65` | Minimum confidence threshold |
 | `QUS_LLM_FAIL_OPEN` | `true` | Fall back to deterministic on LLM failure |
@@ -725,7 +720,7 @@ docker build -t qus .
 docker run -p 8080:8080 --env-file env qus
 ```
 
-Docker Compose brings up OpenSearch and optionally Ollama for local LLM:
+Docker Compose brings up OpenSearch for local development:
 
 ```bash
 docker-compose up -d

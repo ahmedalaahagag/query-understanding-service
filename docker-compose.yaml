@@ -29,29 +29,5 @@ services:
       opensearch:
         condition: service_healthy
 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: qus-ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama-data:/root/.ollama
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:11434/api/tags || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  ollama-pull:
-    image: curlimages/curl:latest
-    container_name: qus-ollama-pull
-    depends_on:
-      ollama:
-        condition: service_healthy
-    entrypoint: >
-      sh -c "curl -sf http://ollama:11434/api/pull -d '{\"name\":\"qwen2.5:3b\"}' && echo 'Model pulled'"
-    restart: "no"
-
 volumes:
   opensearch-data:
-  ollama-data:

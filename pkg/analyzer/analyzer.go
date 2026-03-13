@@ -13,7 +13,6 @@ import (
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/bedrock"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/observability"
-	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/ollama"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
@@ -209,27 +208,13 @@ func buildHybridPipeline(ctx context.Context, cfg Config, osClient *opensearch.C
 		return nil, fmt.Errorf("loading LLM prompt: %w", err)
 	}
 
-	var parser hybrid.LLMParser
-	switch cfg.LLM.Provider {
-	case "bedrock":
-		bedrockClient, err := bedrock.NewClient(ctx, bedrock.ClientConfig{
-			Region:     cfg.LLM.Region,
-			ModelID:    cfg.LLM.Model,
-			MaxRetries: cfg.LLM.MaxRetries,
-		}, logger)
-		if err != nil {
-			return nil, fmt.Errorf("creating bedrock client: %w", err)
-		}
-		parser = bedrockClient
-	case "ollama":
-		parser = ollama.NewClient(ollama.ClientConfig{
-			URL:        cfg.LLM.URL,
-			Model:      cfg.LLM.Model,
-			Timeout:    cfg.LLM.Timeout,
-			MaxRetries: cfg.LLM.MaxRetries,
-		})
-	default:
-		return nil, fmt.Errorf("unknown LLM provider: %s", cfg.LLM.Provider)
+	bedrockClient, err := bedrock.NewClient(ctx, bedrock.ClientConfig{
+		Region:     cfg.LLM.Region,
+		ModelID:    cfg.LLM.Model,
+		MaxRetries: cfg.LLM.MaxRetries,
+	}, logger)
+	if err != nil {
+		return nil, fmt.Errorf("creating bedrock client: %w", err)
 	}
 
 	validator := hybrid.NewValidator(filtersCfg, sortsCfg, cfg.LLM.MinConfidence)
@@ -237,7 +222,7 @@ func buildHybridPipeline(ctx context.Context, cfg Config, osClient *opensearch.C
 	hybridMetrics := observability.NewHybridMetrics()
 
 	return hybrid.NewPipeline(hybrid.PipelineConfig{
-		Parser:          parser,
+		Parser:          bedrockClient,
 		PromptBuilder:   promptBuilder,
 		Validator:       validator,
 		ConceptResolver: conceptResolver,

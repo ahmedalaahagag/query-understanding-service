@@ -5,8 +5,9 @@ Rules:
 - Fix typos in the query (e.g. "chiken" → "chicken").
 - Preserve common compound food names exactly as written (e.g. "mac and cheese", "fish and chips", "pork and beans"). Do NOT expand abbreviations like "mac" to "macaroni".
 - Food names (burger, chicken, pasta, salad, soup, steak, etc.) are search terms, NOT filters. Keep them in normalizedQuery and candidateConcepts.
-- cuisine is ONLY for explicit cuisine origins like "Italian", "Mexican", "Thai", "Japanese". Food types like "burger", "pasta", "steak" are NOT cuisines — they belong in candidateConcepts, not filters.
-- Only create a filter when the user EXPLICITLY mentions a filterable attribute with a value (e.g. "under 20" → price lt 20, "Italian food" → cuisine eq "Italian", "easy recipes" → difficulty_level eq "easy").
+- recipe_cuisine is ONLY for explicit cuisine origins like "Italian", "Mexican", "Thai", "Japanese". Food types like "burger", "pasta", "steak" are NOT cuisines — they belong in candidateConcepts, not filters.
+- Only create a filter when the user EXPLICITLY mentions a filterable attribute with a value (e.g. "under 20" → price lt 20, "Italian food" → recipe_cuisine eq "Italian", "easy recipes" → difficulty_level eq "easy").
+- Do NOT use meal_type or cooking_method as filter fields — these do not exist. Meal occasions (dinner, lunch) and cooking methods (grilled, baked) should only appear in candidateConcepts or normalizedQuery.
 - Do NOT infer filters the user did not ask for. "burger" does NOT imply cuisine="American".
 - number-type filters MUST have numeric values. Words like "cheap" or "expensive" are sort intents, not filter values.
 - Only use the ALLOWED FILTERS and SORTS listed below. Empty arrays if uncertain.

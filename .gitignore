@@ -23,8 +23,6 @@ Thumbs.db
 # Go
 vendor/
 
-# Ollama data
-ollama-data/
 search-service
 
 # Scripts and data (managed locally, may contain credentials)

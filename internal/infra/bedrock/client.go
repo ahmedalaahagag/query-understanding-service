@@ -160,7 +160,41 @@ func parseLLMOutput(raw string) (*hybrid.LLMParseResult, error) {
 	if err := json.Unmarshal(normalized, &result); err != nil {
 		return nil, err
 	}
+
+	// Normalize filter/concept field names to match actual product index fields.
+	// The LLM may return old names (cuisine, ingredient, category) instead of
+	// the real index fields (recipe_cuisine, ingredients, categories).
+	normalizeFilterFields(result.Filters)
+	normalizeConceptFields(result.CandidateConcepts)
+
 	return &result, nil
+}
+
+// fieldAliases maps common LLM field name variations to the actual product
+// index field names. This prevents 0-hit queries when the LLM uses a slightly
+// wrong name.
+var fieldAliases = map[string]string{
+	"cuisine":        "recipe_cuisine",
+	"ingredient":     "ingredients",
+	"category":       "categories",
+	"meal_type":      "", // does not exist in product index — drop
+	"cooking_method": "", // does not exist in product index — drop
+}
+
+func normalizeFilterFields(filters []hybrid.LLMFilter) {
+	for i := range filters {
+		if alias, ok := fieldAliases[filters[i].Field]; ok {
+			filters[i].Field = alias
+		}
+	}
+}
+
+func normalizeConceptFields(concepts []hybrid.LLMCandidateConcept) {
+	for i := range concepts {
+		if alias, ok := fieldAliases[concepts[i].Field]; ok {
+			concepts[i].Field = alias
+		}
+	}
 }
 
 // normalizeRewrites converts various LLM rewrite formats into a JSON []string.

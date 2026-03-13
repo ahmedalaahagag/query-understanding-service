@@ -125,3 +125,34 @@ func TestClient_Parse_RetryOnFailure(t *testing.T) {
 	assert.Equal(t, "test", result.NormalizedQuery)
 	assert.Equal(t, 2, callCount)
 }
+
+func TestParseLLMOutput_NormalizesFieldNames(t *testing.T) {
+	raw := `{
+		"normalizedQuery": "italian chicken",
+		"filters": [
+			{"field": "cuisine", "operator": "eq", "value": "italian", "confidence": 0.9},
+			{"field": "ingredient", "operator": "eq", "value": "chicken", "confidence": 0.9},
+			{"field": "category", "operator": "eq", "value": "dinner", "confidence": 0.9},
+			{"field": "meal_type", "operator": "eq", "value": "dinner", "confidence": 0.9}
+		],
+		"candidateConcepts": [
+			{"label": "italian", "field": "cuisine", "confidence": 0.9},
+			{"label": "dinner", "field": "meal_type", "confidence": 0.9}
+		],
+		"confidence": 0.9
+	}`
+
+	result, err := parseLLMOutput(raw)
+	require.NoError(t, err)
+
+	// cuisine → recipe_cuisine, ingredient → ingredients, category → categories
+	assert.Equal(t, "recipe_cuisine", result.Filters[0].Field)
+	assert.Equal(t, "ingredients", result.Filters[1].Field)
+	assert.Equal(t, "categories", result.Filters[2].Field)
+	// meal_type → "" (does not exist in product index)
+	assert.Equal(t, "", result.Filters[3].Field)
+
+	// Concepts also normalized
+	assert.Equal(t, "recipe_cuisine", result.CandidateConcepts[0].Field)
+	assert.Equal(t, "", result.CandidateConcepts[1].Field)
+}

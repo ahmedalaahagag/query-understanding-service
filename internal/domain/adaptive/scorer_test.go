@@ -73,6 +73,43 @@ func TestScore_Conversational(t *testing.T) {
 	assert.True(t, cs.Escalate, "conversational queries always escalate")
 }
 
+func TestScore_ConversationalAfterStripping(t *testing.T) {
+	// Reproduces the "show me something easy for dinner" → "ginger" bug.
+	// v3 strips stopwords + comprehension, leaving only 1 token.
+	// Conversational check must use original query word count, not post-processed.
+	resp := model.AnalyzeResponse{
+		Tokens: []model.Token{
+			{Value: "dinner", Normalized: "ginger", Position: 0},
+		},
+		Concepts: []model.ConceptMatch{
+			{Label: "ginger", Score: 0.85, Start: 0, End: 0},
+		},
+		Filters: []model.Filter{
+			{Field: "difficulty_level", Operator: "eq", Value: 1},
+		},
+	}
+
+	cs := Score(resp, "show me something easy for dinner", DefaultScorerConfig())
+	assert.Equal(t, 6, cs.OriginalTokenCount)
+	assert.Equal(t, 1, cs.TokenCount)
+	assert.True(t, cs.Conversational, "should detect conversational from original query")
+	assert.True(t, cs.Escalate, "conversational query with heavy stripping must escalate")
+}
+
+func TestScore_HeavyTokenReduction(t *testing.T) {
+	// 4+ original words reduced to 1 token → heavy reduction trigger.
+	resp := model.AnalyzeResponse{
+		Tokens: []model.Token{
+			{Value: "ideas", Normalized: "ideas", Position: 0},
+		},
+	}
+
+	cs := Score(resp, "healthy quick dinner ideas", DefaultScorerConfig())
+	assert.Equal(t, 4, cs.OriginalTokenCount)
+	assert.Equal(t, 1, cs.TokenCount)
+	assert.True(t, cs.Escalate, "4 words reduced to 1 token should escalate")
+}
+
 func TestScore_SpellCorrections(t *testing.T) {
 	resp := model.AnalyzeResponse{
 		Tokens: []model.Token{

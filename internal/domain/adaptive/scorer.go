@@ -9,15 +9,16 @@ import (
 
 // ComplexityScore holds the result of evaluating a v3 pipeline output.
 type ComplexityScore struct {
-	TokenCoverage    float64 // fraction of tokens matched by concepts (0..1)
-	ConceptCount     int     // number of resolved concepts
-	AvgConceptScore  float64 // mean concept match score
-	SpellCorrections int     // number of tokens that were spell-corrected
-	FilterCount      int     // number of extracted filters
-	TokenCount       int     // total tokens after comprehension/stopword
-	Conversational   bool    // query looks like natural language
-	Score            float64 // final complexity score (0 = simple, 1 = complex)
-	Escalate         bool    // true if LLM should be used
+	TokenCoverage      float64 // fraction of tokens matched by concepts (0..1)
+	ConceptCount       int     // number of resolved concepts
+	AvgConceptScore    float64 // mean concept match score
+	SpellCorrections   int     // number of tokens that were spell-corrected
+	FilterCount        int     // number of extracted filters
+	TokenCount         int     // total tokens after comprehension/stopword
+	OriginalTokenCount int     // tokens in the original query (before v3 processing)
+	Conversational     bool    // query looks like natural language
+	Score              float64 // final complexity score (0 = simple, 1 = complex)
+	Escalate           bool    // true if LLM should be used
 }
 
 // ScorerConfig holds tuning thresholds for the complexity scorer.
@@ -57,10 +58,13 @@ var conversationalPatterns = regexp.MustCompile(
 
 // Score evaluates the complexity of a query based on v3 pipeline output.
 func Score(resp model.AnalyzeResponse, originalQuery string, cfg ScorerConfig) ComplexityScore {
+	originalWords := strings.Fields(strings.ToLower(strings.TrimSpace(originalQuery)))
+
 	cs := ComplexityScore{
-		TokenCount:   len(resp.Tokens),
-		ConceptCount: len(resp.Concepts),
-		FilterCount:  len(resp.Filters),
+		TokenCount:         len(resp.Tokens),
+		OriginalTokenCount: len(originalWords),
+		ConceptCount:       len(resp.Concepts),
+		FilterCount:        len(resp.Filters),
 	}
 
 	// Count spell corrections: tokens where original differs from normalized.
@@ -93,7 +97,9 @@ func Score(resp model.AnalyzeResponse, originalQuery string, cfg ScorerConfig) C
 	}
 
 	// Conversational detection on the original query (before v3 strips tokens).
-	if cs.TokenCount >= cfg.MinTokensForConversational {
+	// Use original word count — v3 may strip most tokens as stopwords/comprehension,
+	// making the post-processed count misleadingly low.
+	if cs.OriginalTokenCount >= cfg.MinTokensForConversational {
 		cs.Conversational = conversationalPatterns.MatchString(originalQuery)
 	}
 
@@ -129,10 +135,15 @@ func Score(resp model.AnalyzeResponse, originalQuery string, cfg ScorerConfig) C
 
 	// Escalate if score exceeds 0.5 OR specific hard triggers:
 	// - Conversational phrasing (deterministic can't handle "show me something easy")
-	// - 3+ tokens with zero concepts and zero filters (v3 understood nothing)
+	// - Heavy token reduction: v3 stripped most of the original query (e.g. 6 words → 1 token),
+	//   meaning most of the query was stopwords/comprehension noise to the deterministic pipeline.
+	//   This is a strong signal that the query needs semantic understanding.
+	// - 3+ original tokens with zero concepts and zero filters (v3 understood nothing)
+	heavyReduction := cs.OriginalTokenCount >= 4 && cs.TokenCount <= 1
 	cs.Escalate = score > 0.5 ||
 		cs.Conversational ||
-		(cs.TokenCount >= 3 && cs.ConceptCount == 0 && cs.FilterCount == 0)
+		heavyReduction ||
+		(cs.OriginalTokenCount >= 3 && cs.ConceptCount == 0 && cs.FilterCount == 0)
 
 	return cs
 }

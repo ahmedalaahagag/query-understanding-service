@@ -244,3 +244,71 @@ Reverted `suggest_mode` back to `"popular"` since the existence check now handle
 - **Blocklist common words**: Maintenance burden, language-specific, doesn't generalize
 
 **Files changed:** `internal/infra/opensearch/client.go`
+
+---
+
+## 16. When to Escalate from Deterministic to LLM
+
+**Problem:** The v3 native pipeline is fast (~10–20ms) but can't handle conversational or ambiguous queries ("show me something easy for dinner", "healthy meal prep ideas"). The v2 LLM pipeline understands intent but costs ~200–500ms and requires an LLM provider. Running v2 for every query wastes latency and money on simple queries that v3 handles perfectly.
+
+We needed a way to automatically decide: is v3's output good enough, or should we escalate to the LLM?
+
+**Solution:** Built the v4 adaptive pipeline (`internal/domain/adaptive/`) that runs v3 first, scores its output, and only escalates to v2 when needed.
+
+### Complexity Scorer (`scorer.go`)
+
+Evaluates v3 output on four weighted signals that together produce a score from 0 (simple) to 1 (complex):
+
+| Signal | Weight | What it measures | Default threshold |
+|---|---|---|---|
+| Token coverage | 0.4 | Fraction of tokens not matched by any concept | `max_uncovered_ratio: 0.5` |
+| Concept confidence | 0.2 | Average concept match score too low | `min_concept_score: 0.7` |
+| Spell corrections | 0.2 | Number of tokens that were spell-corrected | `max_spell_corrections: 2` |
+| Conversational patterns | 0.2 | Regex match on the original query | `min_tokens_for_conversational: 5` |
+
+**Token coverage** (strongest signal at 0.4 weight): If v3 matched concepts for most tokens, it understood the query. If half the tokens are uncovered, something is ambiguous or unknown. Scales linearly from 0 to the threshold — 25% uncovered with a 50% threshold contributes `0.4 * 0.5 = 0.2` to the score.
+
+**Concept confidence**: Low average scores suggest fuzzy/uncertain matches — v3 found *something* but isn't confident. Binary: below threshold adds full 0.2.
+
+**Spell corrections**: A few corrections (1–2) are normal typo fixes. Above the threshold suggests garbled input where the LLM's broader language understanding helps. Scales linearly up to the threshold.
+
+**Conversational patterns**: Regex detects phrases like "show me", "i want", "something", "looking for", "give me", "can you", "anything", "recommend". These are natural language constructs that the deterministic pipeline strips as noise but the LLM can interpret semantically. Only checked when token count ≥ 5 (short queries with one matching word aren't truly conversational).
+
+### Escalation Triggers
+
+Escalate if **any** of these is true:
+1. **Composite score > 0.5** — multiple weak signals compound into a complex query
+2. **Conversational phrasing** — hard trigger regardless of score (deterministic pipelines can't parse "show me something easy")
+3. **v3 understood nothing** — 3+ tokens with zero concepts AND zero filters (v3 produced no useful structure)
+
+### Why these signals?
+
+**Token coverage** was chosen as the heaviest signal (0.4) because it directly measures how much of the query v3 could structure. A query where 80% of tokens are concepts is well-understood; one where 80% are uncovered is opaque.
+
+**Conversational patterns** get a hard trigger (not just score weight) because these queries fundamentally require semantic understanding — no amount of fuzzy matching will parse "i want something quick and healthy" into useful structure. The deterministic pipeline would strip "i want" and "something" as stopwords, losing the user's actual intent.
+
+**The 3+ token zero-concept zero-filter trigger** catches edge cases where the query is meaningful but entirely outside the concept/comprehension vocabulary. "meal prep ideas" has clear intent but v3 might not have concepts for any of those terms.
+
+### Fallback Behavior
+
+- If v2 is not configured (`LLM.Enabled=false`), v4 always returns v3's result — graceful degradation
+- If v2 fails (LLM timeout, parse error) or returns empty tokens, v4 falls back to v3's result
+- The v3 result is never discarded — it's always available as a safety net
+
+### Tuning
+
+All thresholds are configurable via `ScorerConfig`. To make the scorer more aggressive (escalate more often), lower `MaxUncoveredRatio` or `MinConceptScore`. To reduce LLM usage, raise the thresholds or increase the score threshold in the escalation check.
+
+**Example scoring:**
+
+| Query | Coverage | Concepts | Spells | Conversational | Score | Escalate? |
+|---|---|---|---|---|---|---|
+| "chicken" | 1.0 | 0.95 avg | 0 | no | 0.0 | No |
+| "pasta under 30 min" | 0.5 | 0.9 avg | 0 | no | 0.2 | No |
+| "chikken brest recipee" | 0.67 | 0.8 avg | 3 | no | ~0.33 | No |
+| "show me something easy" | 0.17 | 0.9 avg | 0 | yes | ~0.53 | **Yes** (conversational) |
+| "meal prep ideas" | 0.0 | — | 0 | no | 0.4 | **Yes** (0 concepts + 0 filters) |
+| "healthy quick dinner" | 0.0 | — | 0 | no | 0.4 | **Yes** (0 concepts + 0 filters) |
+
+**Files created:** `internal/domain/adaptive/scorer.go`, `scorer_test.go`, `pipeline.go`, `pipeline_test.go`
+**Files changed:** `pkg/analyzer/analyzer.go`, `internal/application/routes/routes.go`, `cmd/http.go`

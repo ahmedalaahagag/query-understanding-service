@@ -9,11 +9,20 @@ import (
 
 // PipelineConfig holds the main pipeline configuration.
 type PipelineConfig struct {
-	Server   ServerConfig   `yaml:"server"`
-	Pipeline PipelineSteps  `yaml:"pipeline"`
-	Spell    SpellConfig    `yaml:"spell"`
-	Concept  ConceptConfig  `yaml:"concept"`
+	Server    ServerConfig    `yaml:"server"`
+	Pipeline  PipelineSteps   `yaml:"pipeline"`
+	Spell     SpellConfig     `yaml:"spell"`
+	Concept   ConceptConfig   `yaml:"concept"`
 	Ambiguity AmbiguityConfig `yaml:"ambiguity"`
+	Adaptive  AdaptiveConfig  `yaml:"adaptive"`
+}
+
+// AdaptiveConfig holds tuning thresholds for the v4 adaptive pipeline's complexity scorer.
+type AdaptiveConfig struct {
+	MaxUncoveredRatio          float64 `yaml:"max_uncovered_ratio"`
+	MinConceptScore            float64 `yaml:"min_concept_score"`
+	MaxSpellCorrections        int     `yaml:"max_spell_corrections"`
+	MinTokensForConversational int     `yaml:"min_tokens_for_conversational"`
 }
 
 type ServerConfig struct {

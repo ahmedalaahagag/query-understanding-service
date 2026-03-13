@@ -24,3 +24,9 @@ concept:
 ambiguity:
   prefer_longest_span: true
   min_score_delta: 0.05
+
+adaptive:
+  max_uncovered_ratio: 0.5
+  min_concept_score: 0.7
+  max_spell_corrections: 2
+  min_tokens_for_conversational: 5

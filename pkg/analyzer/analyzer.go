@@ -131,7 +131,7 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 	a.v4 = adaptive.NewPipeline(adaptive.PipelineConfig{
 		V3:        v3,
 		V2:        a.v2, // nil if LLM not enabled — v4 will fall back to v3
-		ScorerCfg: adaptive.DefaultScorerConfig(),
+		ScorerCfg: adaptive.ScorerConfigFromYAML(pipelineCfg.Adaptive),
 		Logger:    logger,
 	})
 

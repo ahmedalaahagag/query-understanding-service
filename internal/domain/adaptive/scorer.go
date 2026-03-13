@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/ahmedalaahagag/query-understanding-service/pkg/config"
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 )
 
@@ -48,6 +49,31 @@ func DefaultScorerConfig() ScorerConfig {
 		MaxSpellCorrections:        2,
 		MinTokensForConversational: 5,
 	}
+}
+
+// ScorerConfigFromYAML converts the YAML config to a ScorerConfig,
+// applying defaults for any zero values.
+func ScorerConfigFromYAML(cfg config.AdaptiveConfig) ScorerConfig {
+	defaults := DefaultScorerConfig()
+	sc := ScorerConfig{
+		MaxUncoveredRatio:          cfg.MaxUncoveredRatio,
+		MinConceptScore:            cfg.MinConceptScore,
+		MaxSpellCorrections:        cfg.MaxSpellCorrections,
+		MinTokensForConversational: cfg.MinTokensForConversational,
+	}
+	if sc.MaxUncoveredRatio == 0 {
+		sc.MaxUncoveredRatio = defaults.MaxUncoveredRatio
+	}
+	if sc.MinConceptScore == 0 {
+		sc.MinConceptScore = defaults.MinConceptScore
+	}
+	if sc.MaxSpellCorrections == 0 {
+		sc.MaxSpellCorrections = defaults.MaxSpellCorrections
+	}
+	if sc.MinTokensForConversational == 0 {
+		sc.MinTokensForConversational = defaults.MinTokensForConversational
+	}
+	return sc
 }
 
 // conversationalPatterns matches natural language phrasing that the

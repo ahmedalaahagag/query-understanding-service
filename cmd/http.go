@@ -191,7 +191,7 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 	routerCfg.AdaptivePipeline = adaptive.NewPipeline(adaptive.PipelineConfig{
 		V3:        nativePipeline,
 		V2:        routerCfg.HybridPipeline,
-		ScorerCfg: adaptive.DefaultScorerConfig(),
+		ScorerCfg: adaptive.ScorerConfigFromYAML(pipelineCfg.Adaptive),
 		Logger:    logger,
 	})
 

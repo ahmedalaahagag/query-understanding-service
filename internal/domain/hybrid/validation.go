@@ -308,9 +308,21 @@ func isValueGrounded(value interface{}, queryLower string, wordValues map[string
 	case float64:
 		// Check integer form first (20 vs 20.00).
 		if v == float64(int(v)) {
-			return strings.Contains(queryLower, fmt.Sprintf("%d", int(v)))
+			if strings.Contains(queryLower, fmt.Sprintf("%d", int(v))) {
+				return true
+			}
+		} else if strings.Contains(queryLower, fmt.Sprintf("%g", v)) {
+			return true
 		}
-		return strings.Contains(queryLower, fmt.Sprintf("%g", v))
+		// Check if the number maps back to a word-value alias in the query.
+		// E.g. LLM returns 1 for difficulty_level, and "easy" → 1 is a
+		// word_value — accept if "easy" appears in the query.
+		for word, num := range wordValues {
+			if num == v && strings.Contains(queryLower, strings.ToLower(word)) {
+				return true
+			}
+		}
+		return false
 	default:
 		return false
 	}

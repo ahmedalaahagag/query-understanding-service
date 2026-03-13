@@ -267,6 +267,33 @@ func TestValidator_NormalizedQueryValidation(t *testing.T) {
 	assert.Contains(t, intent.Warnings[0], "ravioli")
 }
 
+func TestValidator_GroundingAcceptsNumericWordValueAlias(t *testing.T) {
+	// LLM returns difficulty_level=1, "easy" is a word_value alias for 1,
+	// and "easy" appears in the query — should be accepted.
+	v := NewValidator(
+		config.AllowedFiltersConfig{
+			Filters: []config.AllowedFilter{
+				{Field: "difficulty_level", Operators: []string{"eq", "in"}, Type: "number",
+					WordValues: map[string]float64{"easy": 1, "medium": 2, "hard": 3}},
+			},
+		},
+		config.AllowedSortsConfig{},
+		0.65,
+	)
+	result := &LLMParseResult{
+		NormalizedQuery: "show me something easy for dinner",
+		Filters: []LLMFilter{
+			{Field: "difficulty_level", Operator: "eq", Value: float64(1), Confidence: 0.95},
+		},
+		Confidence: 0.9,
+	}
+
+	intent := v.Validate(result, "show me something easy for dinner")
+	assert.Len(t, intent.Filters, 1)
+	assert.Equal(t, float64(1), intent.Filters[0].Value)
+	assert.Empty(t, intent.Warnings)
+}
+
 func TestValidator_GroundingKeepsValueFoundInQuery(t *testing.T) {
 	v := testValidator()
 	result := &LLMParseResult{

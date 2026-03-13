@@ -3,7 +3,8 @@ filters:
   - field: price
     operators: [lt, lte, gt, gte, eq]
     type: number
-    description: "Recipe price in cents."
+    multiplier: 100
+    description: "Recipe price in cents (keyword). User says euros/dollars, multiply by 100."
     examples: ["under 5", "less than 10"]
     word_values:
       cheap: 800
@@ -12,69 +13,51 @@ filters:
   - field: preparation_time
     operators: [lt, lte, gt, gte, eq]
     type: number
-    description: "Preparation time in seconds."
+    multiplier: 60
+    description: "Preparation time in seconds (keyword). User says minutes, multiply by 60."
     examples: ["under 30 minutes", "quick"]
     word_values:
       quick: 1800
       fast: 1200
-      super quick: 1200
 
   - field: total_calories
     operators: [lt, lte, gt, gte, eq]
     type: number
-    description: "Total calories per serving (index stores as 'NNN kcal' string)."
+    description: "Calories per serving (keyword, e.g. '560 kcal'). Painless strips suffix."
     examples: ["under 500 calories", "low calorie"]
     word_values:
       low calorie: 400
 
-  - field: servings
-    operators: [eq]
-    type: number
-    description: "Number of servings."
-    examples: ["for 4 people", "serves 2"]
-
-  # --- Keyword filters (from concept index fields) ---
-  - field: dietary
+  # --- Keyword filters (matching actual product index fields) ---
+  - field: categories
     operators: [eq, in]
     type: keyword
-    description: "Dietary labels like vegan, gluten-free, etc."
-    examples: ["vegan", "gluten-free", "vegetarian", "dairy-free"]
+    description: "Recipe category (e.g. Poultry, Pork, Beef, Seafood, Soup, Salad)."
+    examples: ["soup", "salad", "dessert", "breakfast"]
 
-  - field: cuisine
+  - field: recipe_cuisine
     operators: [eq, in]
     type: keyword
     description: "Cuisine or regional food style."
     examples: ["italian", "mexican", "asian", "mediterranean"]
 
-  - field: ingredient
+  - field: ingredients
     operators: [eq, in]
     type: keyword
     description: "Key ingredient in the recipe."
     examples: ["chicken", "salmon", "tofu", "pasta"]
 
-  - field: category
-    operators: [eq, in]
-    type: keyword
-    description: "Recipe category or course type."
-    examples: ["soup", "salad", "dessert", "breakfast"]
-
-  - field: meal_type
-    operators: [eq, in]
-    type: keyword
-    description: "Meal occasion or time of day."
-    examples: ["dinner", "lunch", "snack", "brunch"]
-
-  - field: cooking_method
-    operators: [eq, in]
-    type: keyword
-    description: "How the dish is prepared."
-    examples: ["grilled", "baked", "fried", "slow-cooked"]
-
   - field: tags
     operators: [eq, in]
     type: keyword
-    description: "Product tags (dietary, cooking method, lifestyle)."
-    examples: ["High Protein", "Low Carb", "One Pan", "Kid Friendly", "Ready to Heat"]
+    description: "Recipe tags including dietary labels, meal types, and cooking methods."
+    examples: ["vegan", "gluten-free", "vegetarian", "high protein", "quick", "grilled", "one pan"]
+
+  - field: allergens
+    operators: [eq, in]
+    type: keyword
+    description: "Allergens present in the recipe."
+    examples: ["milk", "eggs", "wheat", "soy", "tree nuts"]
 
   - field: difficulty_level
     operators: [eq, in]
@@ -85,9 +68,3 @@ filters:
       easy: 1
       medium: 2
       hard: 3
-
-  - field: availability
-    operators: [eq, in]
-    type: keyword
-    description: "Product availability / sold-out status."
-    examples: ["in stock", "sold out"]

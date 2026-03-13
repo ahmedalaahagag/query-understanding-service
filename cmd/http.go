@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/ahmedalaahagag/query-understanding-service/internal/application/routes"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/adaptive"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/native"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
@@ -185,6 +186,14 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 			"llm_model":    cfg.LLM.Model,
 		}).Info("hybrid LLM pipeline enabled")
 	}
+
+	// v4 adaptive pipeline: v3 fast path, optional v2 LLM escalation.
+	routerCfg.AdaptivePipeline = adaptive.NewPipeline(adaptive.PipelineConfig{
+		V3:        nativePipeline,
+		V2:        routerCfg.HybridPipeline,
+		ScorerCfg: adaptive.DefaultScorerConfig(),
+		Logger:    logger,
+	})
 
 	router := routes.NewWithConfig(routerCfg)
 

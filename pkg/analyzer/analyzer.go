@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/adaptive"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/native"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
@@ -34,6 +35,7 @@ type Analyzer struct {
 	v1     *pipeline.Pipeline
 	v2     *hybrid.Pipeline
 	v3     *native.Pipeline
+	v4     *adaptive.Pipeline
 	logger *logrus.Logger
 }
 
@@ -125,6 +127,14 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 		a.v2 = v2
 	}
 
+	// v4 adaptive pipeline: v3 fast path, optional v2 escalation.
+	a.v4 = adaptive.NewPipeline(adaptive.PipelineConfig{
+		V3:        v3,
+		V2:        a.v2, // nil if LLM not enabled — v4 will fall back to v3
+		ScorerCfg: adaptive.DefaultScorerConfig(),
+		Logger:    logger,
+	})
+
 	return a, nil
 }
 
@@ -166,6 +176,12 @@ func (a *Analyzer) AnalyzeV2Debug(ctx context.Context, req model.AnalyzeRequest)
 // AnalyzeV3 runs the v3 native OS-driven pipeline.
 func (a *Analyzer) AnalyzeV3(ctx context.Context, req model.AnalyzeRequest) (model.AnalyzeResponse, error) {
 	return a.v3.Run(ctx, req)
+}
+
+// AnalyzeV4 runs the v4 adaptive pipeline (v3 fast path + v2 LLM escalation).
+func (a *Analyzer) AnalyzeV4(ctx context.Context, req model.AnalyzeRequest) (model.AnalyzeResponse, error) {
+	result := a.v4.Run(ctx, req)
+	return result.Response, nil
 }
 
 // HasV2 reports whether the v2 hybrid pipeline is available.

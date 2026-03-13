@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/adaptive"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/native"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
@@ -17,12 +18,13 @@ import (
 
 // RouterConfig holds all dependencies for creating the router.
 type RouterConfig struct {
-	Logger         *logrus.Logger
-	Pipeline       *pipeline.Pipeline
-	Metrics        *observability.Metrics
-	HybridPipeline *hybrid.Pipeline
-	HybridMetrics  *observability.HybridMetrics
-	NativePipeline *native.Pipeline
+	Logger           *logrus.Logger
+	Pipeline         *pipeline.Pipeline
+	Metrics          *observability.Metrics
+	HybridPipeline   *hybrid.Pipeline
+	HybridMetrics    *observability.HybridMetrics
+	NativePipeline   *native.Pipeline
+	AdaptivePipeline *adaptive.Pipeline
 }
 
 // New creates and configures the chi router with all routes.
@@ -54,6 +56,10 @@ func NewWithConfig(cfg RouterConfig) chi.Router {
 
 	if cfg.NativePipeline != nil {
 		r.Post("/v3/analyze", analyzeV3Handler(cfg.Logger, cfg.NativePipeline))
+	}
+
+	if cfg.AdaptivePipeline != nil {
+		r.Post("/v4/analyze", analyzeV4Handler(cfg.Logger, cfg.AdaptivePipeline))
 	}
 
 	return r
@@ -218,6 +224,36 @@ func analyzeV3Handler(logger *logrus.Logger, np *native.Pipeline) http.HandlerFu
 			logger.WithError(err).Error("native pipeline execution failed")
 			http.Error(w, `{"error":"internal server error"}`, http.StatusInternalServerError)
 			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
+	}
+}
+
+func analyzeV4Handler(logger *logrus.Logger, ap *adaptive.Pipeline) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req, err := parseV2Request(r)
+		if err != nil {
+			http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+			return
+		}
+
+		if req.Query == "" {
+			http.Error(w, `{"error":"query is required"}`, http.StatusBadRequest)
+			return
+		}
+
+		result := ap.Run(r.Context(), req)
+
+		resp := struct {
+			model.AnalyzeResponse
+			Escalated bool    `json:"escalated"`
+			Score     float64 `json:"complexityScore"`
+		}{
+			AnalyzeResponse: result.Response,
+			Escalated:       result.Escalated,
+			Score:           result.Score.Score,
 		}
 
 		w.Header().Set("Content-Type", "application/json")

@@ -126,12 +126,13 @@ func New(ctx context.Context, cfg Config) (*Analyzer, error) {
 		a.v2 = v2
 	}
 
-	// v4 adaptive pipeline: v3 fast path, optional v2 escalation.
+	// v4 adaptive pipeline: short queries → v3, long queries → v2 LLM.
 	a.v4 = adaptive.NewPipeline(adaptive.PipelineConfig{
-		V3:        v3,
-		V2:        a.v2, // nil if LLM not enabled — v4 will fall back to v3
-		ScorerCfg: adaptive.ScorerConfigFromYAML(pipelineCfg.Adaptive),
-		Logger:    logger,
+		V3:                      v3,
+		V2:                      a.v2, // nil if LLM not enabled — v4 uses v3 only
+		DirectLLMTokenThreshold: pipelineCfg.Adaptive.DirectLLMTokenThreshold,
+		Stopwords:               allStopwords,
+		Logger:                  logger,
 	})
 
 	return a, nil

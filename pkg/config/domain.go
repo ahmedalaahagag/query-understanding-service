@@ -17,12 +17,12 @@ type PipelineConfig struct {
 	Adaptive  AdaptiveConfig  `yaml:"adaptive"`
 }
 
-// AdaptiveConfig holds tuning thresholds for the v4 adaptive pipeline's complexity scorer.
+// AdaptiveConfig holds settings for the v4 adaptive pipeline routing.
 type AdaptiveConfig struct {
-	MaxUncoveredRatio          float64 `yaml:"max_uncovered_ratio"`
-	MinConceptScore            float64 `yaml:"min_concept_score"`
-	MaxSpellCorrections        int     `yaml:"max_spell_corrections"`
-	MinTokensForConversational int     `yaml:"min_tokens_for_conversational"`
+	// DirectLLMTokenThreshold: queries with this many or more non-stopword
+	// tokens go straight to v2 LLM. Shorter queries use v3. 0 disables routing
+	// (all queries use v3). Default: 3
+	DirectLLMTokenThreshold int `yaml:"direct_llm_token_threshold"`
 }
 
 type ServerConfig struct {

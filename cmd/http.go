@@ -169,12 +169,13 @@ func runHTTP(cmd *cobra.Command, args []string) error {
 		logger.WithField("llm_model", cfg.LLM.Model).Info("hybrid LLM pipeline enabled (bedrock)")
 	}
 
-	// v4 adaptive pipeline: v3 fast path, optional v2 LLM escalation.
+	// v4 adaptive pipeline: short queries → v3, long queries → v2 LLM.
 	routerCfg.AdaptivePipeline = adaptive.NewPipeline(adaptive.PipelineConfig{
-		V3:        nativePipeline,
-		V2:        routerCfg.HybridPipeline,
-		ScorerCfg: adaptive.ScorerConfigFromYAML(pipelineCfg.Adaptive),
-		Logger:    logger,
+		V3:                      nativePipeline,
+		V2:                      routerCfg.HybridPipeline,
+		DirectLLMTokenThreshold: pipelineCfg.Adaptive.DirectLLMTokenThreshold,
+		Stopwords:               allStopwords,
+		Logger:                  logger,
 	})
 
 	router := routes.NewWithConfig(routerCfg)

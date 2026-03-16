@@ -9,7 +9,7 @@ QUS transforms raw user queries into structured search intent. Four pipelines ar
 | **v1** (deterministic) | `/v1/analyze` | Sequential Go steps with OS dictionary lookups |
 | **v2** (hybrid LLM) | `/v2/analyze` | LLM semantic parse + validation + concept resolution |
 | **v3** (native OS) | `/v3/analyze` | Delegates spell/concept to OS fuzzy matching |
-| **v4** (adaptive) | `/v4/analyze` | v3 fast path + complexity scoring + v2 LLM escalation |
+| **v4** (adaptive) | `/v4/analyze` | Token-count routing: short → v3, long → v2 LLM |
 
 All pipelines produce the same `AnalyzeResponse` shape.
 
@@ -245,57 +245,45 @@ Input: "show me something easy for dinner"  (locale: en-GB)
   │
   ▼
 ┌───────────────────────┐
-│ 1. Run v3 Pipeline     │  full native OS pipeline (normalize → concepts → comprehension)
-└──────────┬────────────┘
-           ▼
-┌───────────────────────┐
-│ 2. Score Complexity    │  evaluate v3 output on 4 signals
+│ 1. Count non-stopword  │  lowercase + split + remove stopwords for locale
+│    tokens              │  "show me something easy for dinner" → 4 non-stopword tokens
 └──────────┬────────────┘
            │
-     ┌─────┴─────┐
-     │ simple?   │
-     ▼           ▼
-  Return v3   ┌───────────────────────┐
-  result      │ 3. Run v2 LLM Pipeline │  escalate to hybrid pipeline
-              └──────────┬────────────┘
-                         │
-                   ┌─────┴─────┐
-                   │ success?  │
-                   ▼           ▼
-                Return v2   Return v3
-                result      (fallback)
+     ┌─────┴──────┐
+     │ ≥ threshold │  (default: 3)
+     ▼            ▼
+  ┌────────┐  ┌───────────────────────┐
+  │ Run v3  │  │ Run v2 LLM Pipeline    │  direct to LLM for semantic understanding
+  └────┬───┘  └──────────┬────────────┘
+       │                 │
+       ▼           ┌─────┴─────┐
+    Return v3      │ success?  │
+    result         ▼           ▼
+               Return v2    Run v3
+               result       (fallback)
 ```
 
-### Complexity Scorer (`adaptive/scorer.go`)
+### Routing Logic
 
-Four weighted signals determine whether to escalate:
+v4 is a simple token-count router:
 
-| Signal | Weight | Trigger |
-|---|---|---|
-| **Token coverage** | 0.4 | Fraction of tokens not matched by any concept |
-| **Concept confidence** | 0.2 | Average concept score below `min_concept_score` (default: 0.7) |
-| **Spell corrections** | 0.2 | Number of corrected tokens above `max_spell_corrections` (default: 2) |
-| **Conversational patterns** | 0.2 | Regex match: "show me", "i want", "something", "looking for", etc. |
+- **Short queries** (< `direct_llm_token_threshold` non-stopword tokens): Use v3 native OS pipeline. These are queries like "chicken", "pasta salad" — v3 handles them well with fuzzy spell correction and concept matching.
+- **Longer queries** (≥ threshold): Skip v3 entirely and go straight to v2 LLM. These are queries like "healthy low carb meal prep", "show me something easy for dinner" — they benefit from semantic understanding.
 
-Escalation happens when:
-- **Composite score > 0.5**, OR
-- **Conversational query** detected (hard trigger), OR
-- **3+ tokens with zero concepts and zero filters** (v3 understood nothing)
+The token count uses the same per-locale stopword sets as the pipeline. Words like "the", "for", "with" are excluded from the count.
 
 ### Configuration
 
-```go
-adaptive.ScorerConfig{
-    MaxUncoveredRatio:          0.5,  // uncovered token fraction threshold
-    MinConceptScore:            0.7,  // concept confidence threshold
-    MaxSpellCorrections:        2,    // spell correction count threshold
-    MinTokensForConversational: 5,    // minimum tokens for conversational detection
-}
+In `configs/qus.yaml`:
+
+```yaml
+adaptive:
+  direct_llm_token_threshold: 3  # 0 to disable (v3 only)
 ```
 
 ### Behavior when v2 is unavailable
 
-If the LLM is not configured (`v2 == nil`), v4 always returns the v3 result — it degrades gracefully to a pure v3 pipeline. Similarly, if v2 returns empty tokens (LLM failure with `fail_open`), v4 falls back to v3.
+If the LLM is not configured (`v2 == nil`) or threshold is 0, v4 always uses v3 — it degrades gracefully to a pure v3 pipeline. If v2 returns empty tokens and no filters (LLM failure with `fail_open`), v4 falls back to v3.
 
 ---
 

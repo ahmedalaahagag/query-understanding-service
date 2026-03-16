@@ -2,6 +2,7 @@ package adaptive
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/hybrid"
@@ -11,33 +12,33 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Pipeline runs v3 (native OS) as a fast path, then scores the result.
-// If the query is complex, it escalates to v2 (LLM hybrid) for semantic
-// understanding. If the LLM fails, it falls back to the v3 result.
+// Pipeline routes queries between v3 (native OS) and v2 (LLM hybrid).
+// Short queries (< DirectLLMTokenThreshold non-stopword tokens) go to v3.
+// Longer queries go straight to v2 LLM, with v3 as fallback if v2 fails.
 type Pipeline struct {
-	v3        *native.Pipeline
-	v2        *hybrid.Pipeline
-	scorerCfg ScorerConfig
-	metrics   *Metrics
-	logger    *logrus.Logger
+	v3                      *native.Pipeline
+	v2                      *hybrid.Pipeline
+	directLLMTokenThreshold int
+	stopwords               map[string]map[string]bool
+	metrics                 *Metrics
+	logger                  *logrus.Logger
 }
 
 // Metrics holds Prometheus counters for adaptive pipeline observability.
 type Metrics struct {
-	EscalationsTotal prometheus.Counter
-	V3Total          prometheus.Counter
-	V2Total          prometheus.Counter
-	V2FallbackTotal  prometheus.Counter
-	ScoreHistogram   prometheus.Histogram
+	V3Total         prometheus.Counter
+	V2Total         prometheus.Counter
+	V2FallbackTotal prometheus.Counter
 }
 
 // PipelineConfig holds dependencies for constructing an adaptive pipeline.
 type PipelineConfig struct {
-	V3        *native.Pipeline
-	V2        *hybrid.Pipeline
-	ScorerCfg ScorerConfig
-	Metrics   *Metrics
-	Logger    *logrus.Logger
+	V3                      *native.Pipeline
+	V2                      *hybrid.Pipeline
+	DirectLLMTokenThreshold int
+	Stopwords               map[string]map[string]bool
+	Metrics                 *Metrics
+	Logger                  *logrus.Logger
 }
 
 // NewPipeline creates an adaptive pipeline that routes between v3 and v2.
@@ -47,19 +48,19 @@ func NewPipeline(cfg PipelineConfig) *Pipeline {
 		logger = logrus.StandardLogger()
 	}
 	return &Pipeline{
-		v3:        cfg.V3,
-		v2:        cfg.V2,
-		scorerCfg: cfg.ScorerCfg,
-		metrics:   cfg.Metrics,
-		logger:    logger,
+		v3:                      cfg.V3,
+		v2:                      cfg.V2,
+		directLLMTokenThreshold: cfg.DirectLLMTokenThreshold,
+		stopwords:               cfg.Stopwords,
+		metrics:                 cfg.Metrics,
+		logger:                  logger,
 	}
 }
 
 // Result wraps the response with routing metadata.
 type Result struct {
 	Response   model.AnalyzeResponse
-	Score      ComplexityScore
-	Escalated  bool
+	UsedV2     bool
 	V2Fallback bool
 }
 
@@ -67,72 +68,81 @@ type Result struct {
 func (p *Pipeline) Run(ctx context.Context, req model.AnalyzeRequest) Result {
 	start := time.Now()
 
-	// Fast path: run v3 native pipeline.
-	v3Resp, v3Err := p.v3.Run(ctx, req)
-	if v3Err != nil {
-		p.logger.WithError(v3Err).WithField("query", req.Query).Warn("adaptive: v3 failed, escalating to v2")
-		return p.escalate(ctx, req, v3Resp, ComplexityScore{Escalate: true}, start)
-	}
-
-	// Score v3 output to decide if escalation is needed.
-	cs := Score(v3Resp, req.Query, p.scorerCfg)
-
-	if p.metrics != nil {
-		p.metrics.ScoreHistogram.Observe(cs.Score)
-	}
-
-	if !cs.Escalate {
-		if p.metrics != nil {
-			p.metrics.V3Total.Inc()
+	// Route: if v2 is available and query has enough non-stopword tokens, use LLM.
+	if p.directLLMTokenThreshold > 0 && p.v2 != nil {
+		if p.countNonStopwordTokens(req.Query, req.Locale) >= p.directLLMTokenThreshold {
+			return p.runV2WithFallback(ctx, req, start)
 		}
-		p.logger.WithFields(logrus.Fields{
-			"query":    req.Query,
-			"score":    cs.Score,
-			"duration": time.Since(start).String(),
-		}).Debug("adaptive: v3 sufficient")
-		return Result{Response: v3Resp, Score: cs}
 	}
 
-	return p.escalate(ctx, req, v3Resp, cs, start)
+	// Short query: use v3 native pipeline.
+	return p.runV3(ctx, req, start)
 }
 
-func (p *Pipeline) escalate(ctx context.Context, req model.AnalyzeRequest, v3Resp model.AnalyzeResponse, cs ComplexityScore, start time.Time) Result {
+// runV3 runs the native OS pipeline.
+func (p *Pipeline) runV3(ctx context.Context, req model.AnalyzeRequest, start time.Time) Result {
+	v3Resp, err := p.v3.Run(ctx, req)
+	if err != nil {
+		p.logger.WithError(err).WithField("query", req.Query).Warn("adaptive: v3 failed")
+	}
 	if p.metrics != nil {
-		p.metrics.EscalationsTotal.Inc()
+		p.metrics.V3Total.Inc()
 	}
+	p.logger.WithFields(logrus.Fields{
+		"query":    req.Query,
+		"route":    "v3",
+		"duration": time.Since(start).String(),
+	}).Debug("adaptive: routed to v3")
+	return Result{Response: v3Resp}
+}
 
-	if p.v2 == nil {
-		p.logger.WithField("query", req.Query).Warn("adaptive: escalation needed but v2 not available")
-		if p.metrics != nil {
-			p.metrics.V3Total.Inc()
-		}
-		return Result{Response: v3Resp, Score: cs, Escalated: true, V2Fallback: true}
-	}
-
+// runV2WithFallback runs v2 LLM, falling back to v3 if v2 produces nothing useful.
+func (p *Pipeline) runV2WithFallback(ctx context.Context, req model.AnalyzeRequest, start time.Time) Result {
 	v2Resp, _ := p.v2.Run(ctx, req, false)
 
-	// If v2 returned no tokens AND no filters, it produced nothing useful.
-	// But 0 tokens + filters is a valid filter-only query (e.g. "show me something easy").
+	// If v2 returned no tokens AND no filters, fall back to v3.
 	if len(v2Resp.Tokens) == 0 && len(v2Resp.Filters) == 0 {
 		p.logger.WithField("query", req.Query).Warn("adaptive: v2 returned empty, falling back to v3")
 		if p.metrics != nil {
 			p.metrics.V2FallbackTotal.Inc()
+		}
+		v3Resp, _ := p.v3.Run(ctx, req)
+		if p.metrics != nil {
 			p.metrics.V3Total.Inc()
 		}
-		return Result{Response: v3Resp, Score: cs, Escalated: true, V2Fallback: true}
+		return Result{Response: v3Resp, UsedV2: true, V2Fallback: true}
 	}
 
 	if p.metrics != nil {
 		p.metrics.V2Total.Inc()
 	}
-
 	p.logger.WithFields(logrus.Fields{
 		"query":    req.Query,
-		"score":    cs.Score,
+		"route":    "v2",
 		"concepts": len(v2Resp.Concepts),
 		"filters":  len(v2Resp.Filters),
 		"duration": time.Since(start).String(),
-	}).Info("adaptive: escalated to v2")
+	}).Info("adaptive: routed to v2")
 
-	return Result{Response: v2Resp, Score: cs, Escalated: true}
+	return Result{Response: v2Resp, UsedV2: true}
+}
+
+// countNonStopwordTokens does a quick token count: lowercase + split + remove stopwords.
+func (p *Pipeline) countNonStopwordTokens(query, locale string) int {
+	words := strings.Fields(strings.ToLower(strings.TrimSpace(query)))
+	if len(p.stopwords) == 0 {
+		return len(words)
+	}
+	normLocale := strings.ToLower(strings.ReplaceAll(locale, "-", "_"))
+	sw := p.stopwords[normLocale]
+	if len(sw) == 0 {
+		return len(words)
+	}
+	count := 0
+	for _, w := range words {
+		if !sw[w] {
+			count++
+		}
+	}
+	return count
 }

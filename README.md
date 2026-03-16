@@ -1,6 +1,6 @@
 # QUS — Query Understanding Service
 
-A Go library and HTTP service that parses search queries into structured intent: normalized tokens, concept matches, filters, sorts, and rewrites. It provides four pipelines: deterministic (v1), LLM-augmented hybrid (v2), native OpenSearch-driven (v3), and adaptive (v4) which uses v3 as a fast path and escalates to v2 only for complex queries.
+A Go library and HTTP service that parses search queries into structured intent: normalized tokens, concept matches, filters, sorts, and rewrites. It provides four pipelines: deterministic (v1), LLM-augmented hybrid (v2), native OpenSearch-driven (v3), and adaptive (v4) which routes short queries to v3 and longer queries straight to v2 LLM.
 
 ## Architecture
 
@@ -40,11 +40,10 @@ graph LR
     end
 
     subgraph "v4 — Adaptive"
-        V4_1[Run v3] --> V4_2{Score Complexity}
-        V4_2 -->|simple| V4_3[Return v3 result]
-        V4_2 -->|complex| V4_4[Run v2 LLM]
-        V4_4 -->|success| V4_5[Return v2 result]
-        V4_4 -.->|failure| V4_3
+        V4_0{Token count} -->|"< 3 tokens"| V4_1[Run v3]
+        V4_0 -->|"≥ 3 tokens"| V4_2[Run v2 LLM]
+        V4_2 -->|success| V4_3[Return v2 result]
+        V4_2 -.->|failure| V4_1
     end
 
     Q --> V1_1
@@ -70,7 +69,7 @@ graph LR
 
 **v3** delegates spell correction, synonym matching, and compound handling to OpenSearch natively via `fuzziness: AUTO` + `cross_fields` multi_match.
 
-**v4** (adaptive) runs v3 first as a fast path, then scores the result on four complexity signals: token coverage (0.4 weight), concept confidence (0.2), spell corrections (0.2), and conversational patterns (0.2). If the score exceeds 0.5 or a hard trigger fires (conversational phrasing, or 3+ tokens with zero concepts and zero filters), it escalates to v2's LLM. Falls back to v3 if v2 is unavailable or fails.
+**v4** (adaptive) routes queries based on non-stopword token count. Short queries (< `direct_llm_token_threshold`, default 3) go to v3. Longer queries skip v3 entirely and go straight to v2 LLM for semantic understanding. If v2 fails or returns empty, falls back to v3. Configurable via `qus.yaml` — set threshold to 0 to disable routing (v3 only).
 
 All pipelines benefit from **locale-aware stemming** on the concept index — queries like "veggies" match "veggie", "burgers" matches "burger", etc. Each locale gets its own language-specific analyzer (English, German, French, Dutch, Italian, Spanish, Swedish, Danish, Norwegian, CJK).
 
@@ -89,7 +88,7 @@ internal/
     pipeline/                 # v1 deterministic pipeline steps
     hybrid/                   # v2 hybrid LLM pipeline
     native/                   # v3 native OS-driven pipeline
-    adaptive/                 # v4 adaptive pipeline (v3 fast path + v2 escalation)
+    adaptive/                 # v4 adaptive pipeline (token-count routing: v3 or v2)
   infra/
     bedrock/                  # AWS Bedrock Converse API client (with Nova field normalization)
     opensearch/               # OS client: LinguisticLookup, CompoundLookup, FuzzySearcher
@@ -620,7 +619,7 @@ curl -X POST 'http://localhost:8080/v3/analyze?locale=en-GB&country=uk' \
 
 ### POST /v4/analyze
 
-Adaptive pipeline. Runs v3 first and scores the result for complexity. Simple queries return the v3 result directly (~10–20ms). Complex queries (conversational phrasing, low concept coverage, many spell corrections) escalate to the v2 LLM pipeline. Falls back to v3 if LLM is unavailable or fails.
+Adaptive pipeline. Routes based on non-stopword token count: short queries (< 3 tokens) use v3 native OS (~10–20ms), longer queries go straight to v2 LLM (~200–500ms). Falls back to v3 if LLM is unavailable or returns empty. Threshold configurable via `direct_llm_token_threshold` in `qus.yaml`.
 
 **Query parameters:** `locale`, `country`
 
@@ -634,8 +633,8 @@ The response includes the standard `AnalyzeResponse` fields plus routing metadat
 
 | Extra field | Type | Description |
 |---|---|---|
-| `escalated` | `bool` | Whether the query was escalated to v2 |
-| `complexityScore` | `float64` | Complexity score (0 = simple, 1 = complex) |
+| `used_v2` | `bool` | Whether the query was routed to v2 LLM |
+| `v2_fallback` | `bool` | Whether v2 failed and fell back to v3 |
 
 ### POST /v2/analyze/debug
 

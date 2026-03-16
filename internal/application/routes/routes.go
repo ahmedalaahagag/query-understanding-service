@@ -248,12 +248,12 @@ func analyzeV4Handler(logger *logrus.Logger, ap *adaptive.Pipeline) http.Handler
 
 		resp := struct {
 			model.AnalyzeResponse
-			Escalated bool    `json:"escalated"`
-			Score     float64 `json:"complexityScore"`
+			UsedV2     bool `json:"used_v2"`
+			V2Fallback bool `json:"v2_fallback"`
 		}{
 			AnalyzeResponse: result.Response,
-			Escalated:       result.Escalated,
-			Score:           result.Score.Score,
+			UsedV2:          result.UsedV2,
+			V2Fallback:      result.V2Fallback,
 		}
 
 		w.Header().Set("Content-Type", "application/json")

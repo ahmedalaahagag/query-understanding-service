@@ -30,8 +30,12 @@ type compiledLocaleRules struct {
 }
 
 // ComprehensionEngine is a pipeline step that extracts filters and sort
-// directives from the query using locale-aware regex rules. Matched fragments
-// are removed from the token list so they don't pollute the search query.
+// directives from the query using locale-aware regex rules.
+//
+// Numeric filter patterns (e.g. "under 10", "less than 500 calories") are
+// stripped from tokens because they are structural noise for text search.
+// Keyword filter patterns (e.g. "quick", "healthy", "easy") are kept as
+// tokens because they are meaningful search terms.
 type ComprehensionEngine struct {
 	byLocale map[string]compiledLocaleRules
 }
@@ -89,24 +93,24 @@ func (c *ComprehensionEngine) Process(_ context.Context, state *model.QueryState
 
 	query := state.NormalizedQuery
 
-	// Track consumed character ranges in the query string.
-	// More specific rules (prep_time, calories) should come before generic price
-	// so they consume the region first and prevent the price rule from matching.
+	// Track consumed character ranges so overlapping rules don't double-match.
 	consumedChars := make([]bool, len(query))
-	consumedTokens := make(map[int]bool)
+
+	// stripChars tracks ranges to remove from tokens/query.
+	// Numeric patterns ("under 10") are stripped; keyword patterns ("quick") are kept.
+	stripChars := make([]bool, len(query))
 
 	for _, rule := range rules.filterRules {
 		loc := rule.re.FindStringIndex(query)
 		if loc == nil {
 			continue
 		}
-		// Skip if this match overlaps an already-consumed region.
 		if overlapsConsumed(consumedChars, loc[0], loc[1]) {
 			continue
 		}
 
 		if rule.value != "" {
-			// Static value — try numeric first, fall back to string.
+			// Keyword filter — keep tokens for text matching.
 			var filterValue interface{} = rule.value
 			if v, err := strconv.ParseFloat(rule.value, 64); err == nil {
 				filterValue = v * rule.multiplier
@@ -117,7 +121,7 @@ func (c *ComprehensionEngine) Process(_ context.Context, state *model.QueryState
 				Value:    filterValue,
 			})
 		} else {
-			// Numeric filter — extract captured number.
+			// Numeric filter — strip tokens (structural noise).
 			matches := rule.re.FindStringSubmatch(query)
 			if len(matches) < 3 {
 				continue
@@ -131,11 +135,10 @@ func (c *ComprehensionEngine) Process(_ context.Context, state *model.QueryState
 				Operator: rule.operator,
 				Value:    val * rule.multiplier,
 			})
+			markConsumedRange(stripChars, loc[0], loc[1])
 		}
 
 		markConsumedRange(consumedChars, loc[0], loc[1])
-		matchedText := strings.ToLower(query[loc[0]:loc[1]])
-		markConsumedTokens(state.Tokens, matchedText, consumedTokens)
 	}
 
 	for _, rule := range rules.sortRules {
@@ -151,21 +154,14 @@ func (c *ComprehensionEngine) Process(_ context.Context, state *model.QueryState
 			Direction: rule.direction,
 		}
 		markConsumedRange(consumedChars, loc[0], loc[1])
-		matchedText := strings.ToLower(query[loc[0]:loc[1]])
-		markConsumedTokens(state.Tokens, matchedText, consumedTokens)
+		markConsumedRange(stripChars, loc[0], loc[1])
 		break // Only one sort directive
 	}
 
-	// Remove consumed tokens and rebuild the normalized query.
-	if len(consumedTokens) > 0 {
-		var kept []model.Token
-		for i, tok := range state.Tokens {
-			if !consumedTokens[i] {
-				tok.Position = len(kept)
-				kept = append(kept, tok)
-			}
-		}
-		state.Tokens = kept
+	// Strip tokens covered by numeric/sort patterns.
+	if len(state.Tokens) > 0 {
+		consumed := markConsumedTokens(state.Tokens, query, stripChars)
+		state.Tokens = removeConsumedTokens(state.Tokens, consumed)
 		rebuildQuery(state)
 	}
 
@@ -205,18 +201,48 @@ func markConsumedRange(consumed []bool, start, end int) {
 	}
 }
 
-// markConsumedTokens marks token positions whose normalized values appear in the matched text.
-func markConsumedTokens(tokens []model.Token, matchedText string, consumed map[int]bool) {
-	words := strings.Fields(matchedText)
-	wordSet := make(map[string]bool, len(words))
-	for _, w := range words {
-		wordSet[strings.ToLower(w)] = true
-	}
+// markConsumedTokens checks which tokens fall within stripped character ranges.
+func markConsumedTokens(tokens []model.Token, query string, stripChars []bool) map[int]bool {
+	consumed := make(map[int]bool)
+	pos := 0
 	for i, tok := range tokens {
-		if wordSet[strings.ToLower(tok.Normalized)] {
+		idx := strings.Index(query[pos:], tok.Normalized)
+		if idx < 0 {
+			continue
+		}
+		start := pos + idx
+		end := start + len(tok.Normalized)
+		if allConsumed(stripChars, start, end) {
 			consumed[i] = true
 		}
+		pos = end
 	}
+	return consumed
 }
 
-// rebuildQuery is defined in synonym.go (shared across pipeline steps).
+// allConsumed returns true if every character in [start, end) is marked.
+func allConsumed(chars []bool, start, end int) bool {
+	for i := start; i < end && i < len(chars); i++ {
+		if !chars[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// removeConsumedTokens returns tokens not in the consumed set, with positions renumbered.
+func removeConsumedTokens(tokens []model.Token, consumed map[int]bool) []model.Token {
+	if len(consumed) == 0 {
+		return tokens
+	}
+	result := make([]model.Token, 0, len(tokens)-len(consumed))
+	pos := 0
+	for i, tok := range tokens {
+		if !consumed[i] {
+			tok.Position = pos
+			result = append(result, tok)
+			pos++
+		}
+	}
+	return result
+}

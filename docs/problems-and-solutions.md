@@ -339,3 +339,25 @@ For multi-word labels, the guard checks ANY word (not just the first), since fuz
 Exact matches (source="exact") are not affected — the guard only applies to fuzzy hits.
 
 **Files changed:** `internal/domain/native/concept.go`
+
+---
+
+## 20. Comprehension Strips Tokens Too Aggressively
+
+**Problem:** Queries like "quick healthy meals" and "low calorie options" returned 0 results. The comprehension engine was stripping ALL matched tokens from the query — both structural patterns ("under 10") and keyword patterns ("quick", "healthy"). After stripping, the remaining tokens were too few or too generic to match any products in the text search stage.
+
+For example:
+- "quick healthy meals" → "quick" stripped (prep_time filter) → "healthy meals" → no concepts, poor text match → 0 results
+- "low calorie options" → "low calorie" stripped (calorie filter) → "options" → meaningless search term → 0 results
+
+**Solution:** Selective token stripping based on filter type:
+
+- **Numeric patterns** ("under 10", "500 calories", "less than 20 minutes"): tokens **stripped** — these are structural noise that pollutes text search
+- **Keyword patterns** ("quick", "healthy", "easy", "low carb"): tokens **kept** — these are meaningful search terms that improve text relevance
+- **Sort patterns** ("cheapest", "newest"): tokens **stripped** — purely structural
+
+The comprehension engine now tracks two separate character maps: `consumedChars` (for overlap prevention between rules) and `stripChars` (for token removal). Only numeric filter and sort matches are marked for stripping.
+
+Filters/sorts are still extracted and applied as `post_filter` by the search orchestrator, so they don't affect text relevance scoring regardless of whether tokens are kept or stripped.
+
+**Files changed:** `internal/domain/pipeline/comprehension.go`, `internal/domain/pipeline/comprehension_test.go`

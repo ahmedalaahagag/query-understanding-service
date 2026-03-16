@@ -102,6 +102,10 @@ en:
       field: tags
       operator: eq
       value: "Carb Conscious"
+    - pattern: '\b(healthy\s*options?|healthy)\b'
+      field: tags
+      operator: eq
+      value: "Healthy Options"
 
     # --- Product types / Recipe labels ---
     - pattern: '\b(ready\s*made(?:\s*meals?)?|ready\s*to\s*(?:heat|eat)|heat\s*and\s*eat|oven\s*ready|pre\s*-?\s*made|premade)\b'

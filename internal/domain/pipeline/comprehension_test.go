@@ -228,9 +228,9 @@ func TestComprehension_KeywordDifficulty(t *testing.T) {
 	assert.Equal(t, "eq", state.Filters[0].Operator)
 	assert.Equal(t, "easy", state.Filters[0].Value)
 
-	// "easy" should be consumed from tokens.
-	assert.Equal(t, "chicken recipes", state.NormalizedQuery)
-	assert.Len(t, state.Tokens, 2)
+	// Tokens are NOT stripped — "easy" remains for text matching.
+	assert.Equal(t, "easy chicken recipes", state.NormalizedQuery)
+	assert.Len(t, state.Tokens, 3)
 }
 
 func TestComprehension_KeywordQuick(t *testing.T) {
@@ -253,7 +253,9 @@ func TestComprehension_KeywordQuick(t *testing.T) {
 	assert.Equal(t, "lte", state.Filters[0].Operator)
 	assert.Equal(t, 30.0, state.Filters[0].Value) // numeric, not string "30"
 
-	assert.Equal(t, "pasta dinner", state.NormalizedQuery)
+	// Tokens are NOT stripped — "quick" remains for text matching.
+	assert.Equal(t, "quick pasta dinner", state.NormalizedQuery)
+	assert.Len(t, state.Tokens, 3)
 }
 
 func TestComprehension_PrepTimeMinutes(t *testing.T) {
@@ -320,7 +322,10 @@ func TestComprehension_GermanDifficulty(t *testing.T) {
 	require.Len(t, state.Filters, 1)
 	assert.Equal(t, "difficulty_level", state.Filters[0].Field)
 	assert.Equal(t, "easy", state.Filters[0].Value)
-	assert.Equal(t, "hähnchen rezepte", state.NormalizedQuery)
+
+	// Tokens are NOT stripped — "einfach" remains for text matching.
+	assert.Equal(t, "einfach hähnchen rezepte", state.NormalizedQuery)
+	assert.Len(t, state.Tokens, 3)
 }
 
 func TestComprehension_BareMinutes(t *testing.T) {
@@ -342,7 +347,7 @@ func TestComprehension_BareMinutes(t *testing.T) {
 	assert.Equal(t, "lte", state.Filters[0].Operator)
 	assert.Equal(t, 10.0, state.Filters[0].Value)
 
-	// Both "10" and "mins" should be consumed.
+	// Numeric pattern — tokens stripped.
 	assert.Empty(t, state.Tokens)
 }
 
@@ -388,7 +393,7 @@ func TestComprehension_BareCalories(t *testing.T) {
 	assert.Equal(t, "lte", state.Filters[0].Operator)
 	assert.Equal(t, 500.0, state.Filters[0].Value)
 
-	// "500" and "calories" consumed, "chicken" remains.
+	// Numeric pattern — "500" and "calories" stripped, "chicken" remains.
 	assert.Len(t, state.Tokens, 1)
 	assert.Equal(t, "chicken", state.Tokens[0].Value)
 }

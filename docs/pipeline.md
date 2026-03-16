@@ -30,9 +30,9 @@ Input: "Cheap  CHIKEN  Burger under 20"  (locale: en-GB)
 └──────┬───────┘
        ▼
 ┌────────────────┐
-│ 3. Comprehend  │  regex filter/sort extraction, strips consumed tokens from query
-└──────┬─────────┘  "cheap" → difficulty_level=easy, "under 20" → price lt 20
-       ▼            normalizedQuery: "chiken burger"
+│ 3. Comprehend  │  regex filter/sort extraction, selective token stripping
+└──────┬─────────┘  "under 20" → price lt 20 (stripped), "cheap" → keyword (kept)
+       ▼            normalizedQuery: "cheap chiken burger"
 ┌──────────────┐
 │ 4. Spell      │  OS term suggester (suggest_mode=missing), Levenshtein guard
 └──────┬───────┘  "chiken" → "chicken"
@@ -92,7 +92,7 @@ Multi-locale regex extraction from `configs/comprehension.yaml` (8 languages: en
 Key behaviors:
 - **Overlap detection**: tracks consumed character ranges — "under 15 minutes" matches prep_time only, not price
 - **Rule ordering**: specific rules (prep_time, calories) before generic price
-- **Token stripping**: consumed tokens removed from `normalizedQuery` and `tokens`
+- **Selective token stripping**: numeric patterns ("under 10", "500 calories") and sort patterns ("cheapest") are stripped from tokens and query. Keyword patterns ("quick", "healthy", "easy") are kept — they are meaningful search terms
 - **Locale selection**: "en-GB" → lang prefix "en" → picks `en` rules
 
 #### 4. Spell Resolver (`spell.go`)

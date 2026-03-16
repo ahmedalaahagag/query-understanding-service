@@ -70,7 +70,7 @@ func TestNativePipeline_FullFlow(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, "Chiken under 10", resp.OriginalQuery)
-	// Comprehension engine strips consumed filter/sort tokens from the query
+	// Numeric filter pattern stripped from query; keyword patterns would be kept.
 	assert.Equal(t, "chicken", resp.NormalizedQuery)
 	assert.True(t, len(resp.Concepts) > 0, "should find chicken concept")
 	assert.Equal(t, "chicken", resp.Concepts[0].Label)

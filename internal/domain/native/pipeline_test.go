@@ -259,3 +259,57 @@ func TestNativeConceptRecognizer_FuzzyMatch(t *testing.T) {
 	assert.Equal(t, "chicken", state.Concepts[0].Label)
 	assert.Equal(t, "fuzzy", state.Concepts[0].Source)
 }
+
+func TestNativeConceptRecognizer_RejectsFuzzyFirstLetterMismatch(t *testing.T) {
+	fuzzy := &mockFuzzySearcher{
+		searchFn: func(_ context.Context, text, _, _ string) ([]opensearch.ConceptHit, error) {
+			if text == "chick" {
+				return []opensearch.ConceptHit{
+					// "chick" fuzzy-matches "chuck" alias within "ground beef" — should be rejected
+					{ID: "cat-ground-beef", Label: "ground beef", Field: "category", Score: 1.2, Source: "fuzzy"},
+				}, nil
+			}
+			return nil, nil
+		},
+	}
+
+	recognizer := NewNativeConceptRecognizer(fuzzy, config.ConceptConfig{ShingleMaxSize: 3, MaxMatchesPerSpan: 3}, logrus.New())
+	state := &model.QueryState{
+		Tokens: []model.Token{
+			{Value: "chick", Normalized: "chick", Position: 0},
+		},
+		Locale: "en-US",
+		Market: "us",
+	}
+
+	err := recognizer.Process(context.Background(), state)
+	require.NoError(t, err)
+	assert.Empty(t, state.Concepts, "fuzzy match with first-letter mismatch should be rejected")
+}
+
+func TestNativeConceptRecognizer_AcceptsFuzzyFirstLetterMatch(t *testing.T) {
+	fuzzy := &mockFuzzySearcher{
+		searchFn: func(_ context.Context, text, _, _ string) ([]opensearch.ConceptHit, error) {
+			if text == "chick" {
+				return []opensearch.ConceptHit{
+					{ID: "cat-chicken", Label: "chicken", Field: "category", Score: 5.0, Source: "fuzzy"},
+				}, nil
+			}
+			return nil, nil
+		},
+	}
+
+	recognizer := NewNativeConceptRecognizer(fuzzy, config.ConceptConfig{ShingleMaxSize: 3, MaxMatchesPerSpan: 3}, logrus.New())
+	state := &model.QueryState{
+		Tokens: []model.Token{
+			{Value: "chick", Normalized: "chick", Position: 0},
+		},
+		Locale: "en-US",
+		Market: "us",
+	}
+
+	err := recognizer.Process(context.Background(), state)
+	require.NoError(t, err)
+	require.Len(t, state.Concepts, 1)
+	assert.Equal(t, "chicken", state.Concepts[0].Label)
+}

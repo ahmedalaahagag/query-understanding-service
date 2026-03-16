@@ -348,3 +348,24 @@ if corrected[0] != tok.Value[0] {
 4. **Updated LLM prompt**: Explicitly tells the LLM not to use `meal_type` or `cooking_method` as filter fields.
 
 **Files changed:** `configs/allowed_filters.yaml`, `configs/llm_prompt.txt`, `internal/infra/bedrock/client.go`
+
+---
+
+## 19. Fuzzy Concept Matcher False Positives on Short Tokens
+
+**Problem:** Searching "chick" returned "ground beef" as a concept. The v3 fuzzy concept recognizer uses `fuzziness: AUTO` which allows 1–2 edit distance. The concept "ground beef" has an alias "ground chuck", and "chick" → "chuck" is only 1 edit (i→u). Since the fuzzy match hit the alias, OpenSearch returned "ground beef" as the top concept match — completely unrelated to what the user was typing.
+
+This class of false positive affects any short token where a single-character change matches an unrelated concept alias buried in a multi-word label.
+
+**Solution:** Added a first-letter guard to the `NativeConceptRecognizer`, mirroring the existing spell correction first-letter guard (problem #17). For fuzzy concept matches (source="fuzzy"), the recognizer now checks that the first letter of the query matches the first letter of at least one word in the concept label:
+
+```go
+// "chick" vs "ground beef" → g≠c, b≠c → rejected
+// "chick" vs "chicken"     → c=c     → accepted
+```
+
+For multi-word labels, the guard checks ANY word (not just the first), since fuzzy matches can hit aliases containing words anywhere in the label.
+
+Exact matches (source="exact") are not affected — the guard only applies to fuzzy hits.
+
+**Files changed:** `internal/domain/native/concept.go`

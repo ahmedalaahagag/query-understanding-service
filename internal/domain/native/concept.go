@@ -2,6 +2,8 @@ package native
 
 import (
 	"context"
+	"strings"
+	"unicode/utf8"
 
 	"github.com/ahmedalaahagag/query-understanding-service/internal/domain/pipeline"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
@@ -51,6 +53,11 @@ func (n *NativeConceptRecognizer) Process(ctx context.Context, state *model.Quer
 			if added >= n.cfg.MaxMatchesPerSpan {
 				break
 			}
+			// Reject fuzzy matches where the first letter differs.
+			// Prevents false positives like "chick" → "ground chuck" (via "chuck" alias).
+			if hit.Source == "fuzzy" && !firstLetterMatches(shingle.Text, hit.Label) {
+				continue
+			}
 			concepts = append(concepts, model.ConceptMatch{
 				ID:          hit.ID,
 				Label:       hit.Label,
@@ -67,4 +74,22 @@ func (n *NativeConceptRecognizer) Process(ctx context.Context, state *model.Quer
 
 	state.Concepts = concepts
 	return nil
+}
+
+// firstLetterMatches checks if the first letter of the query matches the first
+// letter of the concept label. For multi-word labels, it checks whether ANY word
+// in the label starts with the same letter as the query, since fuzzy matches can
+// hit on any word within the label/aliases.
+func firstLetterMatches(query, label string) bool {
+	qFirst, _ := utf8.DecodeRuneInString(strings.ToLower(query))
+	if qFirst == utf8.RuneError {
+		return false
+	}
+	for _, word := range strings.Fields(strings.ToLower(label)) {
+		lFirst, _ := utf8.DecodeRuneInString(word)
+		if lFirst == qFirst {
+			return true
+		}
+	}
+	return false
 }

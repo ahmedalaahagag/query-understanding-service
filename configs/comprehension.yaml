@@ -104,6 +104,46 @@ en:
       field: tags
       operator: eq
       value: "Healthy Options"
+    - pattern: '\b(gluten[\s-]*free|no gluten|gf|celiac)\b'
+      field: tags
+      operator: eq
+      value: "Gluten-Free Friendly"
+      strip: true
+    - pattern: '\b(dairy[\s-]*free|no dairy|lactose[\s-]*free|without dairy)\b'
+      field: tags
+      operator: eq
+      value: "Dairy-free"
+      strip: true
+    - pattern: '\b(no pork|pork[\s-]*free|without pork)\b'
+      field: tags
+      operator: eq
+      value: "Pork-free"
+      strip: true
+    - pattern: '\b(not spicy|no spice|non[\s-]*spicy)\b'
+      field: tags
+      operator: eq
+      value: "Non-spicy"
+      strip: true
+    - pattern: '\b(vegan|plant[\s-]*based)\b'
+      field: tags
+      operator: eq
+      value: "Vegan"
+      strip: true
+    - pattern: '\b(vegetarian|meat[\s-]*free|no meat)\b'
+      field: tags
+      operator: eq
+      value: "Vegetarian"
+      strip: true
+    - pattern: '\b(pescatarian|peskatarian)\b'
+      field: tags
+      operator: eq
+      value: "pescatarian"
+      strip: true
+    - pattern: '\b(keto|ketogenic)\b'
+      field: tags
+      operator: eq
+      value: "Keto"
+      strip: true
 
     # --- Product types / Recipe labels ---
     - pattern: '\b(ready\s*made(?:\s*meals?)?|ready\s*to\s*(?:heat|eat)|heat\s*and\s*eat|oven\s*ready|pre\s*-?\s*made|premade)\b'
@@ -248,6 +288,46 @@ de:
       operator: eq
       value: "Calorie Smart"
       strip: true
+    - pattern: '\b(glutenfrei|ohne Gluten|gluten[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Gluten-Free Friendly"
+      strip: true
+    - pattern: '\b(laktosefrei|ohne Milch|milchfrei|dairy[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Dairy-free"
+      strip: true
+    - pattern: '\b(ohne Schweinefleisch|schweinefrei|kein Schwein)\b'
+      field: tags
+      operator: eq
+      value: "Pork-free"
+      strip: true
+    - pattern: '\b(nicht scharf|mild|ohne Schärfe)\b'
+      field: tags
+      operator: eq
+      value: "Non-spicy"
+      strip: true
+    - pattern: '\b(vegan|pflanzlich)\b'
+      field: tags
+      operator: eq
+      value: "Vegan"
+      strip: true
+    - pattern: '\b(vegetarisch|fleischfrei|ohne Fleisch)\b'
+      field: tags
+      operator: eq
+      value: "Vegetarian"
+      strip: true
+    - pattern: '\b(pescatarisch|peskatarisch)\b'
+      field: tags
+      operator: eq
+      value: "pescatarian"
+      strip: true
+    - pattern: '\b(keto|ketogen)\b'
+      field: tags
+      operator: eq
+      value: "Keto"
+      strip: true
     - pattern: '\b(kinderfreundlich)\b'
       field: tags
       operator: eq
@@ -380,6 +460,46 @@ fr:
       operator: eq
       value: "Calorie Smart"
       strip: true
+    - pattern: '\b(sans gluten|sans[\s-]*gluten|gluten[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Gluten-Free Friendly"
+      strip: true
+    - pattern: '\b(sans lactose|sans lait|sans produits laitiers|dairy[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Dairy-free"
+      strip: true
+    - pattern: '\b(sans porc)\b'
+      field: tags
+      operator: eq
+      value: "Pork-free"
+      strip: true
+    - pattern: '\b(pas épicé|non épicé|doux|sans épice)\b'
+      field: tags
+      operator: eq
+      value: "Non-spicy"
+      strip: true
+    - pattern: '\b(végan|végétalien|plant[\s-]*based)\b'
+      field: tags
+      operator: eq
+      value: "Vegan"
+      strip: true
+    - pattern: '\b(végétarien|sans viande)\b'
+      field: tags
+      operator: eq
+      value: "Vegetarian"
+      strip: true
+    - pattern: '\b(pescatarien|pesco[\s-]*végétarien)\b'
+      field: tags
+      operator: eq
+      value: "pescatarian"
+      strip: true
+    - pattern: '\b(keto|kéto|cétogène)\b'
+      field: tags
+      operator: eq
+      value: "Keto"
+      strip: true
     - pattern: '\b(adapté aux enfants)\b'
       field: tags
       operator: eq
@@ -508,6 +628,46 @@ nl:
       field: tags
       operator: eq
       value: "Calorie Smart"
+      strip: true
+    - pattern: '\b(glutenvrij|zonder gluten|gluten[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Gluten-Free Friendly"
+      strip: true
+    - pattern: '\b(lactosevrij|zuivelvrij|zonder zuivel|dairy[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Dairy-free"
+      strip: true
+    - pattern: '\b(zonder varkensvlees|varkensvrij)\b'
+      field: tags
+      operator: eq
+      value: "Pork-free"
+      strip: true
+    - pattern: '\b(niet pittig|mild|zonder kruiden)\b'
+      field: tags
+      operator: eq
+      value: "Non-spicy"
+      strip: true
+    - pattern: '\b(veganistisch|vegan|plantaardig)\b'
+      field: tags
+      operator: eq
+      value: "Vegan"
+      strip: true
+    - pattern: '\b(vegetarisch|zonder vlees|vleesloos)\b'
+      field: tags
+      operator: eq
+      value: "Vegetarian"
+      strip: true
+    - pattern: '\b(pescotarisch|pescatarisch)\b'
+      field: tags
+      operator: eq
+      value: "pescatarian"
+      strip: true
+    - pattern: '\b(keto|ketogeen)\b'
+      field: tags
+      operator: eq
+      value: "Keto"
       strip: true
     - pattern: '\b(kindvriendelijk)\b'
       field: tags
@@ -638,6 +798,46 @@ it:
       operator: eq
       value: "Calorie Smart"
       strip: true
+    - pattern: '\b(senza glutine|gluten[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Gluten-Free Friendly"
+      strip: true
+    - pattern: '\b(senza lattosio|senza latticini|dairy[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Dairy-free"
+      strip: true
+    - pattern: '\b(senza maiale)\b'
+      field: tags
+      operator: eq
+      value: "Pork-free"
+      strip: true
+    - pattern: '\b(non piccante|delicato|senza spezie)\b'
+      field: tags
+      operator: eq
+      value: "Non-spicy"
+      strip: true
+    - pattern: '\b(vegano|a base vegetale)\b'
+      field: tags
+      operator: eq
+      value: "Vegan"
+      strip: true
+    - pattern: '\b(vegetariano|senza carne)\b'
+      field: tags
+      operator: eq
+      value: "Vegetarian"
+      strip: true
+    - pattern: '\b(pescatariano|pescetariano)\b'
+      field: tags
+      operator: eq
+      value: "pescatarian"
+      strip: true
+    - pattern: '\b(keto|chetogenico)\b'
+      field: tags
+      operator: eq
+      value: "Keto"
+      strip: true
     - pattern: '\b(adatto ai bambini)\b'
       field: tags
       operator: eq
@@ -766,6 +966,46 @@ es:
       field: tags
       operator: eq
       value: "Calorie Smart"
+      strip: true
+    - pattern: '\b(sin gluten|libre de gluten|gluten[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Gluten-Free Friendly"
+      strip: true
+    - pattern: '\b(sin lactosa|sin lácteos|libre de lácteos|dairy[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Dairy-free"
+      strip: true
+    - pattern: '\b(sin cerdo|sin carne de cerdo)\b'
+      field: tags
+      operator: eq
+      value: "Pork-free"
+      strip: true
+    - pattern: '\b(no picante|sin picante|suave)\b'
+      field: tags
+      operator: eq
+      value: "Non-spicy"
+      strip: true
+    - pattern: '\b(vegano|a base de plantas)\b'
+      field: tags
+      operator: eq
+      value: "Vegan"
+      strip: true
+    - pattern: '\b(vegetariano|sin carne)\b'
+      field: tags
+      operator: eq
+      value: "Vegetarian"
+      strip: true
+    - pattern: '\b(pescatariano|pescetariano)\b'
+      field: tags
+      operator: eq
+      value: "pescatarian"
+      strip: true
+    - pattern: '\b(keto|cetogénico)\b'
+      field: tags
+      operator: eq
+      value: "Keto"
       strip: true
     - pattern: '\b(apto para niños)\b'
       field: tags
@@ -896,6 +1136,46 @@ sv:
       operator: eq
       value: "Calorie Smart"
       strip: true
+    - pattern: '\b(glutenfri|utan gluten|gluten[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Gluten-Free Friendly"
+      strip: true
+    - pattern: '\b(laktosfri|mjölkfri|utan mjölk|dairy[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Dairy-free"
+      strip: true
+    - pattern: '\b(utan fläsk|fläskfri)\b'
+      field: tags
+      operator: eq
+      value: "Pork-free"
+      strip: true
+    - pattern: '\b(inte kryddigt|mild|utan kryddor)\b'
+      field: tags
+      operator: eq
+      value: "Non-spicy"
+      strip: true
+    - pattern: '\b(vegansk|vegan|växtbaserad)\b'
+      field: tags
+      operator: eq
+      value: "Vegan"
+      strip: true
+    - pattern: '\b(vegetarisk|köttfri|utan kött)\b'
+      field: tags
+      operator: eq
+      value: "Vegetarian"
+      strip: true
+    - pattern: '\b(pescatarian|peskatarian)\b'
+      field: tags
+      operator: eq
+      value: "pescatarian"
+      strip: true
+    - pattern: '\b(keto|ketogen)\b'
+      field: tags
+      operator: eq
+      value: "Keto"
+      strip: true
     - pattern: '\b(barnvänlig)\b'
       field: tags
       operator: eq
@@ -1024,6 +1304,46 @@ da:
       field: tags
       operator: eq
       value: "Calorie Smart"
+      strip: true
+    - pattern: '\b(glutenfri|uden gluten|gluten[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Gluten-Free Friendly"
+      strip: true
+    - pattern: '\b(laktosefri|mælkefri|uden mælk|dairy[\s-]*free)\b'
+      field: tags
+      operator: eq
+      value: "Dairy-free"
+      strip: true
+    - pattern: '\b(uden svinekød|svinefri)\b'
+      field: tags
+      operator: eq
+      value: "Pork-free"
+      strip: true
+    - pattern: '\b(ikke krydret|mild|uden krydderier)\b'
+      field: tags
+      operator: eq
+      value: "Non-spicy"
+      strip: true
+    - pattern: '\b(vegansk|vegan|plantebaseret)\b'
+      field: tags
+      operator: eq
+      value: "Vegan"
+      strip: true
+    - pattern: '\b(vegetarisk|kødfri|uden kød)\b'
+      field: tags
+      operator: eq
+      value: "Vegetarian"
+      strip: true
+    - pattern: '\b(pescatarianer|peskatarianer)\b'
+      field: tags
+      operator: eq
+      value: "pescatarian"
+      strip: true
+    - pattern: '\b(keto|ketogen)\b'
+      field: tags
+      operator: eq
+      value: "Keto"
       strip: true
     - pattern: '\b(børnevenlig)\b'
       field: tags

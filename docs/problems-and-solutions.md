@@ -397,4 +397,27 @@ The same applied to 2-word shingles: "spicy asian" returned "spicy" and "asian" 
 
 This ensures multi-word shingles only produce concepts that genuinely span the full token range (e.g. "chicken tenders" matching a 2-word shingle), while individual tokens are always matched by their own shingles.
 
-**Files changed:** `internal/domain/pipeline/concept.go`
+**Files changed:** `internal/domain/pipeline/concept.go`, `internal/domain/native/concept.go`
+
+---
+
+## 23. Dietary Preferences Need Negation Pattern Support
+
+**Problem:** Users search with negation patterns like "no gluten", "no pork", "dairy free", "not spicy", "vegan", "no meat" — but these terms either got sent as raw text queries (returning irrelevant results) or matched dietary concepts mapped to a non-existent `dietary` field. The product index has tag values like "Gluten-Free Friendly", "Pork-free", "Dairy-free", "Non-spicy", "Vegan", "Vegetarian", "pescatarian", "Keto" — but no comprehension rules to map natural language to these tags.
+
+**Solution:** Added comprehension rules for 8 dietary tags across all 8 languages (en, de, fr, nl, it, es, sv, da):
+
+| Tag | English patterns |
+|-----|-----------------|
+| Gluten-Free Friendly | gluten free, no gluten, gf, celiac |
+| Dairy-free | dairy free, no dairy, lactose free, without dairy |
+| Pork-free | no pork, pork free, without pork |
+| Non-spicy | not spicy, no spice, non-spicy |
+| Vegan | vegan, plant based |
+| Vegetarian | vegetarian, meat free, no meat |
+| pescatarian | pescatarian, peskatarian |
+| Keto | keto, ketogenic |
+
+All rules use `strip: true` so the dietary terms are removed from the text query and converted to tag filters. Each language has localized patterns (e.g. German "ohne Gluten", French "sans gluten", Dutch "glutenvrij").
+
+**Files changed:** `configs/comprehension.yaml` (all 8 languages)

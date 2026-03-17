@@ -88,12 +88,14 @@ Multi-locale regex extraction from `configs/comprehension.yaml` (8 languages: en
 | Price filter | `under 20` | `{field: "price", operator: "lt", value: 20}` |
 | Difficulty filter | `easy` | `{field: "difficulty_level", operator: "eq", value: "easy"}` |
 | Servings filter | `for 4 people` | `{field: "servings", operator: "eq", value: 4}` |
+| Dietary tag filter | `no gluten`, `vegan`, `no pork` | `{field: "tags", operator: "eq", value: "Gluten-Free Friendly"}` |
 | Sort directive | `cheapest` | `{field: "price", direction: "asc"}` |
 
 Key behaviors:
 - **Overlap detection**: tracks consumed character ranges — "under 15 minutes" matches prep_time only, not price
 - **Rule ordering**: specific rules (prep_time, calories) before generic price
-- **Selective token stripping**: numeric patterns ("under 10", "500 calories"), sort patterns ("cheapest"), and keyword filters with `strip: true` ("low calorie", "calorie smart") are stripped from tokens and query. Other keyword patterns ("quick", "healthy", "easy") are kept — they are meaningful search terms
+- **Selective token stripping**: numeric patterns ("under 10", "500 calories"), sort patterns ("cheapest"), and keyword filters with `strip: true` ("low calorie", "calorie smart", dietary tags) are stripped from tokens and query. Other keyword patterns ("quick", "healthy", "easy") are kept — they are meaningful search terms
+- **Dietary negation patterns**: "no gluten" → Gluten-Free Friendly, "no pork" → Pork-free, "no dairy" → Dairy-free, "not spicy" → Non-spicy, etc. (8 dietary tags, all 8 languages)
 - **Locale selection**: "en-GB" → lang prefix "en" → picks `en` rules
 
 #### 4. Spell Resolver (`spell.go`)

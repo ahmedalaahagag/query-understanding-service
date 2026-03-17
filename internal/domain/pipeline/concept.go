@@ -2,6 +2,7 @@ package pipeline
 
 import (
 	"context"
+	"strings"
 
 	"github.com/ahmedalaahagag/query-understanding-service/pkg/model"
 	"github.com/ahmedalaahagag/query-understanding-service/internal/infra/opensearch"
@@ -64,6 +65,15 @@ func (c *ConceptRecognizer) Process(ctx context.Context, state *model.QueryState
 				break
 			}
 
+			// For multi-word shingles, reject partial matches where the
+			// concept label is shorter than the shingle. E.g. searching
+			// "spicy asian veggie" may return "spicy" (1 word) — that's a
+			// partial match that would incorrectly claim all 3 positions.
+			// Single-token concepts will be found by their own 1-word shingle.
+			if shingle.TokenCount > 1 && wordCount(hit.Label) < shingle.TokenCount {
+				continue
+			}
+
 			score := scoreForSource(hit.Source)
 
 			concepts = append(concepts, model.ConceptMatch{
@@ -82,6 +92,11 @@ func (c *ConceptRecognizer) Process(ctx context.Context, state *model.QueryState
 
 	state.Concepts = concepts
 	return nil
+}
+
+// wordCount returns the number of whitespace-separated words in s.
+func wordCount(s string) int {
+	return len(strings.Fields(s))
 }
 
 func scoreForSource(source string) float64 {

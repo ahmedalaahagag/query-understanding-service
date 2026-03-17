@@ -131,9 +131,10 @@ Removes tokens whose normalized value is in the locale's stopword set. Stopwords
 
 1. Generates **shingles** (n-grams, 1..`shingle_max_size`) from tokens, longest first
 2. Queries OpenSearch concept index using `multi_match` with `cross_fields` on `label` and `aliases`
-3. Filters by `locale` and `market`
-4. Scores by source: exact > synonym > compound > spell
-5. Caps at `max_matches_per_span` per shingle
+3. **Word-count guard**: for multi-word shingles, rejects partial matches where the concept label has fewer words than the shingle (e.g. "spicy" from "spicy asian veggie" is skipped — it will be found by the 1-word shingle instead)
+4. Filters by `locale` and `market`
+5. Scores by source: exact > synonym > compound > spell
+6. Caps at `max_matches_per_span` per shingle
 
 #### 9. Ambiguity Resolver (`ambiguity.go`)
 

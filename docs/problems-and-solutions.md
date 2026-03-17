@@ -384,3 +384,17 @@ Root causes:
 Result: "low calorie beef" extracts filter `total_calories lte 400`, strips "low calorie" tokens, and searches remaining token "beef" via text matching. The `calorie smart` tag rule matches only when users type the exact tag name.
 
 **Files changed:** `configs/comprehension.yaml` (all 8 languages), `pkg/config/domain.go`, `internal/domain/pipeline/comprehension.go`
+
+---
+
+## 22. Multi-Word Shingles Claim Too Many Concept Positions
+
+**Problem:** Queries like "spicy asian veggie" and "asian chicken" returned only one concept (e.g. "spicy") instead of matching each token individually. The concept recognizer generates n-gram shingles and searches each against the concept index. A 3-word shingle like "spicy asian veggie" returned partial matches — OS found "spicy" (1-word label) as a hit for the 3-word query. The concept was added with `Start:0, End:2`, claiming all three token positions. The ambiguity resolver then blocked "asian" (pos 1) and "veggie" (pos 2) as overlapping.
+
+The same applied to 2-word shingles: "spicy asian" returned "spicy" and "asian" as individual hits, both assigned span 0-1, blocking later single-token shingles.
+
+**Solution:** Added a word-count guard in the concept recognizer: for multi-word shingles (tokenCount > 1), reject hits where the concept label has fewer words than the shingle. A concept with label "spicy" (1 word) matched from shingle "spicy asian veggie" (3 words) is a partial match — skip it. The single-word concept will be correctly found by its own 1-word shingle with the right position.
+
+This ensures multi-word shingles only produce concepts that genuinely span the full token range (e.g. "chicken tenders" matching a 2-word shingle), while individual tokens are always matched by their own shingles.
+
+**Files changed:** `internal/domain/pipeline/concept.go`

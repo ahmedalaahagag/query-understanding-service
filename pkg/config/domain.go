@@ -68,6 +68,7 @@ type FilterRule struct {
 	Operator   string  `yaml:"operator"`
 	Value      string  `yaml:"value,omitempty"`      // static value for keyword filters
 	Multiplier float64 `yaml:"multiplier,omitempty"` // numeric multiplier (default 1)
+	Strip      bool    `yaml:"strip,omitempty"`      // strip matched tokens even for keyword filters
 }
 
 type SortRule struct {

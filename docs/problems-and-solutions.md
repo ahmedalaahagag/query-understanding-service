@@ -361,3 +361,26 @@ The comprehension engine now tracks two separate character maps: `consumedChars`
 Filters/sorts are still extracted and applied as `post_filter` by the search orchestrator, so they don't affect text relevance scoring regardless of whether tokens are kept or stripped.
 
 **Files changed:** `internal/domain/pipeline/comprehension.go`, `internal/domain/pipeline/comprehension_test.go`
+
+---
+
+## 21. "Low Calorie Beef" Returns No Beef Results
+
+**Problem:** Searching "low calorie beef" returned 2 results, neither containing beef. The `total_calories` field in the product index is a **keyword** type with string values like `"920 kcal"`, not a numeric field. The comprehension rule `\b(low calories?|low cal|light)\b` extracted a filter `total_calories lte 400`, which performed a lexicographic string comparison — filtering out most products incorrectly. Combined with the `us-diet-low-calorie` concept mapping to the non-existent `dietary` field, "beef" was effectively lost from the search.
+
+Root causes:
+1. **Broken numeric filter on keyword field**: `total_calories lte 400` compared strings lexicographically — `"920 kcal" <= "400"` is false (correct by accident), but `"1010 kcal" <= "400"` is true (wrong). Only a handful of random products passed.
+2. **Keyword calorie rules consumed overlap region**: The `\b(low calories?|low cal|light)\b` → `total_calories lte 400` rule fired first (calories section before tags section), consuming the character range. The tag-based `Calorie Smart` rule never got a chance to match.
+3. **Dietary concepts on non-existent field**: 12 dietary concepts across locales mapped to `field: "dietary"` which doesn't exist in the product index. These resolved in QUS but produced no-op queries in the orchestrator.
+
+**Solution:**
+- **Split calorie rules into two** for all 8 languages:
+  1. Localized "low calorie" keywords (en: `low calories?|low cal|light`, de: `kalorienarm|leicht`, fr: `peu calorique|léger|allégé`, etc.) → `total_calories lte 400` with `strip: true` — numeric filter that strips matched tokens from text search
+  2. `calorie smart|cal smart` → `tags eq "Calorie Smart"` with `strip: true` — exact tag match
+- **Added `strip` flag to comprehension engine** (`FilterRule.Strip`, `compiledFilterRule.strip`) — keyword filters with `strip: true` remove their matched tokens from the query, same as numeric filters. Without the flag, "low calorie beef" sent all three words as a single text query, requiring all to match in one field.
+- **Kept explicit numeric calorie patterns** (`under 500 calories`, `unter 500 Kalorien`) for when users specify exact numbers
+- **Kept dietary concepts** in concept indexes — they serve as semantic metadata even if the orchestrator can't currently query the `dietary` field
+
+Result: "low calorie beef" extracts filter `total_calories lte 400`, strips "low calorie" tokens, and searches remaining token "beef" via text matching. The `calorie smart` tag rule matches only when users type the exact tag name.
+
+**Files changed:** `configs/comprehension.yaml` (all 8 languages), `pkg/config/domain.go`, `internal/domain/pipeline/comprehension.go`

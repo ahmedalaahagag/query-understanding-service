@@ -63,14 +63,6 @@ en:
       field: price
       operator: gt
       multiplier: 100
-    - pattern: '\b(low calories?|low cal|light)\b'
-      field: total_calories
-      operator: lte
-      value: "400"
-    - pattern: '\b(high calorie|calorie rich)\b'
-      field: total_calories
-      operator: gte
-      value: "600"
 
     # --- Dietary / Nutritional tags ---
     # Index field: tags (keyword array).
@@ -94,10 +86,16 @@ en:
       field: tags
       operator: eq
       value: "Sodium Smart"
-    - pattern: '\b(cal smart|calorie smart)\b'
+    - pattern: '\b(low calories?|low cal|light)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+      strip: true
+    - pattern: '\b(calorie smart|cal smart)\b'
       field: tags
       operator: eq
       value: "Calorie Smart"
+      strip: true
     - pattern: '\b(carb conscious)\b'
       field: tags
       operator: eq
@@ -216,10 +214,6 @@ de:
     - pattern: '()\b(\d+)\s*(?:Kalorien|kcal|cal)\b'
       field: total_calories
       operator: lte
-    - pattern: '\b(kalorienarm|leicht)\b'
-      field: total_calories
-      operator: lte
-      value: "400"
 
     # --- Price ---
     - pattern: '(unter|weniger als|günstiger als|billiger als)\s+(\d+(?:[.,]\d+)?)'
@@ -244,6 +238,16 @@ de:
       field: tags
       operator: eq
       value: "Low Sodium"
+    - pattern: '\b(kalorienarm|leicht)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+      strip: true
+    - pattern: '\b(calorie smart)\b'
+      field: tags
+      operator: eq
+      value: "Calorie Smart"
+      strip: true
     - pattern: '\b(kinderfreundlich)\b'
       field: tags
       operator: eq
@@ -342,10 +346,6 @@ fr:
     - pattern: '()\b(\d+)\s*(?:calories?|cal|kcal)\b'
       field: total_calories
       operator: lte
-    - pattern: '\b(peu calorique|léger|allégé)\b'
-      field: total_calories
-      operator: lte
-      value: "400"
 
     # --- Price ---
     - pattern: '(moins de|moins cher que|en dessous de)\s+(\d+(?:[.,]\d+)?)'
@@ -370,6 +370,16 @@ fr:
       field: tags
       operator: eq
       value: "Low Sodium"
+    - pattern: '\b(peu calorique|léger|allégé)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+      strip: true
+    - pattern: '\b(calorie smart)\b'
+      field: tags
+      operator: eq
+      value: "Calorie Smart"
+      strip: true
     - pattern: '\b(adapté aux enfants)\b'
       field: tags
       operator: eq
@@ -465,10 +475,6 @@ nl:
     - pattern: '()\b(\d+)\s*(?:calorieën|cal|kcal)\b'
       field: total_calories
       operator: lte
-    - pattern: '\b(caloriearm|licht)\b'
-      field: total_calories
-      operator: lte
-      value: "400"
 
     # --- Price ---
     - pattern: '(onder|minder dan|goedkoper dan)\s+(\d+(?:[.,]\d+)?)'
@@ -493,6 +499,16 @@ nl:
       field: tags
       operator: eq
       value: "Low Sodium"
+    - pattern: '\b(caloriearm|licht)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+      strip: true
+    - pattern: '\b(calorie smart)\b'
+      field: tags
+      operator: eq
+      value: "Calorie Smart"
+      strip: true
     - pattern: '\b(kindvriendelijk)\b'
       field: tags
       operator: eq
@@ -588,10 +604,6 @@ it:
     - pattern: '()\b(\d+)\s*(?:calorie|cal|kcal)\b'
       field: total_calories
       operator: lte
-    - pattern: '\b(ipocalorico|leggero)\b'
-      field: total_calories
-      operator: lte
-      value: "400"
 
     # --- Price ---
     - pattern: '(sotto|meno di|più economico di)\s+(\d+(?:[.,]\d+)?)'
@@ -616,6 +628,16 @@ it:
       field: tags
       operator: eq
       value: "Low Sodium"
+    - pattern: '\b(ipocalorico|leggero)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+      strip: true
+    - pattern: '\b(calorie smart)\b'
+      field: tags
+      operator: eq
+      value: "Calorie Smart"
+      strip: true
     - pattern: '\b(adatto ai bambini)\b'
       field: tags
       operator: eq
@@ -711,10 +733,6 @@ es:
     - pattern: '()\b(\d+)\s*(?:calorías|cal|kcal)\b'
       field: total_calories
       operator: lte
-    - pattern: '\b(bajo en calorías|ligero|light)\b'
-      field: total_calories
-      operator: lte
-      value: "400"
 
     # --- Price ---
     - pattern: '(menos de|más barato que|por debajo de)\s+(\d+(?:[.,]\d+)?)'
@@ -739,6 +757,16 @@ es:
       field: tags
       operator: eq
       value: "Low Sodium"
+    - pattern: '\b(bajo en calorías|ligero)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+      strip: true
+    - pattern: '\b(calorie smart)\b'
+      field: tags
+      operator: eq
+      value: "Calorie Smart"
+      strip: true
     - pattern: '\b(apto para niños)\b'
       field: tags
       operator: eq
@@ -834,10 +862,6 @@ sv:
     - pattern: '()\b(\d+)\s*(?:kalorier|cal|kcal)\b'
       field: total_calories
       operator: lte
-    - pattern: '\b(kalorisnål|lätt)\b'
-      field: total_calories
-      operator: lte
-      value: "400"
 
     # --- Price ---
     - pattern: '(under|mindre än|billigare än)\s+(\d+(?:[.,]\d+)?)'
@@ -862,6 +886,16 @@ sv:
       field: tags
       operator: eq
       value: "Low Sodium"
+    - pattern: '\b(kalorisnål|lätt)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+      strip: true
+    - pattern: '\b(calorie smart)\b'
+      field: tags
+      operator: eq
+      value: "Calorie Smart"
+      strip: true
     - pattern: '\b(barnvänlig)\b'
       field: tags
       operator: eq
@@ -957,10 +991,6 @@ da:
     - pattern: '()\b(\d+)\s*(?:kalorier|cal|kcal)\b'
       field: total_calories
       operator: lte
-    - pattern: '\b(kalorielet|let)\b'
-      field: total_calories
-      operator: lte
-      value: "400"
 
     # --- Price ---
     - pattern: '(under|mindre end|billigere end)\s+(\d+(?:[.,]\d+)?)'
@@ -985,6 +1015,16 @@ da:
       field: tags
       operator: eq
       value: "Low Sodium"
+    - pattern: '\b(kalorielet|let)\b'
+      field: total_calories
+      operator: lte
+      value: "400"
+      strip: true
+    - pattern: '\b(calorie smart)\b'
+      field: tags
+      operator: eq
+      value: "Calorie Smart"
+      strip: true
     - pattern: '\b(børnevenlig)\b'
       field: tags
       operator: eq

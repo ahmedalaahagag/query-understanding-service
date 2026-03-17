@@ -83,7 +83,8 @@ Multi-locale regex extraction from `configs/comprehension.yaml` (8 languages: en
 | Type | Pattern Example | Output |
 |---|---|---|
 | Prep time filter | `under 30 minutes` | `{field: "prep_time", operator: "lt", value: 30}` |
-| Calorie filter | `low calorie` | `{field: "calories", operator: "lte", value: 400}` |
+| Calorie filter | `low calorie` | `{field: "total_calories", operator: "lte", value: 400}` |
+| Calorie tag filter | `calorie smart` | `{field: "tags", operator: "eq", value: "Calorie Smart"}` |
 | Price filter | `under 20` | `{field: "price", operator: "lt", value: 20}` |
 | Difficulty filter | `easy` | `{field: "difficulty_level", operator: "eq", value: "easy"}` |
 | Servings filter | `for 4 people` | `{field: "servings", operator: "eq", value: 4}` |
@@ -92,7 +93,7 @@ Multi-locale regex extraction from `configs/comprehension.yaml` (8 languages: en
 Key behaviors:
 - **Overlap detection**: tracks consumed character ranges — "under 15 minutes" matches prep_time only, not price
 - **Rule ordering**: specific rules (prep_time, calories) before generic price
-- **Selective token stripping**: numeric patterns ("under 10", "500 calories") and sort patterns ("cheapest") are stripped from tokens and query. Keyword patterns ("quick", "healthy", "easy") are kept — they are meaningful search terms
+- **Selective token stripping**: numeric patterns ("under 10", "500 calories"), sort patterns ("cheapest"), and keyword filters with `strip: true` ("low calorie", "calorie smart") are stripped from tokens and query. Other keyword patterns ("quick", "healthy", "easy") are kept — they are meaningful search terms
 - **Locale selection**: "en-GB" → lang prefix "en" → picks `en` rules
 
 #### 4. Spell Resolver (`spell.go`)

@@ -16,6 +16,7 @@ type compiledFilterRule struct {
 	operator   string
 	value      string  // static value for keyword filters (empty = numeric capture)
 	multiplier float64
+	strip      bool // strip matched tokens even for keyword filters
 }
 
 type compiledSortRule struct {
@@ -62,6 +63,7 @@ func NewComprehensionEngine(cfg config.ComprehensionConfig) *ComprehensionEngine
 				operator:   r.Operator,
 				value:      r.Value,
 				multiplier: mult,
+				strip:      r.Strip,
 			})
 		}
 
@@ -110,7 +112,7 @@ func (c *ComprehensionEngine) Process(_ context.Context, state *model.QueryState
 		}
 
 		if rule.value != "" {
-			// Keyword filter — keep tokens for text matching.
+			// Keyword filter — keep tokens unless strip is set.
 			var filterValue interface{} = rule.value
 			if v, err := strconv.ParseFloat(rule.value, 64); err == nil {
 				filterValue = v * rule.multiplier
@@ -120,6 +122,9 @@ func (c *ComprehensionEngine) Process(_ context.Context, state *model.QueryState
 				Operator: rule.operator,
 				Value:    filterValue,
 			})
+			if rule.strip {
+				markConsumedRange(stripChars, loc[0], loc[1])
+			}
 		} else {
 			// Numeric filter — strip tokens (structural noise).
 			matches := rule.re.FindStringSubmatch(query)

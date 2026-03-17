@@ -53,6 +53,12 @@ func (n *NativeConceptRecognizer) Process(ctx context.Context, state *model.Quer
 			if added >= n.cfg.MaxMatchesPerSpan {
 				break
 			}
+			// For multi-word shingles, only accept exact label matches.
+			// Prevents partial hits (e.g. "chicken sausage" from "asian chicken")
+			// from claiming all shingle positions.
+			if shingle.TokenCount > 1 && !strings.EqualFold(hit.Label, shingle.Text) {
+				continue
+			}
 			// Reject fuzzy matches where the first letter differs.
 			// Prevents false positives like "chick" → "ground chuck" (via "chuck" alias).
 			if hit.Source == "fuzzy" && !firstLetterMatches(shingle.Text, hit.Label) {

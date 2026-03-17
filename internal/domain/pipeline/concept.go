@@ -65,12 +65,12 @@ func (c *ConceptRecognizer) Process(ctx context.Context, state *model.QueryState
 				break
 			}
 
-			// For multi-word shingles, reject partial matches where the
-			// concept label is shorter than the shingle. E.g. searching
-			// "spicy asian veggie" may return "spicy" (1 word) — that's a
-			// partial match that would incorrectly claim all 3 positions.
-			// Single-token concepts will be found by their own 1-word shingle.
-			if shingle.TokenCount > 1 && wordCount(hit.Label) < shingle.TokenCount {
+			// For multi-word shingles, only accept exact label matches.
+			// OS cross_fields returns partial hits (e.g. "chicken sausage"
+			// for "asian chicken" because "chicken" matches). These partial
+			// hits would claim all shingle positions incorrectly. Each
+			// token's concept will be found by its own 1-word shingle.
+			if shingle.TokenCount > 1 && !strings.EqualFold(hit.Label, shingle.Text) {
 				continue
 			}
 
@@ -92,11 +92,6 @@ func (c *ConceptRecognizer) Process(ctx context.Context, state *model.QueryState
 
 	state.Concepts = concepts
 	return nil
-}
-
-// wordCount returns the number of whitespace-separated words in s.
-func wordCount(s string) int {
-	return len(strings.Fields(s))
 }
 
 func scoreForSource(source string) float64 {

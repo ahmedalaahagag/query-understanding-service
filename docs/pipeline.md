@@ -216,29 +216,29 @@ Input: "chiken soup"  (locale: en-GB)
 └──────────┬────────────┘
            ▼
 ┌───────────────────────┐
-│ 2. OS Fuzzy Spell      │  FuzzySuggest per token, Levenshtein guard (AUTO-like)
+│ 2. Comprehension       │  same engine as v1 (runs early to catch negation patterns)
+└──────────┬────────────┘
+           ▼
+┌───────────────────────┐
+│ 3. OS Fuzzy Spell      │  FuzzySuggest per token, Levenshtein guard (AUTO-like)
 └──────────┬────────────┘  "chiken" → "chicken"
            ▼
 ┌───────────────────────┐
-│ 3. Stopword Filter     │  same as v1
+│ 4. Stopword Filter     │  same as v1
 └──────────┬────────────┘
            ▼
 ┌───────────────────────┐
-│ 4. OS Fuzzy Concepts   │  FuzzySearchConcepts — OS does the fuzzy matching
+│ 5. OS Fuzzy Concepts   │  FuzzySearchConcepts — OS does the fuzzy matching
 └──────────┬────────────┘
            ▼
 ┌───────────────────────┐
-│ 5. Ambiguity           │  same as v1
-└──────────┬────────────┘
-           ▼
-┌───────────────────────┐
-│ 6. Comprehension       │  same engine as v1
+│ 6. Ambiguity           │  same as v1
 └──────────┬────────────┘
            ▼
 Output: AnalyzeResponse
 ```
 
-v3 differs from v1 by delegating spell correction and concept matching to OS fuzzy queries instead of separate dictionary lookups for synonyms/compounds. This is simpler (fewer steps, fewer OS round-trips) but less controllable.
+v3 differs from v1 by delegating spell correction and concept matching to OS fuzzy queries instead of separate dictionary lookups for synonyms/compounds. Comprehension runs before stopwords and concepts (matching v1's order) so negation patterns like "no spicy" are caught before "no" is removed as a stopword.
 
 ---
 

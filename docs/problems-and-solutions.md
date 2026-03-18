@@ -445,3 +445,19 @@ en_gb:     # GB-specific overrides (prepended to en rules)
 ```
 
 **Files changed:** `internal/domain/pipeline/comprehension.go` (market-aware `rulesForLocale()`), `internal/domain/pipeline/comprehension_test.go` (market-aware test), `configs/comprehension.yaml` (`en_us`, `en_gb`, `en_ca` override blocks)
+
+## 25. "No Spicy" Returns Spicy Results in v3/v4
+
+**Problem:** Searching "no spicy meals" returned spicy recipes instead of non-spicy ones. Two causes:
+1. The comprehension pattern `not spicy|no spice|non-spicy` didn't include `no spicy`
+2. In v3, comprehension ran after stopword filter and concept recognizer. The stopword filter removed "no", then the concept recognizer matched "spicy" as a concept — comprehension never saw the negation
+
+**Solution:**
+1. Added `no spicy` to the non-spicy comprehension pattern for all 8 languages
+2. Moved comprehension before stopword filter and concept recognizer in v3 pipeline (matching v1's order where comprehension already ran early)
+
+New v3 step order: Normalize → Tokenize → **Comprehension** → Spell → Stopword → Concepts → Ambiguity
+
+This ensures negation patterns like "no spicy" are caught and stripped before "no" can be removed as a stopword or "spicy" matched as a concept.
+
+**Files changed:** `internal/domain/native/pipeline.go` (step order), `configs/comprehension.yaml` (pattern fix)

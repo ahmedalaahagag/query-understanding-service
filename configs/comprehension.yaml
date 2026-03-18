@@ -115,7 +115,7 @@ en:
       operator: eq
       value: "Pork-free"
       strip: true
-    - pattern: '\b(not spicy|no spice|non[\s-]*spicy)\b'
+    - pattern: '\b(not spicy|no spicy|no spice|non[\s-]*spicy)\b'
       field: tags
       operator: eq
       value: "Non-spicy"

@@ -40,11 +40,11 @@ func NewPipeline(cfg PipelineConfig) *Pipeline {
 		steps: []pipeline.Step{
 			pipeline.Normalizer{},
 			pipeline.Tokenizer{},
+			pipeline.NewComprehensionEngine(cfg.Comprehension),
 			NewNativeSpellCorrector(cfg.FuzzySearcher, logger),
 			pipeline.NewStopwordFilter(cfg.Stopwords),
 			NewNativeConceptRecognizer(cfg.FuzzySearcher, cfg.Concept, logger),
 			pipeline.AmbiguityResolver{},
-			pipeline.NewComprehensionEngine(cfg.Comprehension),
 		},
 		logger: logger,
 	}

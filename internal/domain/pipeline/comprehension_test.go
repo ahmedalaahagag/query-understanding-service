@@ -422,12 +422,12 @@ func TestComprehension_MarketAwareLocaleOverride(t *testing.T) {
 		},
 		"en_us": {
 			FilterRules: []config.FilterRule{
-				{Pattern: `\b(healthy)\b`, Field: "tags", Operator: "eq", Value: "Dietitian-Approved"},
+				{Pattern: `\b(big batch)\b`, Field: "tags", Operator: "eq", Value: "Family Size"},
 			},
 		},
 		"en_gb": {
 			FilterRules: []config.FilterRule{
-				{Pattern: `\b(healthy)\b`, Field: "tags", Operator: "eq", Value: "Healthy Options"},
+				{Pattern: `\b(big batch)\b`, Field: "tags", Operator: "eq", Value: "Big Batch"},
 			},
 		},
 	}
@@ -441,25 +441,25 @@ func TestComprehension_MarketAwareLocaleOverride(t *testing.T) {
 		wantLen  int
 	}{
 		{
-			name:    "US healthy maps to Dietitian-Approved",
+			name:    "US locale-specific rule wins",
 			locale:  "en-US",
-			query:   "healthy chicken",
-			wantTag: "Dietitian-Approved",
+			query:   "big batch chicken",
+			wantTag: "Family Size",
 			wantLen: 1,
 		},
 		{
-			name:    "GB healthy maps to Healthy Options",
+			name:    "GB locale-specific rule wins",
 			locale:  "en-GB",
-			query:   "healthy chicken",
-			wantTag: "Healthy Options",
+			query:   "big batch chicken",
+			wantTag: "Big Batch",
 			wantLen: 1,
 		},
 		{
 			name:    "US also gets base en rules",
 			locale:  "en-US",
-			query:   "quick healthy chicken",
-			wantTag: "Dietitian-Approved",
-			wantLen: 2, // healthy + quick
+			query:   "quick big batch chicken",
+			wantTag: "Family Size",
+			wantLen: 2, // big batch + quick
 		},
 		{
 			name:    "locale without override falls back to base en",

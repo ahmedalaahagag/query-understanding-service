@@ -426,25 +426,22 @@ All rules use `strip: true` so the dietary terms are removed from the text query
 
 **Problem:** US uses "Dietitian-Approved" tag (324 recipes) while GB uses "Healthy Options" (454 recipes) for the same concept of "healthy eating". Comprehension rules were language-based (`en` covers US, GB, CA), so a single "healthy" rule could only map to one tag — returning 0 results for the other market.
 
-**Solution:** Made the comprehension engine market-aware. `rulesForLocale()` now tries a locale-specific key first (e.g. `en_us` from `en-US`), then merges with the base language rules (`en`). Locale-specific rules are prepended so they win via `overlapsConsumed` when patterns overlap with base language rules.
+**Solution (v0.5.12):** Made the comprehension engine market-aware. `rulesForLocale()` now tries a locale-specific key first (e.g. `en_us` from `en-US`), then merges with the base language rules (`en`). Locale-specific rules are prepended so they win via `overlapsConsumed` when patterns overlap with base language rules.
 
-YAML config now supports market-specific override blocks:
+YAML config supports market-specific override blocks:
 ```yaml
 en:        # base rules for all English locales
   filter_rules: [...]
 
 en_us:     # US-specific overrides (prepended to en rules)
   filter_rules:
-    - pattern: '\b(healthy)\b'
-      value: "Dietitian-Approved"
-
-en_gb:     # GB-specific overrides (prepended to en rules)
-  filter_rules:
-    - pattern: '\b(healthy)\b'
-      value: "Healthy Options"
+    - pattern: '\b(big batch)\b'
+      value: "Family Size"
 ```
 
-**Files changed:** `internal/domain/pipeline/comprehension.go` (market-aware `rulesForLocale()`), `internal/domain/pipeline/comprehension_test.go` (market-aware test), `configs/comprehension.yaml` (`en_us`, `en_gb`, `en_ca` override blocks)
+**Update (v0.5.14):** Removed the `en_us`/`en_gb`/`en_ca` "healthy" override blocks entirely. "healthy" now passes through as a regular text search token — it matches recipe titles/tags/descriptions via full-text search instead of being forced to a single tag. The market-aware engine code remains for future locale-specific rules.
+
+**Files changed:** `internal/domain/pipeline/comprehension.go` (market-aware `rulesForLocale()`), `internal/domain/pipeline/comprehension_test.go` (market-aware test), `configs/comprehension.yaml`
 
 ## 25. "No Spicy" Returns Spicy Results in v3/v4
 

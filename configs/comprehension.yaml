@@ -144,6 +144,34 @@ en:
       operator: eq
       value: "Keto"
       strip: true
+    - pattern: '\b(under 650 calories|under 650 cal|under 650 kcal|650 calories or less)\b'
+      field: tags
+      operator: eq
+      value: "Under 650 Calories"
+      strip: true
+    - pattern: '\b(glp[\s-]*1\s*balance)\b'
+      field: tags
+      operator: eq
+      value: "GLP-1 Balance"
+      strip: true
+    - pattern: '\b(glp[\s-]*1\s*friendly)\b'
+      field: tags
+      operator: eq
+      value: "GLP-1 Friendly"
+      strip: true
+    - pattern: '\b(dietitian[\s-]*approved)\b'
+      field: tags
+      operator: eq
+      value: "Dietitian-Approved"
+      strip: true
+    - pattern: '\b(mediterranean\s*diet)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
+    - pattern: '\b(mediterranean)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
 
     # --- Product types / Recipe labels ---
     - pattern: '\b(ready\s*made(?:\s*meals?)?|ready\s*to\s*(?:heat|eat)|heat\s*and\s*eat|oven\s*ready|pre\s*-?\s*made|premade)\b'
@@ -328,6 +356,15 @@ de:
       operator: eq
       value: "Keto"
       strip: true
+    - pattern: '\b(unter 650 Kalorien|unter 650 kcal|unter 650 cal)\b'
+      field: tags
+      operator: eq
+      value: "Under 650 Calories"
+      strip: true
+    - pattern: '\b(mediterran|mittelmeerküche|mittelmeer[\s-]*diät)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
     - pattern: '\b(kinderfreundlich)\b'
       field: tags
       operator: eq
@@ -500,6 +537,15 @@ fr:
       operator: eq
       value: "Keto"
       strip: true
+    - pattern: '\b(moins de 650 kcal|moins de 650 calories)\b'
+      field: tags
+      operator: eq
+      value: "Moins de 650 kcal"
+      strip: true
+    - pattern: '\b(méditerranéen|méditerranéenne|régime méditerranéen)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
     - pattern: '\b(adapté aux enfants)\b'
       field: tags
       operator: eq
@@ -669,6 +715,15 @@ nl:
       operator: eq
       value: "Keto"
       strip: true
+    - pattern: '\b(onder 650 calorieën|onder 650 kcal|onder 650 cal)\b'
+      field: tags
+      operator: eq
+      value: "Under 650 Calories"
+      strip: true
+    - pattern: '\b(mediterraan|mediterrane)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
     - pattern: '\b(kindvriendelijk)\b'
       field: tags
       operator: eq
@@ -838,6 +893,15 @@ it:
       operator: eq
       value: "Keto"
       strip: true
+    - pattern: '\b(sotto 650 calorie|sotto 650 kcal|sotto 650 cal)\b'
+      field: tags
+      operator: eq
+      value: "Under 650 Calories"
+      strip: true
+    - pattern: '\b(mediterraneo|mediterranea|dieta mediterranea)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
     - pattern: '\b(adatto ai bambini)\b'
       field: tags
       operator: eq
@@ -1007,6 +1071,15 @@ es:
       operator: eq
       value: "Keto"
       strip: true
+    - pattern: '\b(menos de 650 calorías|menos de 650 kcal|menos de 650 cal)\b'
+      field: tags
+      operator: eq
+      value: "Under 650 Calories"
+      strip: true
+    - pattern: '\b(mediterráneo|mediterránea|dieta mediterránea)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
     - pattern: '\b(apto para niños)\b'
       field: tags
       operator: eq
@@ -1176,6 +1249,15 @@ sv:
       operator: eq
       value: "Keto"
       strip: true
+    - pattern: '\b(under 650 kalorier|under 650 kcal|under 650 cal)\b'
+      field: tags
+      operator: eq
+      value: "Under 650 Calories"
+      strip: true
+    - pattern: '\b(medelhavs|medelhavsmat|medelhavskost)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
     - pattern: '\b(barnvänlig)\b'
       field: tags
       operator: eq
@@ -1345,6 +1427,15 @@ da:
       operator: eq
       value: "Keto"
       strip: true
+    - pattern: '\b(under 650 kalorier|under 650 kcal|under 650 cal)\b'
+      field: tags
+      operator: eq
+      value: "Under 650 Calories"
+      strip: true
+    - pattern: '\b(middelhavs|middelhavsdiæt|middelhavsmad)\b'
+      field: tags
+      operator: eq
+      value: "Mediterranean"
     - pattern: '\b(børnevenlig)\b'
       field: tags
       operator: eq

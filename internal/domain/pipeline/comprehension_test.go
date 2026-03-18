@@ -412,3 +412,78 @@ func TestComprehension_SortFastest(t *testing.T) {
 	assert.Equal(t, "prep_time", state.Sort.Field)
 	assert.Equal(t, "asc", state.Sort.Direction)
 }
+
+func TestComprehension_MarketAwareLocaleOverride(t *testing.T) {
+	cfg := config.ComprehensionConfig{
+		"en": {
+			FilterRules: []config.FilterRule{
+				{Pattern: `\b(quick)\b`, Field: "prep_time", Operator: "lte", Value: "30"},
+			},
+		},
+		"en_us": {
+			FilterRules: []config.FilterRule{
+				{Pattern: `\b(healthy)\b`, Field: "tags", Operator: "eq", Value: "Dietitian-Approved"},
+			},
+		},
+		"en_gb": {
+			FilterRules: []config.FilterRule{
+				{Pattern: `\b(healthy)\b`, Field: "tags", Operator: "eq", Value: "Healthy Options"},
+			},
+		},
+	}
+	step := NewComprehensionEngine(cfg)
+
+	tests := []struct {
+		name     string
+		locale   string
+		query    string
+		wantTag  string
+		wantLen  int
+	}{
+		{
+			name:    "US healthy maps to Dietitian-Approved",
+			locale:  "en-US",
+			query:   "healthy chicken",
+			wantTag: "Dietitian-Approved",
+			wantLen: 1,
+		},
+		{
+			name:    "GB healthy maps to Healthy Options",
+			locale:  "en-GB",
+			query:   "healthy chicken",
+			wantTag: "Healthy Options",
+			wantLen: 1,
+		},
+		{
+			name:    "US also gets base en rules",
+			locale:  "en-US",
+			query:   "quick healthy chicken",
+			wantTag: "Dietitian-Approved",
+			wantLen: 2, // healthy + quick
+		},
+		{
+			name:    "locale without override falls back to base en",
+			locale:  "en-AU",
+			query:   "quick chicken",
+			wantTag: "",
+			wantLen: 1, // just quick
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			state := &model.QueryState{
+				NormalizedQuery: tt.query,
+				Locale:          tt.locale,
+			}
+			err := step.Process(context.Background(), state)
+			require.NoError(t, err)
+			require.Len(t, state.Filters, tt.wantLen)
+
+			if tt.wantTag != "" {
+				assert.Equal(t, "tags", state.Filters[0].Field)
+				assert.Equal(t, tt.wantTag, state.Filters[0].Value)
+			}
+		})
+	}
+}

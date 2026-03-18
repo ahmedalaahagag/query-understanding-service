@@ -83,7 +83,7 @@ Multi-locale regex extraction from `configs/comprehension.yaml` (8 languages: en
 | Type | Pattern Example | Output |
 |---|---|---|
 | Prep time filter | `under 30 minutes` | `{field: "prep_time", operator: "lt", value: 30}` |
-| Calorie filter | `low calorie` | `{field: "total_calories", operator: "lte", value: 400}` |
+| Calorie filter | `low calorie` | `{field: "total_calories", operator: "lte", value: 650}` |
 | Calorie tag filter | `calorie smart` | `{field: "tags", operator: "eq", value: "Calorie Smart"}` |
 | Price filter | `under 20` | `{field: "price", operator: "lt", value: 20}` |
 | Difficulty filter | `easy` | `{field: "difficulty_level", operator: "eq", value: "easy"}` |
@@ -96,7 +96,7 @@ Key behaviors:
 - **Rule ordering**: specific rules (prep_time, calories) before generic price
 - **Selective token stripping**: numeric patterns ("under 10", "500 calories"), sort patterns ("cheapest"), and keyword filters with `strip: true` ("low calorie", "calorie smart", dietary tags) are stripped from tokens and query. Other keyword patterns ("quick", "healthy", "easy") are kept — they are meaningful search terms
 - **Dietary negation patterns**: "no gluten" → Gluten-Free Friendly, "no pork" → Pork-free, "no dairy" → Dairy-free, "not spicy" → Non-spicy, etc. (8 dietary tags, all 8 languages)
-- **Locale selection**: "en-GB" → lang prefix "en" → picks `en` rules
+- **Market-aware locale selection**: tries locale-specific key first (e.g. `en_us` from `en-US`), merges with base language rules (`en`). Locale-specific rules are prepended so they win via overlap detection. Example: "healthy" → "Dietitian-Approved" (US) vs "Healthy Options" (GB)
 
 #### 4. Spell Resolver (`spell.go`)
 
@@ -315,7 +315,7 @@ type QueryState struct {
 | File | Used By | Purpose |
 |---|---|---|
 | `configs/qus.yaml` | v1, v3, v4 | Pipeline settings (spell thresholds, concept limits) |
-| `configs/comprehension.yaml` | v1, v3, v4 | Multi-locale filter/sort regex rules (en, de, fr, nl, it, es, sv, da) |
+| `configs/comprehension.yaml` | v1, v3, v4 | Market-aware filter/sort regex rules (en + en_us/en_gb/en_ca overrides, de, fr, nl, it, es, sv, da) |
 | `configs/allowed_filters.yaml` | v2, v4* | Allowed filter fields, types, operators |
 | `configs/allowed_sorts.yaml` | v2, v4* | Allowed sort fields and directions |
 | `configs/llm_prompt.txt` | v2, v4* | LLM system prompt template |

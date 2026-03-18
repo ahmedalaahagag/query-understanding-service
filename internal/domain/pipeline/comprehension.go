@@ -174,19 +174,46 @@ func (c *ComprehensionEngine) Process(_ context.Context, state *model.QueryState
 }
 
 // rulesForLocale returns compiled rules for the given locale.
-// Tries exact language prefix (e.g. "en" from "en-GB"), then falls back to nil.
+// Tries locale-specific key first (e.g. "en_us" from "en-US"), then merges
+// with the base language rules (e.g. "en"). Locale-specific rules come first
+// so they win via overlapsConsumed when patterns overlap.
 func (c *ComprehensionEngine) rulesForLocale(locale string) *compiledLocaleRules {
 	if len(c.byLocale) == 0 {
 		return nil
 	}
-	lang := strings.ToLower(locale)
-	if idx := strings.IndexAny(lang, "-_"); idx > 0 {
+
+	// Normalize: "en-US" → "en_us"
+	normalized := strings.ToLower(strings.ReplaceAll(locale, "-", "_"))
+
+	// Extract language prefix: "en_us" → "en"
+	lang := normalized
+	if idx := strings.Index(lang, "_"); idx > 0 {
 		lang = lang[:idx]
 	}
-	if rules, ok := c.byLocale[lang]; ok {
-		return &rules
+
+	localeRules, hasLocale := c.byLocale[normalized]
+	langRules, hasLang := c.byLocale[lang]
+
+	if !hasLocale && !hasLang {
+		return nil
 	}
-	return nil
+	if hasLocale && !hasLang {
+		return &localeRules
+	}
+	if !hasLocale && hasLang {
+		return &langRules
+	}
+
+	// Merge: locale-specific rules first, then base language rules.
+	merged := compiledLocaleRules{
+		filterRules: make([]compiledFilterRule, 0, len(localeRules.filterRules)+len(langRules.filterRules)),
+		sortRules:   make([]compiledSortRule, 0, len(localeRules.sortRules)+len(langRules.sortRules)),
+	}
+	merged.filterRules = append(merged.filterRules, localeRules.filterRules...)
+	merged.filterRules = append(merged.filterRules, langRules.filterRules...)
+	merged.sortRules = append(merged.sortRules, localeRules.sortRules...)
+	merged.sortRules = append(merged.sortRules, langRules.sortRules...)
+	return &merged
 }
 
 // overlapsConsumed checks if a match region overlaps any already-consumed characters.

@@ -421,3 +421,27 @@ This ensures multi-word shingles only produce concepts that genuinely span the f
 All rules use `strip: true` so the dietary terms are removed from the text query and converted to tag filters. Each language has localized patterns (e.g. German "ohne Gluten", French "sans gluten", Dutch "glutenvrij").
 
 **Files changed:** `configs/comprehension.yaml` (all 8 languages)
+
+## 24. "Healthy" Maps to Different Tags Per Market
+
+**Problem:** US uses "Dietitian-Approved" tag (324 recipes) while GB uses "Healthy Options" (454 recipes) for the same concept of "healthy eating". Comprehension rules were language-based (`en` covers US, GB, CA), so a single "healthy" rule could only map to one tag — returning 0 results for the other market.
+
+**Solution:** Made the comprehension engine market-aware. `rulesForLocale()` now tries a locale-specific key first (e.g. `en_us` from `en-US`), then merges with the base language rules (`en`). Locale-specific rules are prepended so they win via `overlapsConsumed` when patterns overlap with base language rules.
+
+YAML config now supports market-specific override blocks:
+```yaml
+en:        # base rules for all English locales
+  filter_rules: [...]
+
+en_us:     # US-specific overrides (prepended to en rules)
+  filter_rules:
+    - pattern: '\b(healthy)\b'
+      value: "Dietitian-Approved"
+
+en_gb:     # GB-specific overrides (prepended to en rules)
+  filter_rules:
+    - pattern: '\b(healthy)\b'
+      value: "Healthy Options"
+```
+
+**Files changed:** `internal/domain/pipeline/comprehension.go` (market-aware `rulesForLocale()`), `internal/domain/pipeline/comprehension_test.go` (market-aware test), `configs/comprehension.yaml` (`en_us`, `en_gb`, `en_ca` override blocks)

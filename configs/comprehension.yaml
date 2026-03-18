@@ -100,10 +100,6 @@ en:
       field: tags
       operator: eq
       value: "Carb Conscious"
-    - pattern: '\b(healthy\s*options?|healthy)\b'
-      field: tags
-      operator: eq
-      value: "Healthy Options"
     - pattern: '\b(gluten[\s-]*free|no gluten|gf|celiac)\b'
       field: tags
       operator: eq
@@ -258,6 +254,31 @@ en:
     - pattern: '\b(lowest calorie|fewest calories)\b'
       field: total_calories
       direction: asc
+
+# --- Market-specific English overrides ---
+# These rules are prepended to the base "en" rules for the given locale.
+# They win over base rules via overlapsConsumed when patterns overlap.
+
+en_us:
+  filter_rules:
+    - pattern: '\b(healthy\s*options?|healthy)\b'
+      field: tags
+      operator: eq
+      value: "Dietitian-Approved"
+
+en_gb:
+  filter_rules:
+    - pattern: '\b(healthy\s*options?|healthy)\b'
+      field: tags
+      operator: eq
+      value: "Healthy Options"
+
+en_ca:
+  filter_rules:
+    - pattern: '\b(healthy\s*options?|healthy)\b'
+      field: tags
+      operator: eq
+      value: "Dietitian-Approved"
 
 de:
   filter_rules:

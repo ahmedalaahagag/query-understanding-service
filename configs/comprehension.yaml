@@ -89,7 +89,7 @@ en:
     - pattern: '\b(low calories?|low cal|light)\b'
       field: total_calories
       operator: lte
-      value: "400"
+      value: "650"
       strip: true
     - pattern: '\b(calorie smart|cal smart)\b'
       field: tags
@@ -309,7 +309,7 @@ de:
     - pattern: '\b(kalorienarm|leicht)\b'
       field: total_calories
       operator: lte
-      value: "400"
+      value: "650"
       strip: true
     - pattern: '\b(calorie smart)\b'
       field: tags
@@ -490,7 +490,7 @@ fr:
     - pattern: '\b(peu calorique|léger|allégé)\b'
       field: total_calories
       operator: lte
-      value: "400"
+      value: "650"
       strip: true
     - pattern: '\b(calorie smart)\b'
       field: tags
@@ -668,7 +668,7 @@ nl:
     - pattern: '\b(caloriearm|licht)\b'
       field: total_calories
       operator: lte
-      value: "400"
+      value: "650"
       strip: true
     - pattern: '\b(calorie smart)\b'
       field: tags
@@ -846,7 +846,7 @@ it:
     - pattern: '\b(ipocalorico|leggero)\b'
       field: total_calories
       operator: lte
-      value: "400"
+      value: "650"
       strip: true
     - pattern: '\b(calorie smart)\b'
       field: tags
@@ -1024,7 +1024,7 @@ es:
     - pattern: '\b(bajo en calorías|ligero)\b'
       field: total_calories
       operator: lte
-      value: "400"
+      value: "650"
       strip: true
     - pattern: '\b(calorie smart)\b'
       field: tags
@@ -1202,7 +1202,7 @@ sv:
     - pattern: '\b(kalorisnål|lätt)\b'
       field: total_calories
       operator: lte
-      value: "400"
+      value: "650"
       strip: true
     - pattern: '\b(calorie smart)\b'
       field: tags
@@ -1380,7 +1380,7 @@ da:
     - pattern: '\b(kalorielet|let)\b'
       field: total_calories
       operator: lte
-      value: "400"
+      value: "650"
       strip: true
     - pattern: '\b(calorie smart)\b'
       field: tags

@@ -168,6 +168,26 @@ en:
       field: tags
       operator: eq
       value: "Mediterranean"
+    - pattern: '\b(fiber smart|fibre smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+    - pattern: '\b(fiber powered|fibre powered)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Powered"
+      strip: true
+    - pattern: '\b(fiber filled|fibre filled)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Filled"
+      strip: true
+    - pattern: '\b(high fiber|high fibre)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
 
     # --- Product types / Recipe labels ---
     - pattern: '\b(ready\s*made(?:\s*meals?)?|ready\s*to\s*(?:heat|eat)|heat\s*and\s*eat|oven\s*ready|pre\s*-?\s*made|premade)\b'
@@ -384,6 +404,21 @@ de:
       field: tags
       operator: eq
       value: "Big Batch"
+    - pattern: '\b(ballaststoff smart|ballaststoffreich smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+    - pattern: '\b(ballaststoff power|ballaststoffreich power)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Powered"
+      strip: true
+    - pattern: '\b(ballaststoffreich|viele ballaststoffe|reich an ballaststoffen)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Filled"
+      strip: true
 
     # --- Product types ---
     - pattern: '\b(fertiggericht|essfertig|aufwärmen und essen|ofenfertig|vorgefertigt)\b'
@@ -565,6 +600,21 @@ fr:
       field: tags
       operator: eq
       value: "Big Batch"
+    - pattern: '\b(fibre smart|fibres smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+    - pattern: '\b(fibre power|fibres power)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Powered"
+      strip: true
+    - pattern: '\b(riche en fibres|plein de fibres)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Filled"
+      strip: true
 
     # --- Product types ---
     - pattern: '\b(prêt à manger|prêt à réchauffer|plat préparé|tout prêt)\b'
@@ -743,6 +793,21 @@ nl:
       field: tags
       operator: eq
       value: "Big Batch"
+    - pattern: '\b(vezel smart|vezels smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+    - pattern: '\b(vezel power|vezels power)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Powered"
+      strip: true
+    - pattern: '\b(vezelrijk|rijk aan vezels)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Filled"
+      strip: true
 
     # --- Product types ---
     - pattern: '\b(kant-en-klaar|kant en klaar|voorbereid|klaar om te eten)\b'
@@ -921,6 +986,21 @@ it:
       field: tags
       operator: eq
       value: "Big Batch"
+    - pattern: '\b(fibra smart|fibre smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+    - pattern: '\b(fibra power|fibre power)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Powered"
+      strip: true
+    - pattern: '\b(ricco di fibre|pieno di fibre)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Filled"
+      strip: true
 
     # --- Product types ---
     - pattern: '\b(pronto da mangiare|pronto da scaldare|piatto pronto|già pronto)\b'
@@ -1099,6 +1179,21 @@ es:
       field: tags
       operator: eq
       value: "Big Batch"
+    - pattern: '\b(fibra smart|fibras smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+    - pattern: '\b(fibra power|fibras power)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Powered"
+      strip: true
+    - pattern: '\b(rico en fibra|lleno de fibra|alto en fibra)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Filled"
+      strip: true
 
     # --- Product types ---
     - pattern: '\b(listo para comer|listo para calentar|plato preparado|precocinado)\b'
@@ -1277,6 +1372,21 @@ sv:
       field: tags
       operator: eq
       value: "Big Batch"
+    - pattern: '\b(fiber smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+    - pattern: '\b(fiber power)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Powered"
+      strip: true
+    - pattern: '\b(fiberrik|rik på fiber)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Filled"
+      strip: true
 
     # --- Product types ---
     - pattern: '\b(färdigmat|redo att äta|redo att värma|förberedd)\b'
@@ -1455,6 +1565,21 @@ da:
       field: tags
       operator: eq
       value: "Big Batch"
+    - pattern: '\b(fiber smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+    - pattern: '\b(fiber power)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Powered"
+      strip: true
+    - pattern: '\b(fiberrig|rig på fiber)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Filled"
+      strip: true
 
     # --- Product types ---
     - pattern: '\b(færdigret|klar til at spise|klar til opvarmning|forlavet)\b'

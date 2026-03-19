@@ -315,7 +315,7 @@ type QueryState struct {
 | File | Used By | Purpose |
 |---|---|---|
 | `configs/qus.yaml` | v1, v3, v4 | Pipeline settings (spell thresholds, concept limits) |
-| `configs/comprehension.yaml` | v1, v3, v4 | Market-aware filter/sort regex rules (en, de, fr, nl, it, es, sv, da — supports locale-specific overrides) |
+| `configs/comprehension.yaml` | v1, v2, v3, v4 | Market-aware filter/sort regex rules (en, de, fr, nl, it, es, sv, da — supports locale-specific overrides) |
 | `configs/allowed_filters.yaml` | v2, v4* | Allowed filter fields, types, operators |
 | `configs/allowed_sorts.yaml` | v2, v4* | Allowed sort fields and directions |
 | `configs/llm_prompt.txt` | v2, v4* | LLM system prompt template |

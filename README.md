@@ -225,142 +225,96 @@ make run               # Start QUS HTTP server on :8080
 
 ## Configuration Files
 
-QUS loads configuration from a directory (default: `configs/`). Each file serves a specific purpose.
+QUS loads configuration from a `configs/` directory. Files split into two categories:
 
-### Required Files
+- **Domain configs** — define *what* your search domain looks like (filters, sorts, tag patterns). Anyone integrating QUS must write these to match their product index.
+- **QUS tuning configs** — control *how* the pipeline behaves (spell thresholds, concept limits, routing). Sensible defaults are built in; tune only when needed.
 
-#### `qus.yaml` — Pipeline Settings
-
-Controls the deterministic pipeline behavior.
-
-```yaml
-pipeline:
-  enabled_steps:
-    - normalize
-    - tokenize
-    - spell
-    - synonym
-    - compound
-    - concept
-    - ambiguity
-    - comprehension
-
-spell:
-  enabled: true
-  min_token_length: 4          # Skip spell-check for short tokens
-  confidence_threshold: 0.85   # Minimum score to accept a correction
-
-concept:
-  shingle_max_size: 4          # Max tokens in a concept span (e.g. "peanut butter" = 2)
-  max_matches_per_span: 3      # Max concept candidates per token span
-
-ambiguity:
-  prefer_longest_span: true    # Prefer "ice cream" over "ice" + "cream"
-  min_score_delta: 0.05        # Score gap needed to pick one concept over another
-```
+### Domain Configs (you must customize these)
 
 #### `comprehension.yaml` — Filter & Sort Extraction Rules
 
-Locale-keyed regex rules for extracting filters and sort directives from natural language. Supports 8 languages (en, de, fr, nl, it, es, sv, da) with rules for price, prep time, calories, difficulty, and servings.
+The main domain config. Locale-keyed regex rules that extract filters and sort directives from natural language. Used by **all four pipelines**: v1/v3/v4 run it as a pipeline step; v2 runs it after the LLM parse to strip matched tokens from the normalized query.
+
+Rules must match your product index field names. Two rule types:
+
+**Numeric rules** — capture group 2 is the number. Optional `multiplier` converts user units to index units.
 
 ```yaml
 en:
   filter_rules:
-    # Numeric: capture group 2 is the number
+    # "under 30 minutes" → preparation_time lt 1800 (30 × 60)
     - pattern: '(under|less than)\s+(\d+)\s*(minutes?|mins?)'
-      field: prep_time
+      field: preparation_time
       operator: lt
-    # Keyword: static value, no capture group needed
-    - pattern: '\b(easy|simple|beginner)\b'
-      field: difficulty_level
-      operator: eq
-      value: easy
-    # Generic price (after specific rules — overlap detection prevents conflicts)
+      multiplier: 60
+
+    # "under 10" → price lt 1000 (10 × 100, dollars→cents)
     - pattern: '(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)'
       field: price
       operator: lt
+      multiplier: 100
+```
+
+**Keyword rules** — static `value`, no capture group needed. Set `strip: true` to remove matched tokens from the search query (useful for tag filters that shouldn't pollute text search).
+
+```yaml
+    # "fiber smart" → tags eq "Fiber Smart", stripped from query
+    - pattern: '\b(fiber smart|fibre smart)\b'
+      field: tags
+      operator: eq
+      value: "Fiber Smart"
+      strip: true
+
+    # "easy" → difficulty_level eq 1, kept in query (still useful for text matching)
+    - pattern: '\b(easy|simple|beginner)\b'
+      field: difficulty_level
+      operator: eq
+      value: "1"
+
   sort_rules:
     - pattern: '\b(cheapest|lowest price)\b'
       field: price
       direction: asc
-    - pattern: '\b(fastest|quickest)\b'
-      field: prep_time
-      direction: asc
-
-de:
-  filter_rules:
-    - pattern: '(unter|weniger als)\s+(\d+)\s*(Minuten|Min)'
-      field: prep_time
-      operator: lt
-    - pattern: '\b(einfach|simpel)\b'
-      field: difficulty_level
-      operator: eq
-      value: easy
-    # ... (same structure for all locales)
 ```
 
-More specific rules (prep_time, calories) must come before the generic price rule. The engine tracks consumed character regions so overlapping matches don't produce duplicate filters.
+Key behaviors:
+- **Rule ordering matters**: specific rules (prep_time, calories) before generic price. The engine tracks consumed character ranges — overlapping matches are skipped.
+- **Selective stripping**: numeric patterns and `strip: true` keyword patterns are removed from the normalized query. Other keyword patterns ("easy", "quick") are kept for text matching.
+- **8 languages**: en, de, fr, nl, it, es, sv, da. Supports locale-specific overrides (e.g. `en_us` rules prepended before `en`).
+- **Negation patterns**: "no gluten" → `tags eq "Gluten-Free Friendly"`, "no pork" → `tags eq "Pork-free"`, etc.
 
-### Config Files per Pipeline
+#### `allowed_filters.yaml` — LLM Filter Allowlist (v2/v4 only)
 
-| Config File | v1 | v2 | v3 | v4 |
-|---|---|---|---|---|
-| `qus.yaml` | ✅ | — | ✅ | ✅ |
-| `comprehension.yaml` | ✅ | — | ✅ | ✅ |
-| `allowed_filters.yaml` | — | ✅ | — | ✅* |
-| `allowed_sorts.yaml` | — | ✅ | — | ✅* |
-| `llm_prompt.txt` | — | ✅ | — | ✅* |
-
-*v4 uses these when escalating to v2.
-
-Synonyms and compounds are stored in OpenSearch's linguistic index (types `SYN`, `HYP`, `CMP`) — no YAML data files needed.
-
-### V2 Hybrid Pipeline Files (optional)
-
-These are only needed when `LLM.Enabled = true`.
-
-#### `allowed_filters.yaml` — Filter Allowlist
-
-Defines which filters the LLM is allowed to produce. Any LLM-suggested filter not in this list is silently dropped.
+Defines which filters the LLM is allowed to produce. Any LLM-suggested filter not in this list is silently dropped by the validator. Field names must match your product index.
 
 ```yaml
 filters:
   - field: price
     operators: [lt, lte, gt, gte, eq]
     type: number
-  - field: prep_time
+    multiplier: 100                    # dollars → cents
+    word_values: { cheap: 800, budget: 500 }
+
+  - field: preparation_time
     operators: [lt, lte, gt, gte, eq]
     type: number
-  - field: calories
-    operators: [lt, lte, gt, gte, eq]
-    type: number
-  - field: dietary
+    multiplier: 60                     # minutes → seconds
+    word_values: { quick: 1800, fast: 1200 }
+
+  - field: tags
     operators: [eq, in]
-    type: keyword
-  - field: cuisine
-    operators: [eq, in]
-    type: keyword
-  - field: ingredient
-    operators: [eq, in]
-    type: keyword
-  - field: category
-    operators: [eq, in]
-    type: keyword
-  - field: meal_type
-    operators: [eq, in]
-    type: keyword
-  - field: cooking_method
-    operators: [eq, in]
-    type: keyword
-  - field: availability
-    operators: [eq, in]
-    type: keyword
+    type: keyword                      # dietary, cooking method, lifestyle, fiber tags
+
   - field: difficulty_level
     operators: [eq, in]
-    type: keyword
+    type: number
+    word_values: { easy: 1, medium: 2, hard: 3 }
+
+  # Also: categories, recipe_cuisine, ingredients, allergens, total_calories
 ```
 
-#### `allowed_sorts.yaml` — Sort Allowlist
+#### `allowed_sorts.yaml` — LLM Sort Allowlist (v2/v4 only)
 
 Defines which sort keys the LLM is allowed to produce.
 
@@ -368,21 +322,51 @@ Defines which sort keys the LLM is allowed to produce.
 sorts:
   - key: relevance
   - key: price_asc
-  - key: price_desc
-  - key: newest
+    field: price
+    direction: asc
   - key: prep_time_asc
-  - key: calories_asc
+    field: preparation_time
+    direction: asc
+  # Also: price_desc, newest, calories_asc
 ```
 
-#### `llm_prompt.txt` — LLM System Prompt
+#### `llm_prompt.txt` — LLM System Prompt (v2/v4 only)
 
-The system prompt sent to the LLM. The allowed filters and sorts are automatically appended at runtime. Keep it compact for low latency.
+System prompt sent to the LLM. The allowed filters and sorts from the YAML files above are automatically appended at runtime. Keep it compact for low latency.
 
+### QUS Tuning Configs (sensible defaults built in)
+
+#### `qus.yaml` — Pipeline Settings
+
+Controls spell correction thresholds, concept matching limits, and v4 adaptive routing. QUS falls back to defaults if this file is missing.
+
+```yaml
+spell:
+  enabled: true
+  min_token_length: 4          # Skip spell-check for short tokens
+  confidence_threshold: 0.85   # Minimum score to accept a correction
+
+concept:
+  shingle_max_size: 4          # Max tokens in a concept span ("peanut butter" = 2)
+  max_matches_per_span: 3      # Max concept candidates per token span
+
+adaptive:
+  direct_llm_token_threshold: 3  # v4: queries with ≥3 non-stopword tokens → v2 LLM
 ```
-Parse food search query into JSON. Raw JSON only, no markdown.
-{"normalizedQuery":"","rewrites":[],"candidateConcepts":[{"label":"","field":"","confidence":0.0}],"filters":[{"field":"","operator":"","value":null,"confidence":0.0}],"sort":{"field":"","direction":"asc|desc","confidence":0.0},"confidence":0.0,"warnings":[]}
-Rules: only use ALLOWED FILTERS/SORTS below. Fix typos. Empty arrays if uncertain. Max 1 rewrite.
-```
+
+### Config Files per Pipeline
+
+| Config File | v1 | v2 | v3 | v4 | Category |
+|---|---|---|---|---|---|
+| `comprehension.yaml` | ✅ | ✅ | ✅ | ✅ | Domain |
+| `allowed_filters.yaml` | — | ✅ | — | ✅* | Domain |
+| `allowed_sorts.yaml` | — | ✅ | — | ✅* | Domain |
+| `llm_prompt.txt` | — | ✅ | — | ✅* | Domain |
+| `qus.yaml` | ✅ | — | ✅ | ✅ | QUS tuning |
+
+*v4 uses these when escalating to v2.
+
+Synonyms and compounds are stored in OpenSearch's linguistic index (types `SYN`, `HYP`, `CMP`) — no YAML data files needed.
 
 ---
 

@@ -1,0 +1,32 @@
+{
+  "name": "keyword filter kept: easy chicken → difficulty filter + easy kept as token",
+  "input": {
+    "query": "Easy Chicken",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Easy Chicken",
+    "normalizedQuery": "easy chicken",
+    "tokens": [
+      {"value": "easy", "normalized": "easy", "position": 0},
+      {"value": "chicken", "normalized": "chicken", "position": 1}
+    ],
+    "rewrites": ["easy chicken"],
+    "concepts": [
+      {
+        "id": "c-chicken",
+        "label": "chicken",
+        "matchedText": "chicken",
+        "field": "protein",
+        "score": 1.0,
+        "source": "exact",
+        "start": 1,
+        "end": 1
+      }
+    ],
+    "filters": [
+      {"field": "difficulty_level", "operator": "eq", "value": 1}
+    ]
+  }
+}

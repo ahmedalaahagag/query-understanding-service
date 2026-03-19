@@ -1,0 +1,40 @@
+{
+  "name": "v3 stopword removal: chicken with pasta → 'with' removed",
+  "input": {
+    "query": "Chicken With Pasta",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Chicken With Pasta",
+    "normalizedQuery": "chicken pasta",
+    "tokens": [
+      {"value": "chicken", "normalized": "chicken", "position": 0},
+      {"value": "pasta", "normalized": "pasta", "position": 1}
+    ],
+    "rewrites": ["chicken pasta"],
+    "concepts": [
+      {
+        "id": "c-chicken",
+        "label": "chicken",
+        "matchedText": "chicken",
+        "field": "protein",
+        "score": 10.0,
+        "source": "exact",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "id": "c-pasta",
+        "label": "pasta",
+        "matchedText": "pasta",
+        "field": "category",
+        "score": 10.0,
+        "source": "exact",
+        "start": 1,
+        "end": 1
+      }
+    ],
+    "filters": []
+  }
+}

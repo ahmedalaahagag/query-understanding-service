@@ -1,0 +1,32 @@
+{
+  "name": "multiple filters: vegan no gluten chicken → dietary vegan + gluten-free",
+  "input": {
+    "query": "Vegan No Gluten Chicken",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Vegan No Gluten Chicken",
+    "normalizedQuery": "chicken",
+    "tokens": [
+      {"value": "chicken", "normalized": "chicken", "position": 0}
+    ],
+    "rewrites": ["chicken"],
+    "concepts": [
+      {
+        "id": "c-chicken",
+        "label": "chicken",
+        "matchedText": "chicken",
+        "field": "protein",
+        "score": 1.0,
+        "source": "exact",
+        "start": 3,
+        "end": 3
+      }
+    ],
+    "filters": [
+      {"field": "dietary", "operator": "eq", "value": "Gluten-Free Friendly"},
+      {"field": "dietary", "operator": "eq", "value": "Vegan"}
+    ]
+  }
+}

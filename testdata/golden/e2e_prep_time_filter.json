@@ -1,0 +1,31 @@
+{
+  "name": "prep time filter: chicken under 30 minutes",
+  "input": {
+    "query": "Chicken Under 30 Minutes",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Chicken Under 30 Minutes",
+    "normalizedQuery": "chicken",
+    "tokens": [
+      {"value": "chicken", "normalized": "chicken", "position": 0}
+    ],
+    "rewrites": ["chicken"],
+    "concepts": [
+      {
+        "id": "c-chicken",
+        "label": "chicken",
+        "matchedText": "chicken",
+        "field": "protein",
+        "score": 1.0,
+        "source": "exact",
+        "start": 0,
+        "end": 0
+      }
+    ],
+    "filters": [
+      {"field": "preparation_time", "operator": "lt", "value": 1800}
+    ]
+  }
+}

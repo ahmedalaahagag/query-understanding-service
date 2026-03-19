@@ -86,6 +86,7 @@ func newE2EPipeline() *Pipeline {
 			"pizzza":    {Text: "pizza", Score: 0.90},
 			"cheeze":    {Text: "cheese", Score: 0.91},
 			"vegitable": {Text: "vegetable", Score: 0.88},
+			"tomatoe":   {Text: "tomato", Score: 0.93},
 		},
 	}
 
@@ -138,6 +139,27 @@ func newE2EPipeline() *Pipeline {
 			"aubergine": {
 				{ID: "c-aubergine", Label: "aubergine", Field: "ingredient", Weight: 7, Score: 3.5, Source: "exact"},
 			},
+			"crew neck": {
+				{ID: "c-crew-neck", Label: "crew neck", Field: "category", Weight: 8, Score: 4.0, Source: "exact"},
+			},
+			"crew": {
+				{ID: "c-crew", Label: "crew", Field: "category", Weight: 5, Score: 2.0, Source: "exact"},
+			},
+			"neck": {
+				{ID: "c-neck", Label: "neck", Field: "category", Weight: 4, Score: 1.5, Source: "exact"},
+			},
+			"soup": {
+				{ID: "c-soup", Label: "soup", Field: "category", Weight: 8, Score: 3.5, Source: "exact"},
+			},
+			"tomato soup": {
+				{ID: "c-tomato-soup", Label: "tomato soup", Field: "category", Weight: 10, Score: 5.0, Source: "exact"},
+			},
+			"tomato": {
+				{ID: "c-tomato", Label: "tomato", Field: "ingredient", Weight: 7, Score: 3.0, Source: "exact"},
+			},
+			"pasta": {
+				{ID: "c-pasta", Label: "pasta", Field: "category", Weight: 9, Score: 4.0, Source: "exact"},
+			},
 		},
 	}
 
@@ -152,14 +174,49 @@ func newE2EPipeline() *Pipeline {
 		MaxMatchesPerSpan: 3,
 	}
 
+	stopwords := map[string]map[string]bool{
+		"en_gb": {"the": true, "a": true, "an": true, "for": true, "with": true, "and": true, "of": true, "me": true, "something": true, "some": true},
+		"de_de": {"der": true, "die": true, "das": true, "und": true, "mit": true, "für": true, "ein": true, "eine": true},
+	}
+
 	comprehensionCfg := config.ComprehensionConfig{
 		"en": {
 			FilterRules: []config.FilterRule{
-				{Pattern: `(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)`, Field: "price", Operator: "lt"},
+				// Prep time (before price — more specific)
+				{Pattern: `(under|less than)\s+(\d+)\s*(minutes?|mins?)`, Field: "preparation_time", Operator: "lt", Multiplier: 60},
+				{Pattern: `\b(super\s*quick|superquick)\b`, Field: "preparation_time", Operator: "lte", Value: "1200"},
+				{Pattern: `\b(quick|fast)\b`, Field: "preparation_time", Operator: "lte", Value: "1800"},
+				// Price (generic — after time/calorie)
+				{Pattern: `(under|less than|cheaper than)\s+(\d+(?:\.\d+)?)`, Field: "price", Operator: "lt", Multiplier: 100},
+				// Dietary / Nutritional tags
+				{Pattern: `\b(low carb|low-carb)\b`, Field: "tags", Operator: "eq", Value: "Low Carb"},
+				{Pattern: `\b(high protein|high-protein)\b`, Field: "tags", Operator: "eq", Value: "High Protein"},
+				{Pattern: `\b(low calories?|low cal|light)\b`, Field: "total_calories", Operator: "lte", Value: "650", Strip: true},
+				{Pattern: `\b(calorie smart|cal smart)\b`, Field: "tags", Operator: "eq", Value: "Calorie Smart", Strip: true},
+				// Dietary tags with negation (all strip: true)
+				{Pattern: `\b(no gluten|gluten[ -]?free)\b`, Field: "dietary", Operator: "eq", Value: "Gluten-Free Friendly", Strip: true},
+				{Pattern: `\b(vegan)\b`, Field: "dietary", Operator: "eq", Value: "Vegan", Strip: true},
+				{Pattern: `\b(vegetarian|no meat)\b`, Field: "dietary", Operator: "eq", Value: "Vegetarian", Strip: true},
+				{Pattern: `\b(not spicy|no spicy|no spice)\b`, Field: "dietary", Operator: "eq", Value: "Non-spicy", Strip: true},
+				{Pattern: `\b(no pork|pork[ -]?free)\b`, Field: "dietary", Operator: "eq", Value: "Pork-free", Strip: true},
+				{Pattern: `\b(no dairy|dairy[ -]?free)\b`, Field: "dietary", Operator: "eq", Value: "Dairy-free", Strip: true},
+				// Difficulty
+				{Pattern: `\b(easy)\b`, Field: "difficulty_level", Operator: "eq", Value: "1"},
+				// Servings
+				{Pattern: `\b(for)\s+(\d+)\s*(people|persons?|servings?)\b`, Field: "servings", Operator: "eq"},
 			},
 			SortRules: []config.SortRule{
 				{Pattern: `(cheapest|lowest price)`, Field: "price", Direction: "asc"},
 				{Pattern: `(newest|most recent)`, Field: "created_at", Direction: "desc"},
+			},
+		},
+		"de": {
+			FilterRules: []config.FilterRule{
+				{Pattern: `(unter|weniger als)\s+(\d+(?:\.\d+)?)`, Field: "price", Operator: "lt", Multiplier: 100},
+				{Pattern: `\b(schnell)\b`, Field: "preparation_time", Operator: "lte", Value: "1800"},
+			},
+			SortRules: []config.SortRule{
+				{Pattern: `(günstigste|billigste)`, Field: "price", Direction: "asc"},
 			},
 		},
 	}
@@ -170,6 +227,7 @@ func newE2EPipeline() *Pipeline {
 		NewSpellResolver(spellChecker, spellCfg, logger),
 		NewSynonymExpander(linguisticLookup, logger),
 		NewCompoundHandler(compoundLookup, logger),
+		NewStopwordFilter(stopwords),
 		NewConceptRecognizer(conceptSearcher, conceptCfg, logger),
 		AmbiguityResolver{},
 		NewComprehensionEngine(comprehensionCfg),

@@ -1,0 +1,29 @@
+{
+  "name": "compound split: crewneck → crew neck",
+  "input": {
+    "query": "Crewneck",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Crewneck",
+    "normalizedQuery": "crew neck",
+    "tokens": [
+      {"value": "crew neck", "normalized": "crew neck", "position": 0}
+    ],
+    "rewrites": ["crew neck"],
+    "concepts": [
+      {
+        "id": "c-crew-neck",
+        "label": "crew neck",
+        "matchedText": "crew neck",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 0,
+        "end": 1
+      }
+    ],
+    "filters": []
+  }
+}

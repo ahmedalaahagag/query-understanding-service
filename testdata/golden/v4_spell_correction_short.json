@@ -1,0 +1,31 @@
+{
+  "name": "v4 spell correction on short query: chiken → chicken via v3",
+  "input": {
+    "query": "Chiken",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Chiken",
+    "normalizedQuery": "chicken",
+    "tokens": [
+      {"value": "chiken", "normalized": "chicken", "position": 0}
+    ],
+    "rewrites": ["chicken"],
+    "concepts": [
+      {
+        "id": "c-chicken",
+        "label": "chicken",
+        "matchedText": "chicken",
+        "field": "protein",
+        "score": 10.0,
+        "source": "exact",
+        "start": 0,
+        "end": 0
+      }
+    ],
+    "filters": [],
+    "usedV2": false,
+    "v2Fallback": false
+  }
+}

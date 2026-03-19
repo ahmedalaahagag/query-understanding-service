@@ -1,0 +1,31 @@
+{
+  "name": "dietary negation: no gluten chicken → gluten-free filter + token stripped",
+  "input": {
+    "query": "No Gluten Chicken",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "No Gluten Chicken",
+    "normalizedQuery": "chicken",
+    "tokens": [
+      {"value": "chicken", "normalized": "chicken", "position": 0}
+    ],
+    "rewrites": ["chicken"],
+    "concepts": [
+      {
+        "id": "c-chicken",
+        "label": "chicken",
+        "matchedText": "chicken",
+        "field": "protein",
+        "score": 1.0,
+        "source": "exact",
+        "start": 2,
+        "end": 2
+      }
+    ],
+    "filters": [
+      {"field": "dietary", "operator": "eq", "value": "Gluten-Free Friendly"}
+    ]
+  }
+}

@@ -7,12 +7,11 @@
   },
   "expected": {
     "originalQuery": "Veggie Burger",
-    "normalizedQuery": "vegetarian burger",
+    "normalizedQuery": "burger",
     "tokens": [
-      {"value": "veggie", "normalized": "vegetarian", "position": 0},
-      {"value": "burger", "normalized": "burger", "position": 1}
+      {"value": "burger", "normalized": "burger", "position": 0}
     ],
-    "rewrites": ["vegetarian burger"],
+    "rewrites": ["burger"],
     "concepts": [
       {
         "id": "c-vegetarian",
@@ -35,6 +34,8 @@
         "end": 1
       }
     ],
-    "filters": []
+    "filters": [
+      {"field": "dietary", "operator": "eq", "value": "Vegetarian"}
+    ]
   }
 }

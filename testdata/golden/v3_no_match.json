@@ -1,0 +1,19 @@
+{
+  "name": "v3 no match: unknown query passes through",
+  "input": {
+    "query": "random unknown",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "random unknown",
+    "normalizedQuery": "random unknown",
+    "tokens": [
+      {"value": "random", "normalized": "random", "position": 0},
+      {"value": "unknown", "normalized": "unknown", "position": 1}
+    ],
+    "rewrites": [],
+    "concepts": [],
+    "filters": []
+  }
+}

@@ -1,12 +1,12 @@
 {
-  "name": "price filter extraction: pizza under 15",
+  "name": "v3 price filter: pizza under 10 → price filter + comprehension strips tokens",
   "input": {
-    "query": "Pizza Under 15",
+    "query": "Pizza Under 10",
     "locale": "en-GB",
     "market": "uk"
   },
   "expected": {
-    "originalQuery": "Pizza Under 15",
+    "originalQuery": "Pizza Under 10",
     "normalizedQuery": "pizza",
     "tokens": [
       {"value": "pizza", "normalized": "pizza", "position": 0}
@@ -18,14 +18,14 @@
         "label": "pizza",
         "matchedText": "pizza",
         "field": "category",
-        "score": 1.0,
+        "score": 10.0,
         "source": "exact",
         "start": 0,
         "end": 0
       }
     ],
     "filters": [
-      {"field": "price", "operator": "lt", "value": 1500}
+      {"field": "price", "operator": "lt", "value": 1000}
     ]
   }
 }

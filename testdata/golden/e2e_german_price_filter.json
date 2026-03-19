@@ -1,0 +1,20 @@
+{
+  "name": "german locale: hähnchen unter 15 → price filter",
+  "input": {
+    "query": "Hähnchen unter 15",
+    "locale": "de-DE",
+    "market": "de"
+  },
+  "expected": {
+    "originalQuery": "Hähnchen unter 15",
+    "normalizedQuery": "hahnchen",
+    "tokens": [
+      {"value": "hahnchen", "normalized": "hahnchen", "position": 0}
+    ],
+    "rewrites": ["hahnchen"],
+    "concepts": [],
+    "filters": [
+      {"field": "price", "operator": "lt", "value": 1500}
+    ]
+  }
+}

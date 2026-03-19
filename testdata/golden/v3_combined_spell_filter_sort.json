@@ -1,0 +1,35 @@
+{
+  "name": "v3 combined: cheapest chiken under 20 → spell + price filter + sort",
+  "input": {
+    "query": "Cheapest Chiken Under 20",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Cheapest Chiken Under 20",
+    "normalizedQuery": "chicken",
+    "tokens": [
+      {"value": "chiken", "normalized": "chicken", "position": 0}
+    ],
+    "rewrites": ["chicken"],
+    "concepts": [
+      {
+        "id": "c-chicken",
+        "label": "chicken",
+        "matchedText": "chicken",
+        "field": "protein",
+        "score": 10.0,
+        "source": "exact",
+        "start": 0,
+        "end": 0
+      }
+    ],
+    "filters": [
+      {"field": "price", "operator": "lt", "value": 2000}
+    ],
+    "sort": {
+      "field": "price",
+      "direction": "asc"
+    }
+  }
+}

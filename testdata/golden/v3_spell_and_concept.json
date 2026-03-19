@@ -1,0 +1,40 @@
+{
+  "name": "v3 spell + concept: chiken → chicken via fuzzy suggest",
+  "input": {
+    "query": "Chiken Soup",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Chiken Soup",
+    "normalizedQuery": "chicken soup",
+    "tokens": [
+      {"value": "chiken", "normalized": "chicken", "position": 0},
+      {"value": "soup", "normalized": "soup", "position": 1}
+    ],
+    "rewrites": ["chicken soup"],
+    "concepts": [
+      {
+        "id": "c-chicken",
+        "label": "chicken",
+        "matchedText": "chicken",
+        "field": "protein",
+        "score": 10.0,
+        "source": "exact",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "id": "c-soup",
+        "label": "soup",
+        "matchedText": "soup",
+        "field": "category",
+        "score": 9.0,
+        "source": "exact",
+        "start": 1,
+        "end": 1
+      }
+    ],
+    "filters": []
+  }
+}

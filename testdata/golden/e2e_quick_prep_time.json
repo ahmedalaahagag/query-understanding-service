@@ -1,0 +1,32 @@
+{
+  "name": "quick keyword: quick pasta → prep_time filter + quick kept as token",
+  "input": {
+    "query": "Quick Pasta",
+    "locale": "en-GB",
+    "market": "uk"
+  },
+  "expected": {
+    "originalQuery": "Quick Pasta",
+    "normalizedQuery": "quick pasta",
+    "tokens": [
+      {"value": "quick", "normalized": "quick", "position": 0},
+      {"value": "pasta", "normalized": "pasta", "position": 1}
+    ],
+    "rewrites": ["quick pasta"],
+    "concepts": [
+      {
+        "id": "c-pasta",
+        "label": "pasta",
+        "matchedText": "pasta",
+        "field": "category",
+        "score": 1.0,
+        "source": "exact",
+        "start": 1,
+        "end": 1
+      }
+    ],
+    "filters": [
+      {"field": "preparation_time", "operator": "lte", "value": 1800}
+    ]
+  }
+}

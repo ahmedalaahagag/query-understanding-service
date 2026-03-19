@@ -329,6 +329,18 @@ type QueryState struct {
 | `concepts_{locale}` | v1 Concept, v2 ConceptResolver, v3 FuzzyConcepts | Concept search with locale-aware stemming |
 | `linguistic_{locale}` | v1 Spell/Synonym/Compound/Stopword, v3 Spell | SYN/HYP/CMP/SW dictionary lookups |
 
+## Golden Tests
+
+32 golden test fixtures in `testdata/golden/` validate pipeline behavior with mock OS backends:
+
+| Pipeline | Prefix | Count | Runner |
+|---|---|---|---|
+| v1 (deterministic) | `e2e_*` | 20 | `internal/domain/pipeline/e2e_golden_test.go` |
+| v3 (native OS) | `v3_*` | 7 | `internal/domain/native/golden_test.go` |
+| v4 (adaptive) | `v4_*` | 5 | `internal/domain/adaptive/golden_test.go` |
+
+Coverage includes: spell correction, synonym expansion, compound join/split, stopword removal, concept recognition, ambiguity resolution, comprehension (price/prep time/dietary/calorie/difficulty filters, sort directives, negation patterns, keyword keep vs strip), multi-locale (German), combined multi-step scenarios, and v4 routing logic.
+
 ## Running Locally
 
 ```bash

@@ -69,15 +69,18 @@ en:
     - pattern: '\b(low carb|low-carb)\b'
       field: tags
       operator: eq
-      value: "Low Carb"
+      value: "Low carb"
+      strip: true
     - pattern: '\b(high protein|high-protein)\b'
       field: tags
       operator: eq
       value: "High Protein"
+      strip: true
     - pattern: '\b(low sodium|low-sodium)\b'
       field: tags
       operator: eq
-      value: "Low Sodium"
+      value: "Sodium Smart"
+      strip: true
     - pattern: '\b(carb smart)\b'
       field: tags
       operator: eq
@@ -218,22 +221,10 @@ en:
       value: "Big Batch"
 
     # --- Cooking method / equipment ---
-    - pattern: '\b(one\s*-?\s*pan)\b'
-      field: tags
-      operator: eq
-      value: "One Pan"
     - pattern: '\b(one\s*-?\s*pot)\b'
       field: tags
       operator: eq
       value: "One Pot"
-    - pattern: '\b(sheet\s*pan)\b'
-      field: tags
-      operator: eq
-      value: "Sheet Pan"
-    - pattern: '\b(air\s*fryer)\b'
-      field: tags
-      operator: eq
-      value: "Air Fryer"
 
     # --- Difficulty ---
     # Index field: difficulty_level (keyword, "1"=easy, "2"=medium, "3"=hard).
@@ -312,15 +303,17 @@ de:
     - pattern: '\b(wenig Kohlenhydrate|low carb)\b'
       field: tags
       operator: eq
-      value: "Low Carb"
+      value: "Low carb"
+      strip: true
     - pattern: '\b(proteinreich|high protein)\b'
       field: tags
       operator: eq
       value: "High Protein"
+      strip: true
     - pattern: '\b(natriumarm|wenig Salz)\b'
       field: tags
       operator: eq
-      value: "Low Sodium"
+      value: "Sodium Smart"
     - pattern: '\b(kalorienarm|leicht)\b'
       field: total_calories
       operator: lte
@@ -388,18 +381,10 @@ de:
       field: tags
       operator: eq
       value: "Family Friendly"
-    - pattern: '\b(eine Pfanne|Ein-Pfannen)\b'
-      field: tags
-      operator: eq
-      value: "One Pan"
     - pattern: '\b(ein Topf|Ein-Topf)\b'
       field: tags
       operator: eq
       value: "One Pot"
-    - pattern: '\b(Heißluftfritteuse|Airfryer|Air Fryer)\b'
-      field: tags
-      operator: eq
-      value: "Air Fryer"
     - pattern: '\b(große Portion|große Menge)\b'
       field: tags
       operator: eq
@@ -508,15 +493,17 @@ fr:
     - pattern: '\b(faible en glucides|low carb)\b'
       field: tags
       operator: eq
-      value: "Low Carb"
+      value: "Low carb"
+      strip: true
     - pattern: '\b(riche en protéines|high protein)\b'
       field: tags
       operator: eq
       value: "High Protein"
+      strip: true
     - pattern: '\b(faible en sodium|pauvre en sel)\b'
       field: tags
       operator: eq
-      value: "Low Sodium"
+      value: "Sodium Smart"
     - pattern: '\b(peu calorique|léger|allégé)\b'
       field: total_calories
       operator: lte
@@ -584,18 +571,10 @@ fr:
       field: tags
       operator: eq
       value: "Family Friendly"
-    - pattern: '\b(une poêle|en une poêle)\b'
-      field: tags
-      operator: eq
-      value: "One Pan"
     - pattern: '\b(un pot|en un pot|une casserole)\b'
       field: tags
       operator: eq
       value: "One Pot"
-    - pattern: '\b(friteuse à air|air fryer)\b'
-      field: tags
-      operator: eq
-      value: "Air Fryer"
     - pattern: '\b(grande quantité|grand lot)\b'
       field: tags
       operator: eq
@@ -701,15 +680,17 @@ nl:
     - pattern: '\b(koolhydraatarm|low carb)\b'
       field: tags
       operator: eq
-      value: "Low Carb"
+      value: "Low carb"
+      strip: true
     - pattern: '\b(eiwitrijk|high protein)\b'
       field: tags
       operator: eq
       value: "High Protein"
+      strip: true
     - pattern: '\b(natriumarm|weinig zout)\b'
       field: tags
       operator: eq
-      value: "Low Sodium"
+      value: "Sodium Smart"
     - pattern: '\b(caloriearm|licht)\b'
       field: total_calories
       operator: lte
@@ -777,18 +758,10 @@ nl:
       field: tags
       operator: eq
       value: "Family Friendly"
-    - pattern: '\b(één pan|een pan)\b'
-      field: tags
-      operator: eq
-      value: "One Pan"
     - pattern: '\b(één pot|een pot)\b'
       field: tags
       operator: eq
       value: "One Pot"
-    - pattern: '\b(airfryer|heteluchtfriteuse)\b'
-      field: tags
-      operator: eq
-      value: "Air Fryer"
     - pattern: '\b(grote portie|groot batch)\b'
       field: tags
       operator: eq
@@ -894,15 +867,17 @@ it:
     - pattern: '\b(pochi carboidrati|low carb)\b'
       field: tags
       operator: eq
-      value: "Low Carb"
+      value: "Low carb"
+      strip: true
     - pattern: '\b(ricco di proteine|high protein)\b'
       field: tags
       operator: eq
       value: "High Protein"
+      strip: true
     - pattern: '\b(poco sodio|basso sodio)\b'
       field: tags
       operator: eq
-      value: "Low Sodium"
+      value: "Sodium Smart"
     - pattern: '\b(ipocalorico|leggero)\b'
       field: total_calories
       operator: lte
@@ -970,18 +945,10 @@ it:
       field: tags
       operator: eq
       value: "Family Friendly"
-    - pattern: '\b(una padella|in padella unica)\b'
-      field: tags
-      operator: eq
-      value: "One Pan"
     - pattern: '\b(una pentola|in pentola unica)\b'
       field: tags
       operator: eq
       value: "One Pot"
-    - pattern: '\b(friggitrice ad aria|air fryer)\b'
-      field: tags
-      operator: eq
-      value: "Air Fryer"
     - pattern: '\b(grande quantità|grande porzione)\b'
       field: tags
       operator: eq
@@ -1087,15 +1054,17 @@ es:
     - pattern: '\b(bajo en carbohidratos|low carb)\b'
       field: tags
       operator: eq
-      value: "Low Carb"
+      value: "Low carb"
+      strip: true
     - pattern: '\b(alto en proteínas|high protein)\b'
       field: tags
       operator: eq
       value: "High Protein"
+      strip: true
     - pattern: '\b(bajo en sodio|poca sal)\b'
       field: tags
       operator: eq
-      value: "Low Sodium"
+      value: "Sodium Smart"
     - pattern: '\b(bajo en calorías|ligero)\b'
       field: total_calories
       operator: lte
@@ -1163,18 +1132,10 @@ es:
       field: tags
       operator: eq
       value: "Family Friendly"
-    - pattern: '\b(una sartén|en una sartén)\b'
-      field: tags
-      operator: eq
-      value: "One Pan"
     - pattern: '\b(una olla|en una olla)\b'
       field: tags
       operator: eq
       value: "One Pot"
-    - pattern: '\b(freidora de aire|air fryer)\b'
-      field: tags
-      operator: eq
-      value: "Air Fryer"
     - pattern: '\b(gran cantidad|gran lote)\b'
       field: tags
       operator: eq
@@ -1280,15 +1241,17 @@ sv:
     - pattern: '\b(lågkolhydrat|low carb)\b'
       field: tags
       operator: eq
-      value: "Low Carb"
+      value: "Low carb"
+      strip: true
     - pattern: '\b(proteinrik|high protein)\b'
       field: tags
       operator: eq
       value: "High Protein"
+      strip: true
     - pattern: '\b(låg natrium|lite salt)\b'
       field: tags
       operator: eq
-      value: "Low Sodium"
+      value: "Sodium Smart"
     - pattern: '\b(kalorisnål|lätt)\b'
       field: total_calories
       operator: lte
@@ -1356,18 +1319,10 @@ sv:
       field: tags
       operator: eq
       value: "Family Friendly"
-    - pattern: '\b(en panna|i en panna)\b'
-      field: tags
-      operator: eq
-      value: "One Pan"
     - pattern: '\b(en gryta|i en gryta)\b'
       field: tags
       operator: eq
       value: "One Pot"
-    - pattern: '\b(airfryer|varmluftsfritös)\b'
-      field: tags
-      operator: eq
-      value: "Air Fryer"
     - pattern: '\b(stor sats|stor batch)\b'
       field: tags
       operator: eq
@@ -1473,15 +1428,17 @@ da:
     - pattern: '\b(lavt kulhydrat|low carb)\b'
       field: tags
       operator: eq
-      value: "Low Carb"
+      value: "Low carb"
+      strip: true
     - pattern: '\b(proteinrig|high protein)\b'
       field: tags
       operator: eq
       value: "High Protein"
+      strip: true
     - pattern: '\b(lavt natrium|lidt salt)\b'
       field: tags
       operator: eq
-      value: "Low Sodium"
+      value: "Sodium Smart"
     - pattern: '\b(kalorielet|let)\b'
       field: total_calories
       operator: lte
@@ -1549,18 +1506,10 @@ da:
       field: tags
       operator: eq
       value: "Family Friendly"
-    - pattern: '\b(én pande|i én pande)\b'
-      field: tags
-      operator: eq
-      value: "One Pan"
     - pattern: '\b(én gryde|i én gryde)\b'
       field: tags
       operator: eq
       value: "One Pot"
-    - pattern: '\b(airfryer|varmluftfriture)\b'
-      field: tags
-      operator: eq
-      value: "Air Fryer"
     - pattern: '\b(stor portion|stor batch)\b'
       field: tags
       operator: eq
